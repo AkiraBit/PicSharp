@@ -1,7 +1,16 @@
 {
   "name": "@picsharp/monorepo",
   "private": true,
-  "repository": "JaylenLee/picsharp",
+  "author": {
+    "name": "JaylenLee117",
+    "email": "fengyvxiu@gmail.com"
+  },
+  "license": "AGPL-3.0",
+  "repository": "JaylenLee117/PicSharp",
+  "homepage": "https://github.com/JaylenLee117/PicSharp",
+  "bugs": {
+    "url": "https://github.com/JaylenLee117/PicSharp/issues"
+  },
   "scripts": {
     "dev:sidecar": "pnpm --filter @picsharp/picsharp-sidecar dev",
     "dev:app": "pnpm --filter @picsharp/picsharp-app tauri dev",
