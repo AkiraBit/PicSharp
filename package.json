@@ -1,0 +1,23 @@
+{
+  "name": "@picsharp/monorepo",
+  "private": true,
+  "repository": "JaylenLee/picsharp",
+  "scripts": {
+    "dev:sidecar": "pnpm --filter @picsharp/picsharp-sidecar dev",
+    "dev:app": "pnpm --filter @picsharp/picsharp-app tauri dev",
+    "build:sidecar": "pnpm --filter @picsharp/picsharp-sidecar build:sea"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.17",
+    "eslint": "^9",
+    "eslint-config-prettier": "^9.1.0",
+    "husky": "^9.1.6",
+    "prettier": "^3.3.3",
+    "prettier-plugin-tailwindcss": "^0.6.8",
+    "typescript": "^5"
+  },
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=9"
+  }
+}

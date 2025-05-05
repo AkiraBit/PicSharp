@@ -1,0 +1,42 @@
+{
+  "name": "@picsharp/picsharp-sidecar",
+  "version": "1.0.0",
+  "description": "PicSharp Sidecar",
+  "author": "JaylenLee",
+  "private": true,
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "build:sea": "tsc && pkg --options abort-on-far-code-range --compress gzip --output ./bin/picsharp-sidecar ."
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.14.1",
+    "@hono/zod-validator": "^0.4.3",
+    "fs-extra": "^11.3.0",
+    "hono": "^4.7.7",
+    "nanoid": "^3.3.11",
+    "sharp": "^0.34.1",
+    "svgo": "^3.3.2",
+    "yargs": "^17.7.2",
+    "zod": "^3.24.3"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "@types/yargs": "^17.0.33",
+    "@yao-pkg/pkg": "^6.4.0",
+    "tsx": "^4.7.1"
+  },
+  "bin": "dist/index.js",
+  "pkg": {
+    "assets": [
+      "node_modules/@img/**/*"
+    ],
+    "targets": [
+      "node20-macos-arm64"
+    ]
+  },
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=9"
+  }
+}

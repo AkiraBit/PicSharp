@@ -1,0 +1,21 @@
+{
+  "language": "",
+  "theme": "system",
+  "system_notification": false,
+  "autostart": false,
+  "compression_action": "auto",
+  "compression_local_quality_level": 4,
+  "compression_local_quality_mode": "lossy",
+  "compression_tinypng_api_keys": [],
+  "compression_tasks_concurrency": 6,
+  "compression_tasks_output_mode": "overwrite",
+  "compression_tasks_output_mode_save_as_file_suffix": "_compressed",
+  "compression_tasks_output_mode_save_to_folder": "",
+  "compression_tasks_save_compress_rate_limit": false,
+  "compression_tasks_save_compress_rate_limit_threshold": 0.2,
+  "compression_retain_metadata": [
+    "copyright",
+    "creator",
+    "location"
+  ]
+}

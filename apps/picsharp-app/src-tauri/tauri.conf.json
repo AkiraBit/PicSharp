@@ -1,0 +1,111 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "PicSharp",
+  "version": "1.0.0",
+  "identifier": "com.PicSharp.app",
+  "build": {
+    "beforeDevCommand": "pnpm dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "pnpm build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "resizable": true,
+        "titleBarStyle": "Overlay",
+        "hiddenTitle": true,
+        "title": "PicSharp",
+        "width": 1002,
+        "height": 670,
+        "center": true
+      }
+    ],
+    "security": {
+      "dangerousDisableAssetCspModification": true,
+      // "csp": {
+      //   "default-src": "'self' customprotocol: asset:",
+      //   "connect-src": "ipc: http://ipc.localhost http://localhost",
+      //   "font-src": [
+      //     "https://fonts.gstatic.com"
+      //   ],
+      //   "img-src": "'self' asset: http://asset.localhost blob: data:",
+      //   "style-src": "'unsafe-inline' 'self' https://fonts.googleapis.com"
+      // },
+      "assetProtocol": {
+        "enable": true,
+        "scope": [
+          "**"
+        ]
+      }
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "category": "Productivity",
+    "copyright": "Copyright (c) JaylenLee 2025. All rights reserved.",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "resources": [
+      "resources/**/*"
+    ],
+    "externalBin": [
+      "binaries/picsharp-sidecar"
+    ],
+    "windows": {
+      "webviewInstallMode": {
+        "type": "embedBootstrapper"
+      }
+    },
+    "macOS": {
+      "entitlements": "./Entitlements.plist",
+      "minimumSystemVersion": "12.0"
+    },
+    "linux": {
+      "deb": {
+        "section": "text"
+      }
+    },
+    "fileAssociations": [
+      {
+        "name": "image",
+        "ext": [
+          "png",
+          "jpg",
+          "jpeg",
+          "webp",
+          "avif",
+          "gif",
+          "svg",
+          "tiff"
+        ],
+        "description": "Image file",
+        "mimeType": "image/*",
+        "role": "Editor"
+      }
+    ]
+  },
+  "plugins": {
+    "cli": {
+      "description": "PicSharp CLI",
+      "args": [
+        {
+          "name": "file",
+          "index": 1,
+          "takesValue": true
+        }
+      ]
+    },
+    "deep-link": {
+      "desktop": {
+        "schemes": ["picsharp"]
+      }
+    }
+  }
+}

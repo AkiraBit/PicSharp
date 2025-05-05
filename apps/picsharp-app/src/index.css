@@ -1,0 +1,130 @@
+@import '@fontsource/ibm-plex-mono';
+@import '@fontsource/ibm-plex-mono/200.css';
+@import '@fontsource/ibm-plex-mono/300.css';
+@import '@fontsource/ibm-plex-mono/400.css';
+@import '@fontsource/ibm-plex-mono/500.css';
+@import '@fontsource/ibm-plex-mono/600.css';
+@import '@fontsource/ibm-plex-mono/700.css';
+@import '@fontsource/ibm-plex-mono/400-italic.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  /* font-family: IBM Plex Mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace, sans-serif; */
+}
+
+html,
+body,
+#root{
+  height: 100vh;
+  overflow: hidden;
+  background: transparent;
+  /* user-select: none; */
+}
+
+:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+
+.dark{
+  .ant-pagination{
+    .ant-pagination-prev{
+      color: hsl(var(--foreground))!important;
+      button{
+        color: inherit;
+      }
+      button:hover{
+        color: inherit;
+        background-color: rgb(64 64 64 / 0.5)!important;
+      }
+    }
+
+    .ant-pagination-item-ellipsis{
+      color: hsl(var(--foreground))!important;
+    }
+
+    .ant-pagination-jump-prev{
+      color: hsl(var(--foreground))!important;
+    }
+  
+    .ant-pagination-next{
+      color: hsl(var(--foreground))!important;
+      button{
+        color: inherit!important;
+      }
+      button:hover{
+        background-color: rgb(64 64 64 / 0.5)!important;
+      }
+    }
+    .ant-pagination-item{
+      background-color: transparent!important;
+      a{
+        color: hsl(var(--foreground))!important;
+      }
+    }
+    .ant-pagination-item:hover{
+      background-color: rgb(64 64 64 / 0.5)!important;
+    }
+
+    .ant-pagination-item-active{
+      border-color: rgb(82, 82, 82)!important;
+    }
+    .anticon-double-left,.anticon-double-right{
+      color: hsl(var(--foreground))!important;
+    }
+
+    .ant-select-selector,.ant-pagination-options-size-changer.ant-select-open .ant-select-selector{
+      border-color: rgb(82, 82, 82)!important;
+      background-color: transparent!important;
+      color: hsl(var(--foreground))!important;
+      box-shadow: none!important;
+    }
+    .ant-select-arrow{
+      color: hsl(var(--foreground))!important;
+    }
+    .ant-select-selection-item{
+      color: hsl(var(--foreground))!important;
+    }
+    .ant-pagination-options .ant-select-dropdown{
+      background-color: rgb(38 38 38)!important;
+      border:1px solid rgb(82, 82, 82)!important;
+    }
+    .ant-pagination-options .ant-select-dropdown .ant-select-item{
+      color: hsl(var(--foreground))!important;
+    }
+    .ant-pagination-options .ant-select-dropdown .ant-select-item.ant-select-item-option-selected{
+      background-color: rgb(64 64 64 / 0.8)!important;
+    }
+    .ant-pagination-options .ant-select-dropdown .ant-select-item.ant-select-item-option-active{
+      background-color: rgb(64 64 64 / 0.8)!important;
+    }
+  }
+}
+
+@layer base {
+  :root {
+    --radius: 0.5rem;
+    --background: 210 40% 98%;
+    --foreground: 222.2 84% 4.9%;
+    --border: 24 4.42% 84%;
+  }
+
+  .dark {
+    --background: 10 0% 10%;
+    --foreground: 141 7% 94%;
+    --border: 0 0% 20%;
+  }
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}

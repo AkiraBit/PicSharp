@@ -1,0 +1,107 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Capability for the main window",
+  "windows": [
+    "main",
+    "PicSharp-*"
+  ],
+  "remote": {
+    "urls": ["https://*"]
+  },
+  "permissions": [
+    {
+      "identifier": "http:default",
+      "allow": [{ "url": "https://api.tinify.com/shrink" }, { "url": "http://localhost:*" }]
+    },
+    "core:app:allow-default-window-icon",
+    "core:window:allow-set-focus",
+    "core:window:allow-destroy",
+    "core:default",
+    "opener:default",
+    "dialog:default",
+    "fs:default",
+    "fs:allow-app-write",
+    "fs:allow-app-write-recursive",
+    "fs:allow-copy-file",
+    "fs:allow-app-meta",
+    "fs:allow-app-meta-recursive",
+    "fs:allow-app-read",
+    "fs:allow-app-read-recursive",
+    "fs:allow-appcache-meta",
+    "fs:allow-appcache-meta-recursive",
+    "fs:allow-appcache-read",
+    "fs:allow-appcache-read-recursive",
+    "fs:allow-lstat",
+    "log:default",
+    "http:default",
+    "upload:default",
+    "core:window:allow-set-size",
+    "core:webview:allow-set-webview-size",
+    "os:default",
+    "core:webview:allow-create-webview",
+    "core:webview:allow-webview-show",
+    "core:window:allow-create",
+    "core:window:allow-show",
+    "core:window:allow-set-title",
+    "core:window:allow-start-dragging",
+    "store:default",
+    {
+      "identifier": "opener:allow-open-path",
+      "allow": [
+        {
+          "path": "**/*"
+        }
+      ]
+    },
+    {
+      "identifier": "opener:allow-reveal-item-in-dir",
+      "allow": [
+        {
+          "path": "**/*"
+        }
+      ]
+    },
+    {
+      "identifier": "fs:scope",
+      "allow": [
+        {
+          "path": "**/*"
+        }
+      ]
+    },
+    {
+      "identifier": "fs:allow-watch",
+      "allow": [
+        {
+          "path": "**/*"
+        }
+      ]
+    },
+    {
+      "identifier": "fs:allow-unwatch",
+      "allow": [
+        {
+          "path": "**/*"
+        }
+      ]
+    },
+    "clipboard-manager:default",
+    "clipboard-manager:allow-write-text",
+    "clipboard-manager:allow-write-image",
+    "clipboard-manager:allow-read-text",
+    "clipboard-manager:allow-read-image",
+    "notification:default",
+    {
+      "identifier": "shell:allow-spawn",
+      "allow": [
+        {
+          "name": "binaries/picsharp-sidecar",
+          "sidecar": true
+        }
+      ]
+    },
+    "shell:allow-kill",
+    "shell:allow-execute"
+  ]
+}

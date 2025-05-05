@@ -1,0 +1,108 @@
+[package]
+name = "PicSharp"
+version = "0.0.1"
+description = "Swiss Army Knife: image compression, format conversion, oss storage"
+authors = ["JaylenL"]
+edition = "2021"
+default-run = "PicSharp"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+# The `_lib` suffix may seem redundant but it is necessary
+# to make the lib name unique and wouldn't conflict with the bin name.
+# This seems to be only an issue on Windows, see https://github.com/rust-lang/cargo/issues/8519
+name = "picsharp_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = ["config-json5"] }
+
+[dependencies]
+glob = "0.3.1"
+tauri = { version = "2", features = ["protocol-asset", "tray-icon", "devtools"] }
+tauri-plugin-opener = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tauri-plugin-dialog = "2"
+tauri-plugin-fs = { version = "2.0.0", features = ["watch"] }
+tauri-plugin-log = "2"
+tauri-plugin-http = { version = "2", features = ["unsafe-headers"] }
+tauri-plugin-upload = "2"
+tauri-plugin-os = "2"
+tauri-plugin-store = "2"
+log = "0.4"
+tauri-plugin-clipboard-manager = "2.2.1"
+tauri-plugin-notification = "2"
+notify = "^8"
+rayon = "1.10.0"
+walkdir = "2.5.0"
+urlencoding = "2.1.3"
+dunce = "1.0.5"
+filesize = "0.2.0"
+reqwest = { version = "0.12.12", default-features = false, features = ["json", "stream"] }
+tokio = { version = "1", features = ["fs"] }
+tokio-util = { version = "0.7", features = ["codec"] }
+futures-util = "0.3"
+read-progress-stream = "1.0.0"
+thiserror = "2.0.12"
+base64 = "0.21.7"
+rand = "0.8.5"
+# 图像处理相关依赖
+image = "0.25.6"
+webp = "0.2.6"
+webp-animation = "0.9.0"
+ravif = "0.11.11"
+svgcleaner = "0.9.5"
+imagequant = "4.3.4"
+mozjpeg = "0.10.13"
+png = "0.17.16"
+rgb = "0.8.50"
+oxipng = "9.1.4"
+tauri-plugin-deep-link = "2"
+url = "2.5.4"
+arboard = "3.5.0"
+clap = { version = "4.5", features = ["derive"] }
+clap_derive = { version = "4" }
+nanoid = "0.4.0"
+merge = "0.2.0"
+tauri-plugin-shell = "2"
+
+[build]
+rustc-wrapper = "~/.cargo/bin/sccache"
+
+# TODO: cleanup features on objc2 crates
+[target.'cfg(target_os = "macos")'.dependencies]
+objc2-uniform-type-identifiers = { version = "0.3.0", features = [
+  "UTCoreTypes",
+  "UTType",
+] }
+objc2-app-kit = { version = "0.3.0", features = [
+  "NSApplication",
+  "NSResponder",
+  "NSPasteboard",
+] }
+objc2-foundation = { version = "0.3.0", features = [
+  "NSExtensionRequestHandling",
+  "NSExtensionContext",
+  "NSExtensionItem",
+  "NSArray",
+  "NSItemProvider",
+  "NSDictionary",
+  "NSError",
+  "NSObject",
+  "NSString",
+  "block2",
+  "NSThread",
+  "NSRunLoop",
+] }
+objc2 = "0.6.0"
+
+[target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
+tauri-plugin-autostart = "2"
+tauri-plugin-cli = "2"
+
+[[bin]]
+name = "picsharp-cli"
+path = "bin/cli.rs"
+default = true

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+	<dict>
+		<key>CFBundleDocumentTypes</key>
+	<array>
+	     <dict>
+        <key>CFBundleTypeExtensions</key>
+        <array/>
+        <key>CFBundleTypeName</key>
+        <string>Folder</string>
+        <key>CFBundleTypeOSTypes</key>
+        <array>
+          <string>TEXT</string>
+          <string>utxt</string>
+          <string>TUTX</string>
+          <string>****</string>
+        </array>
+        <key>CFBundleTypeRole</key>
+        <string>Editor</string>
+        <key>LSItemContentTypes</key>
+        <array>
+          <string>public.folder</string>
+        </array>
+      </dict>
+	</array>
+		<key>NSServices</key>
+		<array>
+			<dict>
+				<key>NSMenuItem</key>
+        <dict>
+          <key>default</key>
+          <string>PicSharp • 图片压缩</string>
+        </dict>
+				<key>NSMessage</key>
+				<string>nsCompress</string>
+				<key>NSPortName</key>
+				<string>PicSharp</string>
+				<key>NSRequiredContext</key>
+				<dict>
+					<key>NSTextContent</key>
+					<string>FilePath</string>
+				</dict>
+				<key>NSSendFileTypes</key>
+				<array>
+					<string>public.png</string>
+					<string>public.jpeg</string>
+					<string>public.jpg</string>
+					<string>public.JPG</string>
+					<string>public.webp</string>
+					<string>public.avif</string>
+					<string>public.folder</string>
+				</array>
+			</dict>
+						<dict>
+				<key>NSMenuItem</key>
+        <dict>
+          <key>default</key>
+          <string>PicSharp • 监控新增图片并压缩</string>
+        </dict>
+				<key>NSMessage</key>
+				<string>nsWatchAndCompress</string>
+				<key>NSPortName</key>
+				<string>PicSharp</string>
+				<key>NSRequiredContext</key>
+				<dict>
+					<key>NSTextContent</key>
+					<string>FilePath</string>
+				</dict>
+				<key>NSSendFileTypes</key>
+				<array>
+					<string>public.folder</string>
+				</array>
+			</dict>
+		</array>
+	</dict>
+</plist>
+
+
