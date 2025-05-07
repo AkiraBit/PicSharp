@@ -45,6 +45,7 @@ function FileCard(props: FileCardProps) {
     const osPlatform = getOSPlatform();
     const fileRevealLabel =
       FILE_REVEAL_LABELS[osPlatform as FILE_REVEAL_PLATFORMS] || FILE_REVEAL_LABELS.default;
+    console.log('fileRevealLabel', fileRevealLabel);
     const compareMenuItem = await MenuItem.new({
       text: t('compression.file_action.compare_file'),
       action: async () => {
@@ -151,7 +152,7 @@ function FileCard(props: FileCardProps) {
 
   return (
     <div
-      className='group relative overflow-hidden rounded-lg border bg-background transition-all duration-300 hover:shadow-lg dark:border-neutral-700'
+      className='bg-background group relative overflow-hidden rounded-lg border transition-all duration-300 hover:shadow-lg dark:border-neutral-700'
       onContextMenu={fileContextMenuHandler}
     >
       <div className='relative flex aspect-[4/3] items-center justify-center overflow-hidden bg-neutral-200/30 p-2 dark:bg-neutral-700/30'>
@@ -168,7 +169,7 @@ function FileCard(props: FileCardProps) {
         />
       </div>
       <div className='p-2'>
-        <h3 className='max-w-[100%] overflow-hidden text-ellipsis whitespace-nowrap font-medium text-foreground'>
+        <h3 className='text-foreground max-w-[100%] overflow-hidden text-ellipsis whitespace-nowrap font-medium'>
           {file.name}
         </h3>
         <div className='flex items-center justify-between'>

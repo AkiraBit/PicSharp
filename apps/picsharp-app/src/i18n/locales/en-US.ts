@@ -161,7 +161,7 @@ const enUS = {
   'tips.tinypng_api_keys_not_configured': 'TinyPNG API keys are not configured.',
   'tips.save_to_folder_not_configured': 'Image saving directory is not configured.',
   'tips.compressing': 'Success: {{fulfilled}}, Failed: {{rejected}}, Total Tasks: {{total}}',
-  'tips.compress_completed': 'Success: {{fulfilled}}, Failed: {{rejected}}, Total Tasks: {{total}}',
+  'tips.compress_completed': 'Success: {{fulfilled}} Failed: {{rejected}}  Total Tasks: {{total}}',
   'tips.saving': 'Success: {{fulfilled}}, Failed: {{rejected}}, Total Tasks: {{total}}',
   'tips.save_completed': 'Success: {{fulfilled}}, Failed: {{rejected}}, Total Tasks: {{total}}',
   'tips.settings_reset_success': 'Application configuration reset completed',

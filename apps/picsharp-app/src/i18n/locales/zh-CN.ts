@@ -152,8 +152,7 @@ export default {
   'tips.tinypng_api_keys_not_configured': 'TinyPNG API密钥未配置',
   'tips.save_to_folder_not_configured': '图片保存目录未配置',
   'tips.compressing': '正在压缩... 成功：{{fulfilled}}，失败：{{rejected}}，总任务数：{{total}}',
-  'tips.compress_completed':
-    '压缩完成，成功：{{fulfilled}}，失败：{{rejected}}，总任务数：{{total}}',
+  'tips.compress_completed': '成功：{{fulfilled}}  失败：{{rejected}}  总任务数：{{total}}',
   'tips.saving': '正在保存... 成功：{{fulfilled}}，失败：{{rejected}}，总任务数：{{total}}',
   'tips.save_completed': '保存完成，成功：{{fulfilled}}，失败：{{rejected}}，总任务数：{{total}}',
   'tips.settings_reset_success': '应用配置重置完成',

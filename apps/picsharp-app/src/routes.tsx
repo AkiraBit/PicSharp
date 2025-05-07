@@ -11,11 +11,22 @@ import SettingsCompression from './pages/settings/compression';
 import ImageCompare from './pages/image-compare';
 import { Toaster } from 'sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
+import { useTheme } from '@/components/theme-provider';
 
 export default function AppRoutes() {
+  const { theme } = useTheme();
   return (
     <TooltipProvider delayDuration={100}>
-      <Toaster position='top-center' />
+      <Toaster
+        position='bottom-right'
+        theme={theme}
+        offset={{
+          top: '24px',
+          right: '16px',
+          bottom: '24px',
+          left: '16px',
+        }}
+      />
       <BrowserRouter>
         <Routes>
           <Route path='/' element={<AppLayout />}>
