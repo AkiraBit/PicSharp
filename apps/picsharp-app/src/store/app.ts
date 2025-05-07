@@ -3,7 +3,7 @@ import EventEmitter from 'eventemitter3';
 import { isProd } from '@/utils';
 import { Command, Child } from '@tauri-apps/plugin-shell';
 import { info, error } from '@tauri-apps/plugin-log';
-import { remove, BaseDirectory } from '@tauri-apps/plugin-fs';
+import { exists, remove, mkdir, BaseDirectory } from '@tauri-apps/plugin-fs';
 
 interface AppState {
   eventEmitter: EventEmitter;
@@ -82,7 +82,10 @@ const useAppStore = create<AppState & AppAction>((set, get) => ({
   },
   clearImageCache: async () => {
     try {
-      await remove('picsharp_temp', { baseDir: BaseDirectory.AppCache, recursive: true });
+      if (await exists('picsharp_temp', { baseDir: BaseDirectory.AppCache })) {
+        await remove('picsharp_temp', { baseDir: BaseDirectory.AppCache, recursive: true });
+      }
+      await mkdir('picsharp_temp', { baseDir: BaseDirectory.AppCache, recursive: true });
       info('[Clear Image Cache]: Success');
       return true;
     } catch (err) {
