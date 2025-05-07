@@ -1,16 +1,11 @@
-import fse from "fs-extra";
-import path from "node:path";
-import fs from "node:fs/promises";
-import { nanoid } from "nanoid";
-import getPort from "./get-port";
+import fse from 'fs-extra';
+import path from 'node:path';
+import fs from 'node:fs/promises';
+import { nanoid } from 'nanoid';
+import getPort from './get-port';
 
-export const calCompressionRate = (
-  originalSize: number,
-  compressedSize: number
-) => {
-  return parseFloat(
-    ((originalSize - compressedSize) / originalSize).toFixed(2)
-  );
+export const calCompressionRate = (originalSize: number, compressedSize: number) => {
+  return Number(((originalSize - compressedSize) / originalSize).toFixed(2));
 };
 
 export const isFile = async (path: string) => {
@@ -39,7 +34,7 @@ export const getFileSize = async (path: string) => {
 };
 
 export const convertFileSrc = async (origPath: string): Promise<string> => {
-  const base = "asset://localhost/";
+  const base = 'asset://localhost/';
   const canonicalPath = await fs.realpath(origPath);
   const encoded = encodeURIComponent(canonicalPath);
   return `${base}${encoded}`;
@@ -48,10 +43,7 @@ export const convertFileSrc = async (origPath: string): Promise<string> => {
 export const copyFileToTemp = async (targetPath: string, tempDir: string) => {
   const tempFilePath = path.join(
     tempDir,
-    `${path.basename(
-      targetPath,
-      path.extname(targetPath)
-    )}_${nanoid()}${path.extname(targetPath)}`
+    `${path.basename(targetPath, path.extname(targetPath))}_${nanoid()}${path.extname(targetPath)}`,
   );
   await fs.copyFile(targetPath, tempFilePath);
   return tempFilePath;
@@ -60,27 +52,22 @@ export const copyFileToTemp = async (targetPath: string, tempDir: string) => {
 export const createOutputPath = async (
   inputPath: string,
   options: {
-    mode: "overwrite" | "save_as_new_file" | "save_to_new_folder";
+    mode: 'overwrite' | 'save_as_new_file' | 'save_to_new_folder';
     new_file_suffix?: string;
     new_folder_path?: string;
-  }
+  },
 ) => {
   switch (options.mode) {
-    case "overwrite":
+    case 'overwrite':
       return inputPath;
-    case "save_as_new_file": {
+    case 'save_as_new_file': {
       const fileExt = path.extname(inputPath);
       const filename = path.basename(inputPath, fileExt);
-      return path.join(
-        path.dirname(inputPath),
-        `${filename}${options.new_file_suffix}${fileExt}`
-      );
+      return path.join(path.dirname(inputPath), `${filename}${options.new_file_suffix}${fileExt}`);
     }
-    case "save_to_new_folder": {
-      if (!(await isDirectory(options.new_folder_path || ""))) {
-        throw new Error(
-          `Directory '${options.new_folder_path}' does not exist`
-        );
+    case 'save_to_new_folder': {
+      if (!(await isDirectory(options.new_folder_path || ''))) {
+        throw new Error(`Directory '${options.new_folder_path}' does not exist`);
       }
       const filename = path.basename(inputPath);
       return path.join(options.new_folder_path!, filename);
@@ -88,9 +75,7 @@ export const createOutputPath = async (
   }
 };
 
-export async function findAvailablePort(
-  preferredPort?: number
-): Promise<number> {
+export async function findAvailablePort(preferredPort?: number): Promise<number> {
   return getPort({ port: preferredPort });
 }
 
@@ -107,12 +92,10 @@ export interface RetryOptions {
  */
 export function retryPromise<T>(
   promiseFunc: () => Promise<T>,
-  retryOptions?: RetryOptions
+  retryOptions?: RetryOptions,
 ): Promise<T> {
-  if (typeof promiseFunc !== "function") {
-    throw new TypeError(
-      "[retryPromise]: Argument 1 must be a function that returns a promise!"
-    );
+  if (typeof promiseFunc !== 'function') {
+    throw new TypeError('[retryPromise]: Argument 1 must be a function that returns a promise!');
   }
   return new Promise<T>((resolve, reject) => {
     const { enable = true, retryInterval, retryCount } = retryOptions || {};
@@ -122,10 +105,7 @@ export function retryPromise<T>(
         .then(resolve)
         .catch((error) => {
           if (enable) {
-            if (
-              typeof retryCount === "number" &&
-              typeof retryInterval === "number"
-            ) {
+            if (typeof retryCount === 'number' && typeof retryInterval === 'number') {
               if (++attempt < retryCount) {
                 setTimeout(() => retry(), retryInterval);
               } else {

@@ -15,8 +15,8 @@ interface AppState {
 
 interface AppAction {
   initSidecar: () => Promise<void>;
-  startSidecarHeartbeat: () => Promise<void>;
-  destroySidecar: () => void;
+  pingSidecar: () => Promise<void>;
+  destroySidecar: () => Promise<boolean>;
 }
 
 const useAppStore = create<AppState & AppAction>((set, get) => ({
@@ -24,8 +24,8 @@ const useAppStore = create<AppState & AppAction>((set, get) => ({
   sidecar: null,
   initSidecar: async () => {
     try {
+      get().destroySidecar();
       if (isProd) {
-        get().destroySidecar();
         const command = Command.sidecar('binaries/picsharp-sidecar');
         command.stdout.once('data', (data) => {
           const response = JSON.parse(data);
@@ -49,7 +49,7 @@ const useAppStore = create<AppState & AppAction>((set, get) => ({
       error(`[Init Sidecar Error]: ${err.message || err.toString()}`);
     }
   },
-  startSidecarHeartbeat: async () => {
+  pingSidecar: async () => {
     if (get().sidecar?.origin) {
       try {
         const response = await fetch(`${get().sidecar?.origin}/ping`);
@@ -70,10 +70,9 @@ const useAppStore = create<AppState & AppAction>((set, get) => ({
     try {
       if (get().sidecar?.process) {
         await get().sidecar.process.kill();
-        set({ sidecar: null });
-        return true;
       }
-      return false;
+      set({ sidecar: null });
+      return true;
     } catch (err) {
       console.error(`[Destroy Sidecar Error]: ${err.message || err.toString()}`);
       return false;

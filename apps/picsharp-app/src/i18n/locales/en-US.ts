@@ -151,6 +151,8 @@ const enUS = {
   quit: 'Quit',
   goToSettings: 'Setting',
   no_config: 'No Config',
+  beforeCompression: 'Before Compression',
+  afterCompression: 'After Compression',
   'error.something_went_wrong': 'Oh no, something went wrong‼️',
   'error.unexpected_error': 'An unexpected error occurred while running the application',
   'error.refresh_page': 'Refresh',

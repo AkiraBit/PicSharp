@@ -13,7 +13,10 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useTheme, Theme } from '@/components/theme-provider';
-
+import useAppStore from '@/store/app';
+import useSelector from '@/hooks/useSelector';
+import clsx from 'clsx';
+import { isProd, isDev } from '@/utils';
 export interface NavLink {
   title: string;
   href: string;
@@ -34,6 +37,7 @@ export default function SidebarNav() {
   const t = useI18n();
   const location = useLocation();
   const { theme, setTheme } = useTheme();
+  const { sidecar } = useAppStore(useSelector(['sidecar']));
 
   const navigation: NavigationProps = {
     primary: [
@@ -120,17 +124,28 @@ export default function SidebarNav() {
           <Tooltip>
             <TooltipTrigger>
               <Link to='/settings' title={t('nav.settings')} viewTransition>
-                <Button
-                  variant={location.pathname.startsWith('/settings') ? 'secondary' : 'ghost'}
-                  className={cn(
-                    'h-12 justify-start',
-                    location.pathname.startsWith('/settings')
-                      ? 'hover:bg-mute bg-neutral-200/60 dark:bg-neutral-700/50 dark:hover:bg-neutral-700/50'
-                      : 'dark:hover:bg-neutral-700/50',
-                  )}
-                >
-                  <Settings className='size-4' />
-                </Button>
+                <div className='relative flex items-center justify-center'>
+                  <div
+                    className={clsx(
+                      'absolute right-2 top-2 h-[6px] w-[6px] rounded-full',
+                      (isProd && sidecar?.process && sidecar?.origin && sidecar?.spawning) ||
+                        (isDev && sidecar?.origin)
+                        ? 'bg-green-400'
+                        : 'bg-red-400',
+                    )}
+                  ></div>
+                  <Button
+                    variant={location.pathname.startsWith('/settings') ? 'secondary' : 'ghost'}
+                    className={cn(
+                      'h-12 justify-start',
+                      location.pathname.startsWith('/settings')
+                        ? 'hover:bg-mute bg-neutral-200/60 dark:bg-neutral-700/50 dark:hover:bg-neutral-700/50'
+                        : 'dark:hover:bg-neutral-700/50',
+                    )}
+                  >
+                    <Settings className='size-4' />
+                  </Button>
+                </div>
               </Link>
             </TooltipTrigger>
             <TooltipContent side='right'>{t('nav.settings')}</TooltipContent>

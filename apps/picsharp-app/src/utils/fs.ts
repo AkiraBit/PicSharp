@@ -3,7 +3,7 @@ import { ICompressor } from './compressor';
 import { isValidArray } from '.';
 
 const mags = ' KMGTPEZY';
-export function humanSize(bytes: number, precision: number = 2) {
+export function humanSize(bytes: number, precision: number = 1) {
   const magnitude = Math.min((Math.log(bytes) / Math.log(1024)) | 0, mags.length - 1);
   const result = bytes / Math.pow(1024, magnitude);
   const suffix = mags[magnitude].trim() + 'B';

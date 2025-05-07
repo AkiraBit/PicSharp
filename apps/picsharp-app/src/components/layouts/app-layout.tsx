@@ -1,7 +1,7 @@
 import SidebarNav from './sidebar-nav';
 import ErrorBoundary from '../error-boundary';
 import { Outlet } from 'react-router';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useLayoutEffect } from 'react';
 import { emit, listen, UnlistenFn } from '@tauri-apps/api/event';
 import { PageProgress, PageProgressRef } from '../fullscreen-progress';
 import { isFunction } from 'radash';
@@ -152,10 +152,10 @@ export default function AppLayout() {
 
     let timer;
     if (getCurrentWebviewWindow().label === 'main') {
-      handleNsInspect();
       useAppStore.getState().initSidecar();
+      handleNsInspect();
       timer = setInterval(() => {
-        useAppStore.getState().startSidecarHeartbeat();
+        useAppStore.getState().pingSidecar();
       }, 10000);
     }
     handleOpenWithFiles();
@@ -170,10 +170,10 @@ export default function AppLayout() {
   }, []);
 
   return (
-    <div className='flex h-screen w-screen bg-background'>
+    <div className='bg-background flex h-screen w-screen'>
       <PageProgress ref={progressRef} />
       {getCurrentWebviewWindow().label === 'main' && <SidebarNav />}
-      <div className='h-screen flex-1 bg-background bg-gradient-to-b from-blue-50 to-white dark:bg-background dark:bg-none'>
+      <div className='bg-background dark:bg-background h-screen flex-1 bg-gradient-to-b from-blue-50 to-white dark:bg-none'>
         <ErrorBoundary>
           <main className='relative h-full overflow-hidden'>
             <div

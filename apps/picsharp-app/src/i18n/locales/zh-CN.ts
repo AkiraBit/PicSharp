@@ -142,6 +142,8 @@ export default {
   quit: '退出',
   goToSettings: '前往设置',
   no_config: '未配置',
+  beforeCompression: '压缩前',
+  afterCompression: '压缩后',
   'error.something_went_wrong': '呀，出错了‼️',
   'error.unexpected_error': '应用运行过程中发生了意外的错误',
   'error.refresh_page': '刷新页面',

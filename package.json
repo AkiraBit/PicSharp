@@ -24,9 +24,5 @@
     "prettier": "^3.3.3",
     "prettier-plugin-tailwindcss": "^0.6.8",
     "typescript": "^5"
-  },
-  "engines": {
-    "node": ">=20",
-    "pnpm": ">=9"
   }
 }
