@@ -1,5 +1,6 @@
-import { create } from "zustand";
-import EventEmitter from "eventemitter3";
+import { create } from 'zustand';
+import EventEmitter from 'eventemitter3';
+import useAppStore from './app';
 
 interface CompressionState {
   // 是否正在工作区
@@ -25,57 +26,54 @@ interface CompressionAction {
   reset: () => void;
 }
 
-const useCompressionStore = create<CompressionState & CompressionAction>(
-  (set, get) => ({
-    working: false,
-    eventEmitter: new EventEmitter(),
-    watchingFolder: "",
-    files: [],
-    fileMap: new Map(),
-    selectedFiles: [],
-    inCompressing: false,
-    setWorking: (value: boolean) => {
-      set({ working: value });
-    },
-    setInCompressing: (inCompressing: boolean) => {
-      set({ inCompressing });
-    },
-    setWatchingFolder: (path) => {
-      set({ watchingFolder: path });
-    },
-    setFiles: (files: FileInfo[]) => {
+const useCompressionStore = create<CompressionState & CompressionAction>((set, get) => ({
+  working: false,
+  eventEmitter: new EventEmitter(),
+  watchingFolder: '',
+  files: [],
+  fileMap: new Map(),
+  selectedFiles: [],
+  inCompressing: false,
+  setWorking: (value: boolean) => {
+    set({ working: value });
+  },
+  setInCompressing: (inCompressing: boolean) => {
+    set({ inCompressing });
+  },
+  setWatchingFolder: (path) => {
+    set({ watchingFolder: path });
+  },
+  setFiles: (files: FileInfo[]) => {
+    set({
+      files,
+      fileMap: new Map(files.map((file) => [file.path, file])),
+      selectedFiles: files.map((file) => file.path),
+    });
+  },
+  removeFile: (path: string) => {
+    const targetIndex = get().files.findIndex((file) => file.path === path);
+    if (targetIndex !== -1) {
+      get().files.splice(targetIndex, 1);
+      get().fileMap.delete(path);
+      const selectedFiles = get().selectedFiles.filter((file) => file !== path);
       set({
-        files,
-        fileMap: new Map(files.map((file) => [file.path, file])),
-        selectedFiles: files.map((file) => file.path),
+        files: [...get().files],
+        fileMap: new Map(get().fileMap),
+        selectedFiles,
       });
-    },
-    removeFile: (path: string) => {
-      const targetIndex = get().files.findIndex((file) => file.path === path);
-      if (targetIndex !== -1) {
-        get().files.splice(targetIndex, 1);
-        get().fileMap.delete(path);
-        const selectedFiles = get().selectedFiles.filter(
-          (file) => file !== path
-        );
-        set({
-          files: [...get().files],
-          fileMap: new Map(get().fileMap),
-          selectedFiles,
-        });
-      }
-    },
-    reset: () => {
-      set({
-        working: false,
-        inCompressing: false,
-        watchingFolder: "",
-        files: [],
-        fileMap: new Map(),
-        selectedFiles: [],
-      });
-    },
-  })
-);
+    }
+  },
+  reset: () => {
+    useAppStore.getState().clearImageCache();
+    set({
+      working: false,
+      inCompressing: false,
+      watchingFolder: '',
+      files: [],
+      fileMap: new Map(),
+      selectedFiles: [],
+    });
+  },
+}));
 
 export default useCompressionStore;

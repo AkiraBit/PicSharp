@@ -7,7 +7,6 @@ import { useNavigate } from '@/hooks/useNavigate';
 import { toast } from 'sonner';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useI18n } from '@/i18n';
-import useAppStore from '@/store/app';
 
 function ToolbarExit(props: { mode: 'classic' | 'watch' }) {
   const navigate = useNavigate();
@@ -20,7 +19,6 @@ function ToolbarExit(props: { mode: 'classic' | 'watch' }) {
       navigate('/compression/watch/guide');
     }
     toast.dismiss();
-    useAppStore.getState().clearImageCache();
   };
 
   return (

@@ -123,8 +123,6 @@ function CompressionWatch() {
       },
     );
     toast.promise(compressor, {
-      duration: Infinity,
-      closeButton: true,
       loading: t('tips.compressing', {
         fulfilled,
         rejected,

@@ -4,7 +4,11 @@ import { Sparkles } from 'lucide-react';
 import useAppStore from '@/store/app';
 import useCompressionStore from '@/store/compression';
 import useSelector from '@/hooks/useSelector';
-import { SettingsKey, SettingsCompressionTaskConfigOutputMode } from '@/constants';
+import {
+  SettingsKey,
+  SettingsCompressionAction,
+  SettingsCompressionTaskConfigOutputMode,
+} from '@/constants';
 import { isValidArray } from '@/utils';
 import Compressor from '@/utils/compressor';
 import { toast } from 'sonner';
@@ -71,7 +75,7 @@ function ToolbarCompress() {
     );
 
   const handleCompress = async () => {
-    if (!isValidArray(tinypngApiKeys)) {
+    if (compressionAction !== SettingsCompressionAction.Local && !isValidArray(tinypngApiKeys)) {
       const result = await ask('', {
         title: t('tips.tinypng_api_keys_not_configured'),
         okLabel: t('goToSettings'),
@@ -247,9 +251,7 @@ function ToolbarCompress() {
           <Sparkles className='h-4 w-4' />
         </Button>
       </TooltipTrigger>
-      <TooltipContent>
-        <p>{t('page.compression.process.actions.compress')}</p>
-      </TooltipContent>
+      <TooltipContent>{t('page.compression.process.actions.compress')}</TooltipContent>
     </Tooltip>
   );
 }
