@@ -3,6 +3,7 @@ import EventEmitter from 'eventemitter3';
 import { isProd } from '@/utils';
 import { Command, Child } from '@tauri-apps/plugin-shell';
 import { info, error } from '@tauri-apps/plugin-log';
+import { remove, BaseDirectory } from '@tauri-apps/plugin-fs';
 
 interface AppState {
   eventEmitter: EventEmitter;
@@ -17,6 +18,7 @@ interface AppAction {
   initSidecar: () => Promise<void>;
   pingSidecar: () => Promise<void>;
   destroySidecar: () => Promise<boolean>;
+  clearImageCache: () => Promise<boolean>;
 }
 
 const useAppStore = create<AppState & AppAction>((set, get) => ({
@@ -75,6 +77,17 @@ const useAppStore = create<AppState & AppAction>((set, get) => ({
       return true;
     } catch (err) {
       console.error(`[Destroy Sidecar Error]: ${err.message || err.toString()}`);
+      return false;
+    }
+  },
+  clearImageCache: async () => {
+    try {
+      await remove('picsharp_temp', { baseDir: BaseDirectory.AppCache, recursive: true });
+      info('[Clear Image Cache]: Success');
+      return true;
+    } catch (err) {
+      console.error(`[Clear Image Cache Error]: ${err.message || err.toString()}`);
+      error(`[Clear Image Cache Error]: ${err.message || err.toString()}`);
       return false;
     }
   },
