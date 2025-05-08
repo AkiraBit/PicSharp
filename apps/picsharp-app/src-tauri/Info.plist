@@ -49,6 +49,10 @@
 					<string>public.JPG</string>
 					<string>public.webp</string>
 					<string>public.avif</string>
+					<string>public.tiff</string>
+					<string>public.tif</string>
+					<string>public.gif</string>
+					<string>public.svg</string>
 					<string>public.folder</string>
 				</array>
 			</dict>
