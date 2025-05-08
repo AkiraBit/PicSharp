@@ -7,6 +7,7 @@ import { info, error } from '@tauri-apps/plugin-log';
 import { exists, remove, mkdir, BaseDirectory } from '@tauri-apps/plugin-fs';
 import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow';
 import { withStorageDOMEvents } from './withStorageDOMEvents';
+import { isFunction } from 'radash';
 
 interface AppState {
   eventEmitter: EventEmitter;
@@ -89,7 +90,7 @@ const useAppStore = create(
       },
       destroySidecar: async () => {
         try {
-          if (get().sidecar?.process) {
+          if (isFunction(get().sidecar?.process?.kill)) {
             await get().sidecar.process.kill();
           }
           set({ sidecar: null });

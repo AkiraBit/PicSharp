@@ -61,7 +61,7 @@ export async function uint8ArrayToRGBA(
   width: number;
   height: number;
 }> {
-  const blob = new Blob([uint8Array.buffer], { type: mimeType }); // 可换为 jpeg/webp 等
+  const blob = new Blob([uint8Array.buffer], { type: mimeType });
   const imageBitmap = await createImageBitmap(blob);
 
   const canvas = document.createElement('canvas');
@@ -78,4 +78,8 @@ export async function uint8ArrayToRGBA(
     width: canvas.width,
     height: canvas.height,
   };
+}
+
+export function correctFloat(value: number, precision = 12) {
+  return parseFloat(value.toPrecision(precision));
 }

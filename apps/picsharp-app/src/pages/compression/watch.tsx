@@ -6,7 +6,7 @@ import WatchFileManager from './watch-file-manager';
 import { getFilename, parsePaths, humanSize } from '@/utils/fs';
 import { watchFolder } from '@/utils/fs-watch';
 import { SettingsCompressionTaskConfigOutputMode, VALID_IMAGE_EXTS } from '@/constants';
-import { isValidArray } from '@/utils';
+import { isValidArray, correctFloat } from '@/utils';
 import Compressor, { ICompressor } from '@/utils/compressor';
 import { SettingsKey } from '@/constants';
 import { isString } from 'radash';
@@ -84,7 +84,7 @@ function CompressionWatch() {
             targetFile.compressedBytesSize = res.output_size;
             targetFile.compressedDiskSize = res.output_size;
             targetFile.formattedCompressedBytesSize = humanSize(res.output_size);
-            targetFile.compressRate = `${res.compression_rate * 100}%`;
+            targetFile.compressRate = `${correctFloat(res.compression_rate * 100)}%`;
           } else {
             targetFile.compressedBytesSize = targetFile.bytesSize;
             targetFile.compressedDiskSize = targetFile.diskSize;

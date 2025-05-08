@@ -35,7 +35,7 @@ function FileManager() {
   return (
     <div className='relative flex h-full flex-col items-center' onContextMenu={preventDefault}>
       {isValidArray(dataList) ? (
-        <div className='w-full flex-1 px-4 py-4'>
+        <div className='w-full flex-1 px-4 pb-4 pt-6'>
           <div
             className='grid grid-cols-1 gap-4 contain-layout sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8'
             style={{

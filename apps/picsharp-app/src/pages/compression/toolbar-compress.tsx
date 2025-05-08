@@ -9,7 +9,7 @@ import {
   SettingsCompressionAction,
   SettingsCompressionTaskConfigOutputMode,
 } from '@/constants';
-import { isValidArray } from '@/utils';
+import { isValidArray, correctFloat } from '@/utils';
 import Compressor from '@/utils/compressor';
 import { toast } from 'sonner';
 import { humanSize } from '@/utils/fs';
@@ -159,7 +159,7 @@ function ToolbarCompress() {
             targetFile.compressedBytesSize = res.output_size;
             targetFile.compressedDiskSize = res.output_size;
             targetFile.formattedCompressedBytesSize = humanSize(res.output_size);
-            targetFile.compressRate = `${res.compression_rate * 100}%`;
+            targetFile.compressRate = `${correctFloat(res.compression_rate * 100)}%`;
           } else {
             targetFile.compressedBytesSize = targetFile.bytesSize;
             targetFile.compressedDiskSize = targetFile.diskSize;
