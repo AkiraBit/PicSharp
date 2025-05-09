@@ -15,6 +15,9 @@ const Link = forwardRef<React.RefAttributes<HTMLAnchorElement>, LinkProps>((prop
     if (location.pathname.startsWith(toPath)) {
       return;
     }
+    if (isFunction(document.startViewTransition)) {
+      document.startViewTransition(() => {});
+    }
     navigate(to);
   };
 

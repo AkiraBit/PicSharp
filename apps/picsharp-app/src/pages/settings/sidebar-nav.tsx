@@ -1,7 +1,7 @@
-import { Link, useLocation } from 'react-router';
+import { useLocation } from 'react-router';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-
+import Link from '@/components/link';
 interface SidebarNavProps extends React.HTMLAttributes<HTMLElement> {
   items: {
     href: string;
