@@ -5,8 +5,8 @@ import {
   SettingsCompressionTaskConfigOutputMode,
   SettingsCompressionQualityMode,
 } from '../constants';
-import { Tinify } from './tinify';
 import * as logger from '@tauri-apps/plugin-log';
+import { draw } from 'radash';
 
 export namespace ICompressor {
   export type Options = {
@@ -254,6 +254,16 @@ export namespace ICompressor {
     }>;
   }
 
+  export interface TinifyCompressPayload {
+    input_path: string;
+    options?: CompressPayloadOptions;
+    process_options: Partial<{
+      api_key: string;
+      mime_type: string;
+      preserveMetadata?: string[];
+    }>;
+  }
+
   export type CompressType =
     | 'jpeg'
     | 'jpg'
@@ -263,7 +273,8 @@ export namespace ICompressor {
     | 'tiff'
     | 'tif'
     | 'gif'
-    | 'svg';
+    | 'svg'
+    | 'tinify';
   export type CompressPayloadMap = {
     svg: SvgCompressPayload;
     jpeg: JpegCompressPayload;
@@ -274,6 +285,7 @@ export namespace ICompressor {
     tiff: TiffCompressPayload;
     tif: TiffCompressPayload;
     gif: GifCompressPayload;
+    tinify: TinifyCompressPayload;
   };
 }
 
@@ -438,7 +450,6 @@ const GIF_COMPRESSION_LEVEL_PRESET: Record<
   },
 };
 export default class Compressor {
-  private tinify: Tinify;
   private options: ICompressor.Options;
   private handlers: Record<
     ICompressor.CompressType,
@@ -456,7 +467,6 @@ export default class Compressor {
       },
       options,
     );
-    this.tinify = new Tinify(this.options.tinifyApiKeys);
     this.handlers = {
       jpeg: this.jpeg,
       jpg: this.jpeg,
@@ -467,6 +477,7 @@ export default class Compressor {
       tiff: this.tiff,
       tif: this.tiff,
       gif: this.gif,
+      tinify: this.tinify,
     };
   }
 
@@ -485,9 +496,7 @@ export default class Compressor {
       case SettingsCompressionAction.Auto: {
         return files.map((file) => () => {
           if (VALID_TINYPNG_IMAGE_EXTS.includes(file.ext)) {
-            return this.tinify
-              .compress(file.path, file.mimeType)
-              .catch(() => this.selectHandler(file));
+            return this.tinify(file).catch(() => this.selectHandler(file));
           } else {
             return this.selectHandler(file);
           }
@@ -496,7 +505,7 @@ export default class Compressor {
       case SettingsCompressionAction.Remote: {
         return files.map(
           (file) => () =>
-            this.tinify.compress(file.path, file.mimeType).catch((error) => {
+            this.tinify(file).catch((error) => {
               return Promise.reject({
                 input_path: file.path,
                 error,
@@ -625,6 +634,16 @@ export default class Compressor {
       process_options: {
         ...GIF_COMPRESSION_LEVEL_PRESET[this.options.compressionLevel],
         force: true,
+      },
+    });
+  };
+
+  tinify = async (file: FileInfo) => {
+    return this.process('tinify', {
+      input_path: file.path,
+      process_options: {
+        api_key: draw(this.options.tinifyApiKeys),
+        mime_type: file.mimeType,
       },
     });
   };

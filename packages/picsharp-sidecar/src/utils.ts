@@ -33,9 +33,10 @@ export const getFileSize = async (path: string) => {
   return stats.size;
 };
 
-export const convertFileSrc = async (origPath: string): Promise<string> => {
+export const convertFileSrc = async (path: string): Promise<string> => {
+  if (!path) return '';
   const base = 'asset://localhost/';
-  const canonicalPath = await fs.realpath(origPath);
+  const canonicalPath = await fs.realpath(path);
   const encoded = encodeURIComponent(canonicalPath);
   return `${base}${encoded}`;
 };

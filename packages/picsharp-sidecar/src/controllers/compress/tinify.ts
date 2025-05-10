@@ -1,7 +1,6 @@
 import { Hono } from 'hono';
-import { optimize } from 'svgo';
-import type { Config } from 'svgo';
-import { readFile, writeFile, copyFile } from 'node:fs/promises';
+import { createReadStream, createWriteStream } from 'node:fs';
+import { copyFile } from 'node:fs/promises';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
 import {
@@ -12,12 +11,9 @@ import {
   convertFileSrc,
 } from '../../utils';
 import { SaveMode } from '../../constants';
+import { request } from 'undici';
+import { pipeline } from 'node:stream/promises';
 const app = new Hono();
-
-const defaultSvgoConfigs: Config = {
-  multipass: true,
-  plugins: [{ name: 'preset-default', params: {} }],
-};
 
 const OptionsSchema = z
   .object({
@@ -35,19 +31,59 @@ const OptionsSchema = z
   .optional()
   .default({});
 
+const ProcessOptionsSchema = z
+  .object({
+    api_key: z.string(),
+    mime_type: z.string(),
+    preserveMetadata: z.array(z.string()).optional(),
+  })
+  .optional()
+  .default({
+    api_key: '',
+    mime_type: '',
+  });
+
 const PayloadSchema = z.object({
   input_path: z.string(),
   options: OptionsSchema,
+  process_options: ProcessOptionsSchema,
 });
 
+const API_ENDPOINT = 'https://api.tinify.com';
+
+interface TinifyResult {
+  input: {
+    size: number;
+    type: string;
+  };
+  output: {
+    width: number;
+    height: number;
+    ratio: number;
+    size: number;
+    type: string;
+    url: string;
+  };
+}
+
 app.post('/', zValidator('json', PayloadSchema), async (context) => {
-  let { input_path, options } = await context.req.json<z.infer<typeof PayloadSchema>>();
+  let { input_path, options, process_options } =
+    await context.req.json<z.infer<typeof PayloadSchema>>();
   await checkFile(input_path);
   options = OptionsSchema.parse(options);
+  process_options = ProcessOptionsSchema.parse(process_options);
 
-  const originalContent = await readFile(input_path, 'utf-8');
-  const optimizedContent = optimize(originalContent, defaultSvgoConfigs);
-  const compressRatio = calCompressionRate(originalContent.length, optimizedContent.data.length);
+  const response = await request<TinifyResult>(`${API_ENDPOINT}/shrink`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': process_options.mime_type,
+      Authorization: `Basic ${btoa(`api:${process_options.api_key}`)}`,
+    },
+    body: createReadStream(input_path),
+  });
+
+  const data = (await response.body?.json()) as TinifyResult;
+  const compressRatio = calCompressionRate(data.input.size, data.output.size);
 
   const availableCompressRate = compressRatio >= (options.limit_compress_rate || 0);
 
@@ -59,7 +95,17 @@ app.post('/', zValidator('json', PayloadSchema), async (context) => {
 
   const tempFilePath = options.temp_dir ? await copyFileToTemp(input_path, options.temp_dir) : '';
   if (availableCompressRate) {
-    await writeFile(newOutputPath, optimizedContent.data);
+    const response = await request(data.output.url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Basic ${btoa(`api:${process_options.api_key}`)}`,
+      },
+      body: JSON.stringify({
+        preserve: process_options.preserveMetadata,
+      }),
+    });
+    await pipeline(response.body, createWriteStream(newOutputPath));
   } else {
     if (options.save.mode !== SaveMode.Overwrite && input_path !== newOutputPath) {
       await copyFile(input_path, newOutputPath);
@@ -68,10 +114,10 @@ app.post('/', zValidator('json', PayloadSchema), async (context) => {
 
   return context.json({
     input_path,
-    input_size: originalContent.length,
+    input_size: data.input.size,
     output_path: newOutputPath,
     output_converted_path: await convertFileSrc(newOutputPath),
-    output_size: optimizedContent.data.length,
+    output_size: data.output.size,
     compression_rate: compressRatio,
     original_temp_path: tempFilePath,
     original_temp_converted_path: await convertFileSrc(tempFilePath),

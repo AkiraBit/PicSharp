@@ -12,6 +12,7 @@ import webp from './controllers/compress/webp';
 import gif from './controllers/compress/gif';
 import avif from './controllers/compress/avif';
 import tiff from './controllers/compress/tiff';
+import tinify from './controllers/compress/tinify';
 import { findAvailablePort } from './utils';
 import { HTTPException } from 'hono/http-exception';
 
@@ -35,7 +36,7 @@ async function main() {
     .use('*', cors())
     .use(
       '*',
-      timeout(10000, (context) => {
+      timeout(30000, (context) => {
         return new HTTPException(500, {
           message: `Process timeout. Please try again.`,
         });
@@ -63,7 +64,8 @@ async function main() {
     .route('/compress/webp', webp)
     .route('/compress/gif', gif)
     .route('/compress/avif', avif)
-    .route('/compress/tiff', tiff);
+    .route('/compress/tiff', tiff)
+    .route('/compress/tinify', tinify);
 
   serve(
     {

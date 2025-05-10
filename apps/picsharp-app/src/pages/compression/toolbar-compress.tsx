@@ -141,6 +141,7 @@ function ToolbarCompress() {
     }).compress(
       files,
       (res) => {
+        console.log('res', res);
         const targetFile = fileMap.get(res.input_path);
         if (targetFile) {
           fulfilled++;
@@ -169,8 +170,11 @@ function ToolbarCompress() {
           targetFile.assetPath = res.output_converted_path;
           targetFile.outputPath = res.output_path;
           targetFile.originalTempPath = res.original_temp_converted_path;
-          eventEmitter.emit('update_file_item', targetFile.path);
+        } else {
+          targetFile.status = ICompressor.Status.Failed;
+          targetFile.errorMessage = 'Process failed,Please try again';
         }
+        eventEmitter.emit('update_file_item', targetFile.path);
       },
       (res) => {
         const targetFile = fileMap.get(res.input_path);

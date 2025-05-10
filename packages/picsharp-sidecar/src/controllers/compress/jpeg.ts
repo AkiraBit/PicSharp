@@ -1,8 +1,8 @@
-import { Hono } from "hono";
-import fs from "node:fs/promises";
-import sharp from "sharp";
-import { zValidator } from "@hono/zod-validator";
-import { z } from "zod";
+import { Hono } from 'hono';
+import { writeFile, copyFile } from 'node:fs/promises';
+import sharp from 'sharp';
+import { zValidator } from '@hono/zod-validator';
+import { z } from 'zod';
 import {
   calCompressionRate,
   checkFile,
@@ -10,8 +10,8 @@ import {
   createOutputPath,
   copyFileToTemp,
   convertFileSrc,
-} from "../../utils";
-import { SaveMode } from "../../constants";
+} from '../../utils';
+import { SaveMode } from '../../constants';
 const app = new Hono();
 
 const OptionsSchema = z
@@ -20,7 +20,7 @@ const OptionsSchema = z
     save: z
       .object({
         mode: z.nativeEnum(SaveMode).optional().default(SaveMode.Overwrite),
-        new_file_suffix: z.string().optional().default("_compressed"),
+        new_file_suffix: z.string().optional().default('_compressed'),
         new_folder_path: z.string().optional(),
       })
       .optional()
@@ -37,7 +37,7 @@ const ProcessOptionsSchema = z
     // 是否使用渐进式（交错）扫描
     progressive: z.boolean().optional().default(false),
     // 色度子采样，设置为'4:4:4'以防止色度子采样，默认为'4:2:0'
-    chromaSubsampling: z.string().optional().default("4:2:0"),
+    chromaSubsampling: z.string().optional().default('4:2:0'),
     // 优化霍夫曼编码表
     optimiseCoding: z.boolean().optional().default(true),
     // 优化编码的替代拼写
@@ -68,21 +68,17 @@ const PayloadSchema = z.object({
   process_options: ProcessOptionsSchema,
 });
 
-app.post("/", zValidator("json", PayloadSchema), async (context) => {
-  let { input_path, options, process_options } = await context.req.json<
-    z.infer<typeof PayloadSchema>
-  >();
+app.post('/', zValidator('json', PayloadSchema), async (context) => {
+  let { input_path, options, process_options } =
+    await context.req.json<z.infer<typeof PayloadSchema>>();
   await checkFile(input_path);
   options = OptionsSchema.parse(options);
   process_options = ProcessOptionsSchema.parse(process_options);
   const originalSize = await getFileSize(input_path);
-  const compressedImageBuffer = await sharp(input_path)
-    .jpeg(process_options)
-    .toBuffer();
+  const compressedImageBuffer = await sharp(input_path).jpeg(process_options).toBuffer();
   const compressedSize = compressedImageBuffer.byteLength;
   const compressionRate = calCompressionRate(originalSize, compressedSize);
-  const availableCompressRate =
-    compressionRate >= (options.limit_compress_rate || 0);
+  const availableCompressRate = compressionRate >= (options.limit_compress_rate || 0);
 
   const newOutputPath = await createOutputPath(input_path, {
     mode: options.save.mode,
@@ -90,18 +86,13 @@ app.post("/", zValidator("json", PayloadSchema), async (context) => {
     new_folder_path: options.save.new_folder_path,
   });
 
-  const tempFilePath = options.temp_dir
-    ? await copyFileToTemp(input_path, options.temp_dir)
-    : "";
+  const tempFilePath = options.temp_dir ? await copyFileToTemp(input_path, options.temp_dir) : '';
 
   if (availableCompressRate) {
-    await fs.writeFile(newOutputPath, compressedImageBuffer);
+    await writeFile(newOutputPath, compressedImageBuffer);
   } else {
-    if (
-      options.save.mode !== SaveMode.Overwrite &&
-      input_path !== newOutputPath
-    ) {
-      await fs.cp(input_path, newOutputPath);
+    if (options.save.mode !== SaveMode.Overwrite && input_path !== newOutputPath) {
+      await copyFile(input_path, newOutputPath);
     }
   }
 

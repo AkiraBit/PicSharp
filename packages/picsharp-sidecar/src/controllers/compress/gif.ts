@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import fs from 'node:fs/promises';
+import { writeFile, copyFile } from 'node:fs/promises';
 import sharp from 'sharp';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
@@ -98,10 +98,10 @@ app.post('/', zValidator('json', PayloadSchema), async (context) => {
   const tempFilePath = options.temp_dir ? await copyFileToTemp(input_path, options.temp_dir) : '';
 
   if (availableCompressRate) {
-    await fs.writeFile(newOutputPath, compressedImageBuffer);
+    await writeFile(newOutputPath, compressedImageBuffer);
   } else {
     if (options.save.mode !== SaveMode.Overwrite && input_path !== newOutputPath) {
-      await fs.cp(input_path, newOutputPath);
+      await copyFile(input_path, newOutputPath);
     }
   }
 
