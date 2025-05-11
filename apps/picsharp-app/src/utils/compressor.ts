@@ -1,23 +1,19 @@
-import { isFunction } from 'radash';
 import Scheduler from './scheduler';
-import { SettingsCompressionAction, VALID_TINYPNG_IMAGE_EXTS } from '../constants';
-import {
-  SettingsCompressionTaskConfigOutputMode,
-  SettingsCompressionQualityMode,
-} from '../constants';
+import { CompressionMode, VALID_TINYPNG_IMAGE_EXTS } from '../constants';
+import { CompressionOutputMode, CompressionType } from '../constants';
 import * as logger from '@tauri-apps/plugin-log';
-import { draw } from 'radash';
+import { draw, isFunction } from 'radash';
 
 export namespace ICompressor {
   export type Options = {
     concurrency?: number;
-    action?: SettingsCompressionAction;
+    action?: CompressionMode;
     limitCompressRate?: number;
     tinifyApiKeys?: string[];
     compressionLevel?: number;
-    compressionMode?: SettingsCompressionQualityMode;
+    compressionType?: CompressionType;
     save?: Partial<{
-      mode: SettingsCompressionTaskConfigOutputMode;
+      mode: CompressionOutputMode;
       newFileSuffix: string;
       newFolderPath: string;
     }>;
@@ -56,7 +52,7 @@ export namespace ICompressor {
   export interface CompressPayloadOptions {
     limit_compress_rate: number;
     save: {
-      mode: SettingsCompressionTaskConfigOutputMode;
+      mode: CompressionOutputMode;
       new_file_suffix: string;
       new_folder_path: string;
     };
@@ -460,9 +456,9 @@ export default class Compressor {
     this.options = Object.assign(
       {
         concurrency: 6,
-        action: SettingsCompressionAction.Auto,
+        action: CompressionMode.Auto,
         save: {
-          mode: SettingsCompressionTaskConfigOutputMode.Overwrite,
+          mode: CompressionOutputMode.Overwrite,
         },
       },
       options,
@@ -493,7 +489,7 @@ export default class Compressor {
 
   private createTasks = (files: FileInfo[]) => {
     switch (this.options.action) {
-      case SettingsCompressionAction.Auto: {
+      case CompressionMode.Auto: {
         return files.map((file) => () => {
           if (VALID_TINYPNG_IMAGE_EXTS.includes(file.ext)) {
             return this.tinify(file).catch(() => this.selectHandler(file));
@@ -502,7 +498,7 @@ export default class Compressor {
           }
         });
       }
-      case SettingsCompressionAction.Remote: {
+      case CompressionMode.Remote: {
         return files.map(
           (file) => () =>
             this.tinify(file).catch((error) => {

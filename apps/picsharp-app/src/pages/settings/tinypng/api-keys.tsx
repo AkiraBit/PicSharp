@@ -1,4 +1,4 @@
-import { CardHeader, CardContent, CardTitle, CardDescription } from '@/components/ui/card';
+import { CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { PlusCircle, RefreshCcw } from 'lucide-react';
 import {
@@ -44,17 +44,18 @@ import { isValidArray } from '@/utils';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
+import SettingItem from '../setting-item';
 
-function SettingsCompressionTinyPngApiKeys() {
+export default memo(function SettingsCompressionTinyPngApiKeys() {
   const t = useI18n();
-  const { compression_tinypng_api_keys: tinypngApiKeys, set } = useSettingsStore(
-    useSelector([SettingsKey.compression_tinypng_api_keys, 'set']),
+  const { tinypng_api_keys: tinypngApiKeys, set } = useSettingsStore(
+    useSelector([SettingsKey.TinypngApiKeys, 'set']),
   );
   const [loading, setLoading] = useState(false);
 
   const handleDelete = async (apiKey: string) => {
     const newApiKeys = tinypngApiKeys.filter((item) => item.api_key !== apiKey);
-    await set(SettingsKey.compression_tinypng_api_keys, newApiKeys);
+    await set(SettingsKey.TinypngApiKeys, newApiKeys);
     toast.success(t('delete_success'));
   };
 
@@ -63,13 +64,19 @@ function SettingsCompressionTinyPngApiKeys() {
       accessorKey: 'name',
       id: 'name',
       header: t('settings.compression.tinypng_api_keys.table.name'),
-      cell: ({ row }) => <div>{row.original.name}</div>,
+      cell: ({ row }) => (
+        <div className='min-w-[10%] max-w-[80%] truncate'>{row.original.name}</div>
+      ),
     },
     {
       accessorKey: 'api_key',
       id: 'api_key',
       header: t('settings.compression.tinypng_api_keys.table.api_key'),
-      cell: ({ row }) => <div className='cursor-pointer'>{row.original.api_key}</div>,
+      cell: ({ row }) => (
+        <div className='min-w-[10%] max-w-[80%] cursor-pointer truncate'>
+          {row.original.api_key}
+        </div>
+      ),
     },
     {
       accessorKey: 'usage',
@@ -93,14 +100,16 @@ function SettingsCompressionTinyPngApiKeys() {
         </div>
       ),
     },
-    {
-      accessorKey: 'created_at',
-      id: 'created_at',
-      header: t('settings.compression.tinypng_api_keys.table.created_at'),
-      cell: ({ row }) => (
-        <div>{dayjs(Number(row.original.created_at)).format('YYYY-MM-DD HH:mm:ss')}</div>
-      ),
-    },
+    // {
+    //   accessorKey: 'created_at',
+    //   id: 'created_at',
+    //   header: t('settings.compression.tinypng_api_keys.table.created_at'),
+    //   cell: ({ row }) => (
+    //     <div className='min-w-[10%] max-w-[80%] truncate'>
+    //       {dayjs(Number(row.original.created_at)).format('YYYY-MM-DD HH:mm:ss')}
+    //     </div>
+    //   ),
+    // },
     {
       header: t('settings.compression.tinypng_api_keys.table.actions'),
       id: 'actions',
@@ -142,7 +151,7 @@ function SettingsCompressionTinyPngApiKeys() {
           };
         }),
       );
-      await set(SettingsKey.compression_tinypng_api_keys, newApiKeys);
+      await set(SettingsKey.TinypngApiKeys, newApiKeys);
       setLoading(false);
     }
   };
@@ -153,44 +162,39 @@ function SettingsCompressionTinyPngApiKeys() {
 
   return (
     <>
-      <CardHeader>
-        <div className='flex items-center justify-between gap-10'>
-          <div>
-            <CardTitle className='text-lg'>
-              {t('settings.compression.tinypng_api_keys.title')}
-            </CardTitle>
-            <CardDescription>
-              <Trans
-                // @ts-ignore
-                i18nKey='settings.compression.tinypng_api_keys.description'
-                components={{
-                  tinypng: (
-                    <a
-                      target='_blank'
-                      href='https://tinypng.com/developers'
-                      className='text-blue-500 underline'
-                    />
-                  ),
-                  here: (
-                    <a
-                      target='_blank'
-                      href='https://tinypng.com/developers'
-                      className='text-blue-500 underline'
-                    />
-                  ),
-                }}
-              ></Trans>
-            </CardDescription>
-          </div>
-          <div className='flex items-center gap-2'>
-            <Button variant='default' size='sm' onClick={handleRefreshUsage} disabled={loading}>
-              <RefreshCcw className={cn('h-4 w-4', loading && 'animate-spin')} />
-            </Button>
-            <AddApiKeyDialog />
-          </div>
+      <SettingItem
+        title={t('settings.compression.tinypng_api_keys.title')}
+        description={
+          <Trans
+            // @ts-ignore
+            i18nKey='settings.compression.tinypng_api_keys.description'
+            components={{
+              tinypng: (
+                <a
+                  target='_blank'
+                  href='https://tinypng.com/developers'
+                  className='text-blue-500 underline'
+                />
+              ),
+              here: (
+                <a
+                  target='_blank'
+                  href='https://tinypng.com/developers'
+                  className='text-blue-500 underline'
+                />
+              ),
+            }}
+          ></Trans>
+        }
+      >
+        <div className='flex items-center gap-2'>
+          <Button variant='default' size='sm' onClick={handleRefreshUsage} disabled={loading}>
+            <RefreshCcw className={cn('h-4 w-4', loading && 'animate-spin')} />
+          </Button>
+          <AddApiKeyDialog />
         </div>
-      </CardHeader>
-      <CardContent>
+      </SettingItem>
+      <CardContent className='pb-0'>
         {isValidArray(tinypngApiKeys) ? (
           loading ? (
             <div className='w-full space-y-2'>
@@ -212,9 +216,7 @@ function SettingsCompressionTinyPngApiKeys() {
       </CardContent>
     </>
   );
-}
-
-export default memo(SettingsCompressionTinyPngApiKeys);
+});
 
 const tinypngApiKeySchema = z.object({
   name: z.string().nonempty('Name is required'),
@@ -317,8 +319,8 @@ function AddApiKeyDialog() {
   const [isSubmiting, setIsSubmiting] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const t = useI18n();
-  const { compression_tinypng_api_keys: tinypngApiKeys, set } = useSettingsStore(
-    useSelector([SettingsKey.compression_tinypng_api_keys, 'set']),
+  const { tinypng_api_keys: tinypngApiKeys, set } = useSettingsStore(
+    useSelector([SettingsKey.TinypngApiKeys, 'set']),
   );
 
   const form = useForm<TinypngApiKeyFormData>({
@@ -342,7 +344,7 @@ function AddApiKeyDialog() {
       return;
     }
 
-    await set(SettingsKey.compression_tinypng_api_keys, [
+    await set(SettingsKey.TinypngApiKeys, [
       ...tinypngApiKeys,
       {
         ...data,
@@ -416,7 +418,7 @@ function AddApiKeyDialog() {
                 return;
               }
               await set(
-                SettingsKey.compression_tinypng_api_keys,
+                SettingsKey.TinypngApiKeys,
                 data.data.map((item) => ({
                   ...item,
                   usage:

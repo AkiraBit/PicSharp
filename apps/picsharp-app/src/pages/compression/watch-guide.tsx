@@ -20,7 +20,7 @@ import { basename } from '@tauri-apps/api/path';
 import { Button } from '@/components/ui/button';
 import useSettingsStore from '@/store/settings';
 import { message } from '@tauri-apps/plugin-dialog';
-import { SettingsCompressionTaskConfigOutputMode } from '@/constants';
+import { CompressionOutputMode } from '@/constants';
 import { Badge } from '@/components/ui/badge';
 const WATCH_HISTORY_KEY = 'compression_watch_history';
 
@@ -59,9 +59,8 @@ function WatchCompressionGuide() {
       }
       const state = useSettingsStore.getState();
       if (
-        state.compression_tasks_output_mode ===
-          SettingsCompressionTaskConfigOutputMode.SaveToNewFolder &&
-        state.compression_tasks_output_mode_save_to_folder === path
+        state.compression_output === CompressionOutputMode.SaveToNewFolder &&
+        state.compression_output_save_to_folder === path
       ) {
         message(t('tips.watch_and_save_same_folder'), {
           kind: 'warning',
@@ -82,9 +81,8 @@ function WatchCompressionGuide() {
     if (isExists) {
       const state = useSettingsStore.getState();
       if (
-        state.compression_tasks_output_mode ===
-          SettingsCompressionTaskConfigOutputMode.SaveToNewFolder &&
-        state.compression_tasks_output_mode_save_to_folder === path
+        state.compression_output === CompressionOutputMode.SaveToNewFolder &&
+        state.compression_output_save_to_folder === path
       ) {
         message(t('tips.watch_and_save_same_folder'), {
           kind: 'warning',
@@ -122,7 +120,7 @@ function WatchCompressionGuide() {
   return (
     <div className='relative flex min-h-screen flex-col items-center justify-center p-6'>
       <div className='relative z-10 text-center'>
-        <h1 className='mb-6 text-3xl font-bold dark:text-foreground'>
+        <h1 className='dark:text-foreground mb-6 text-3xl font-bold'>
           {' '}
           ✨{t('page.compression.watch.guide.title')}✨
         </h1>
@@ -165,7 +163,7 @@ function WatchCompressionGuide() {
 
               {/* 支持的格式展示 */}
               <div className='mt-2 text-center'>
-                <p className='mb-2 text-sm text-slate-500 dark:text-foreground'>
+                <p className='dark:text-foreground mb-2 text-sm text-slate-500'>
                   {t('page.compression.classic.tinypng_supported_formats')}
                 </p>
                 <div className='flex flex-wrap justify-center gap-2'>
@@ -177,7 +175,7 @@ function WatchCompressionGuide() {
                 </div>
               </div>
               <div className='mt-2 text-center'>
-                <p className='mb-2 text-sm text-slate-500 dark:text-foreground'>
+                <p className='dark:text-foreground mb-2 text-sm text-slate-500'>
                   {t('page.compression.classic.local_supported_formats')}
                 </p>
                 <div className='flex flex-wrap justify-center gap-2'>

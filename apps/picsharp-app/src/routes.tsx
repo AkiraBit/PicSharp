@@ -8,6 +8,7 @@ import CompressionWatch from './pages/compression/watch';
 import Settings from './pages/settings';
 import SettingsGeneral from './pages/settings/general';
 import SettingsCompression from './pages/settings/compression';
+import SettingsTinypng from './pages/settings/tinypng';
 import ImageCompare from './pages/image-compare';
 import { Toaster } from 'sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
@@ -47,6 +48,7 @@ export default function AppRoutes() {
             <Route path='settings' element={<Settings />}>
               <Route index element={<Navigate to='/settings/general' />} />
               <Route path='general' element={<SettingsGeneral />} />
+              <Route path='tinypng' element={<SettingsTinypng />} />
               <Route path='compression' element={<SettingsCompression />} />
             </Route>
             <Route path='image-compare' element={<ImageCompare />} />

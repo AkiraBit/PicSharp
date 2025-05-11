@@ -19,41 +19,40 @@ export const VALID_IMAGE_MIME_TYPES = {
 };
 
 export enum SettingsKey {
-  language = 'language',
-  system_notification = 'system_notification',
-  autostart = 'autostart',
-  compression_action = 'compression_action',
-  compression_local_quality_level = 'compression_local_quality_level',
-  compression_local_quality_mode = 'compression_local_quality_mode',
-  compression_tinypng_api_keys = 'compression_tinypng_api_keys',
-  compression_tasks_concurrency = 'compression_tasks_concurrency',
-  compression_tasks_output_mode = 'compression_tasks_output_mode',
-  compression_tasks_output_mode_save_as_file_suffix = 'compression_tasks_output_mode_save_as_file_suffix',
-  compression_tasks_output_mode_save_to_folder = 'compression_tasks_output_mode_save_to_folder',
-  compression_tasks_save_compress_rate_limit = 'compression_tasks_save_compress_rate_limit',
-  compression_tasks_save_compress_rate_limit_threshold = 'compression_tasks_save_compress_rate_limit_threshold',
-  compression_retain_metadata = 'compression_retain_metadata',
+  Language = 'language',
+  Autostart = 'autostart',
+  CompressionMode = 'compression_mode',
+  CompressionType = 'compression_type',
+  CompressionLevel = 'compression_level',
+  Concurrency = 'concurrency',
+  CompressionThresholdEnable = 'compression_threshold_enable',
+  CompressionThresholdValue = 'compression_threshold_value',
+  CompressionOutput = 'compression_output',
+  CompressionOutputSaveAsFileSuffix = 'compression_output_save_as_file_suffix',
+  CompressionOutputSaveToFolder = 'compression_output_save_to_folder',
+  TinypngApiKeys = 'tinypng_api_keys',
+  TinypngPreserveMetadata = 'tinypng_preserve_metadata',
 }
 
-export enum SettingsCompressionAction {
+export enum CompressionMode {
   Auto = 'auto',
   Remote = 'remote',
   Local = 'local',
 }
 
-export enum SettingsCompressionTaskConfigOutputMode {
+export enum CompressionType {
+  Lossless = 'lossless',
+  Lossy = 'lossy',
+}
+
+export enum CompressionOutputMode {
   Overwrite = 'overwrite',
   SaveAsNewFile = 'save_as_new_file',
   SaveToNewFolder = 'save_to_new_folder',
 }
 
-export enum SettingsCompressionTaskConfigMetadata {
+export enum TinypngMetadata {
   Copyright = 'copyright',
   Creator = 'creator',
   Location = 'location',
-}
-
-export enum SettingsCompressionQualityMode {
-  Lossless = 'lossless',
-  Lossy = 'lossy',
 }

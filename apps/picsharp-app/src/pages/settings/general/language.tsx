@@ -1,53 +1,38 @@
 import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
   Select,
   SelectContent,
   SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { useTranslation } from "react-i18next";
-import { useI18n } from "../../../i18n";
-import { memo } from "react";
-import useSettingsStore from "../../../store/settings";
-import useSelector from "@/hooks/useSelector";
-import { SettingsKey } from "@/constants";
+} from '@/components/ui/select';
+import { useTranslation } from 'react-i18next';
+import { useI18n } from '@/i18n';
+import { memo } from 'react';
+import useSettingsStore from '@/store/settings';
+import useSelector from '@/hooks/useSelector';
+import { SettingsKey } from '@/constants';
+import SettingItem from '../setting-item';
 
 const languages = [
-  { value: "zh-CN", label: "简体中文" },
-  { value: "en-US", label: "English(US)" },
+  { value: 'zh-CN', label: '简体中文' },
+  { value: 'en-US', label: 'English(US)' },
 ];
 
 export default memo(function SettingsGeneralLanguage() {
   const { i18n } = useTranslation();
   const t = useI18n();
-  const { language, set } = useSettingsStore(
-    useSelector([SettingsKey.language, "set"])
-  );
+  const { language, set } = useSettingsStore(useSelector([SettingsKey.Language, 'set']));
 
   const handleChangeLanguage = async (value: string) => {
-    await set(SettingsKey.language, value);
+    await set(SettingsKey.Language, value);
     i18n.changeLanguage(value);
   };
   return (
-    <CardHeader className="flex flex-row justify-between">
-      <div>
-        <CardTitle className="text-lg">
-          {t("settings.general.language")}
-        </CardTitle>
-        <CardDescription>
-          {t("settings.general.language.description")}
-        </CardDescription>
-      </div>
+    <SettingItem title={t('settings.general.language')}>
       <Select value={language} onValueChange={handleChangeLanguage}>
-        <SelectTrigger className="w-[180px]">
-          <SelectValue placeholder={t("settings.general.language")} />
+        <SelectTrigger>
+          <SelectValue placeholder={t('settings.general.language')} />
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>
@@ -59,6 +44,6 @@ export default memo(function SettingsGeneralLanguage() {
           </SelectGroup>
         </SelectContent>
       </Select>
-    </CardHeader>
+    </SettingItem>
   );
 });

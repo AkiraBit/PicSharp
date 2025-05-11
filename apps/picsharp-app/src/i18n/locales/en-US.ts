@@ -18,7 +18,7 @@ const enUS = {
   'settings.general.notification.description_macos': `Notify you via system notification banners when application operations are completed. Need to set in "System Preferences"->"Notifications"->"PicSharp"`,
   'settings.general.notification.description_other':
     'Notify you via system notification banners when application operations are completed.',
-  'settings.general.autostart.title': 'Autostart',
+  'settings.general.autostart.title': 'Launch at Startup',
   'settings.general.autostart.description':
     'Automatically start the application when the system starts.',
   general: 'General',
@@ -28,16 +28,16 @@ const enUS = {
   'settings.reset_all_confirm': 'Are you sure you want to reset all application configurations?',
   'settings.compression.title': 'Image Compression',
   'settings.compression.description': 'Manage image compression configurations and preferences.',
-  'settings.compression.action': 'Compression Method',
-  'settings.compression.action.description.auto':
+  'settings.compression.mode.title': 'Compression Mode',
+  'settings.compression.mode.description.auto':
     'Prioritize Tinypng compression; if Tinypng compression fails, switch to local compression for retry.',
-  'settings.compression.action.description.remote':
+  'settings.compression.mode.description.remote':
     'Use Tinypng compression only, which provides better compression effect but requires internet connection.',
-  'settings.compression.action.description.local':
+  'settings.compression.mode.description.local':
     "Use local compression only, which has a weaker compression effect than Tinypng but doesn't require internet connection. For batch image compression scenarios, it has extremely high processing efficiency.",
-  'settings.compression.action.auto': 'Automatic',
-  'settings.compression.action.remote': 'TinyPNG',
-  'settings.compression.action.local': 'Local Compression',
+  'settings.compression.mode.auto': 'Automatic',
+  'settings.compression.mode.remote': 'TinyPNG',
+  'settings.compression.mode.local': 'Local Compression',
   'settings.compression.tinypng_api_keys.title': 'TinyPNG Api Keys',
   'settings.compression.tinypng_api_keys.description':
     '<tinypng>Tinypng</tinypng> is a tool that helps you compress images. You can click <here>here</here> to get your API key.',
@@ -95,17 +95,17 @@ const enUS = {
   'settings.compression.task_config.save_compress_rate.title': 'Compression Rate Threshold',
   'settings.compression.task_config.save_compress_rate.description':
     'When enabled, during the save operation, if the image compression rate is below the set threshold, saving will not be performed.',
-  'settings.compression.local_config.quality_mode.title': 'Compression Mode',
-  'settings.compression.local_config.quality_mode.description':
+  'settings.compression.compression_type.title': 'Compression Type',
+  'settings.compression.compression_type.description':
     'PNG、WebP support lossless and lossy compression. Lossless compression can maintain the original image quality but has a lower compression rate; lossy compression can significantly reduce file size but may lose some image quality.',
-  'settings.compression.local_config.quality_level.title': 'Compression Level',
-  'settings.compression.local_config.quality_level.description':
+  'settings.compression.level.title': 'Compression Level',
+  'settings.compression.level.description':
     'For image formats that support lossy compression (PNG, JPG/JPEG, WebP), setting a reasonable compression level can achieve the best visual effect.',
-  'settings.compression.local_config.quality_level.1': 'Very Low',
-  'settings.compression.local_config.quality_level.2': 'Low',
-  'settings.compression.local_config.quality_level.3': 'Medium',
-  'settings.compression.local_config.quality_level.4': 'High',
-  'settings.compression.local_config.quality_level.5': 'Excellent',
+  'settings.compression.level.1': 'Very Low',
+  'settings.compression.level.2': 'Low',
+  'settings.compression.level.3': 'Medium',
+  'settings.compression.level.4': 'High',
+  'settings.compression.level.5': 'Excellent',
   local_compression: 'Local Compression',
   lossless_compression: 'Lossless',
   lossy_compression: 'Lossy',

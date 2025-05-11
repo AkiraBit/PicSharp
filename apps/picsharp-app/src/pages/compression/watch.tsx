@@ -5,7 +5,7 @@ import useCompressionStore from '@/store/compression';
 import WatchFileManager from './watch-file-manager';
 import { getFilename, parsePaths, humanSize } from '@/utils/fs';
 import { watchFolder } from '@/utils/fs-watch';
-import { SettingsCompressionTaskConfigOutputMode, VALID_IMAGE_EXTS } from '@/constants';
+import { CompressionOutputMode, VALID_IMAGE_EXTS } from '@/constants';
 import { isValidArray, correctFloat } from '@/utils';
 import Compressor, { ICompressor } from '@/utils/compressor';
 import { SettingsKey } from '@/constants';
@@ -27,17 +27,16 @@ function CompressionWatch() {
     const { sidecar } = useAppStore.getState();
     const { fileMap, eventEmitter } = useCompressionStore.getState();
     const {
-      [SettingsKey.compression_tinypng_api_keys]: tinypngApiKeys,
-      [SettingsKey.compression_tasks_concurrency]: concurrency,
-      [SettingsKey.compression_action]: compressionAction,
-      [SettingsKey.compression_tasks_output_mode]: outputMode,
-      [SettingsKey.compression_tasks_output_mode_save_to_folder]: saveToFolder,
-      [SettingsKey.compression_tasks_output_mode_save_as_file_suffix]: saveAsFileSuffix,
-      [SettingsKey.compression_tasks_save_compress_rate_limit]: saveCompressRateLimit,
-      [SettingsKey.compression_tasks_save_compress_rate_limit_threshold]:
-        saveCompressRateLimitThreshold,
-      [SettingsKey.compression_local_quality_level]: compressionLevel,
-      [SettingsKey.compression_local_quality_mode]: compressionMode,
+      [SettingsKey.TinypngApiKeys]: tinypngApiKeys,
+      [SettingsKey.Concurrency]: concurrency,
+      [SettingsKey.CompressionMode]: compressionMode,
+      [SettingsKey.CompressionOutput]: outputMode,
+      [SettingsKey.CompressionOutputSaveToFolder]: saveToFolder,
+      [SettingsKey.CompressionOutputSaveAsFileSuffix]: saveAsFileSuffix,
+      [SettingsKey.CompressionThresholdEnable]: saveCompressRateLimit,
+      [SettingsKey.CompressionThresholdValue]: saveCompressRateLimitThreshold,
+      [SettingsKey.CompressionLevel]: compressionLevel,
+      [SettingsKey.CompressionType]: compressionType,
     } = useSettingsStore.getState();
 
     eventEmitter.emit('update_file_item', 'all');
@@ -51,11 +50,11 @@ function CompressionWatch() {
 
     const compressor = new Compressor({
       concurrency,
-      action: compressionAction,
+      action: compressionMode,
       limitCompressRate: saveCompressRateLimit ? saveCompressRateLimitThreshold : undefined,
       tinifyApiKeys: tinypngApiKeys.map((key) => key.api_key),
       compressionLevel: compressionLevel,
-      compressionMode: compressionMode,
+      compressionType: compressionType,
       save: {
         mode: outputMode,
         newFileSuffix: saveAsFileSuffix,
@@ -199,17 +198,12 @@ function CompressionWatch() {
           const settingsState = useSettingsStore.getState();
           const compressionState = useCompressionStore.getState();
           if (type === 'file') {
-            if (
-              settingsState.compression_tasks_output_mode ===
-              SettingsCompressionTaskConfigOutputMode.SaveAsNewFile
-            ) {
+            if (settingsState.compression_output === CompressionOutputMode.SaveAsNewFile) {
               paths.forEach((p) => {
                 const filename = getFilename(p);
                 if (
                   !compressionState.fileMap.has(p) &&
-                  !filename.endsWith(
-                    settingsState.compression_tasks_output_mode_save_as_file_suffix,
-                  )
+                  !filename.endsWith(settingsState.compression_output_save_as_file_suffix)
                 ) {
                   queueRef.current.push(p);
                 }

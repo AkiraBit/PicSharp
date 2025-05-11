@@ -4,11 +4,7 @@ import { Sparkles } from 'lucide-react';
 import useAppStore from '@/store/app';
 import useCompressionStore from '@/store/compression';
 import useSelector from '@/hooks/useSelector';
-import {
-  SettingsKey,
-  SettingsCompressionAction,
-  SettingsCompressionTaskConfigOutputMode,
-} from '@/constants';
+import { SettingsKey, CompressionMode, CompressionOutputMode } from '@/constants';
 import { isValidArray, correctFloat } from '@/utils';
 import Compressor from '@/utils/compressor';
 import { toast } from 'sonner';
@@ -37,29 +33,28 @@ function ToolbarCompress() {
       ]),
     );
   const {
-    [SettingsKey.compression_tinypng_api_keys]: tinypngApiKeys,
-    [SettingsKey.compression_tasks_concurrency]: concurrency,
-    [SettingsKey.compression_action]: compressionAction,
-    [SettingsKey.compression_tasks_output_mode]: outputMode,
-    [SettingsKey.compression_tasks_output_mode_save_to_folder]: saveToFolder,
-    [SettingsKey.compression_tasks_output_mode_save_as_file_suffix]: saveAsFileSuffix,
-    [SettingsKey.compression_tasks_save_compress_rate_limit]: saveCompressRateLimit,
-    [SettingsKey.compression_tasks_save_compress_rate_limit_threshold]:
-      saveCompressRateLimitThreshold,
-    [SettingsKey.compression_local_quality_mode]: compressionMode,
-    [SettingsKey.compression_local_quality_level]: compressionLevel,
+    [SettingsKey.TinypngApiKeys]: tinypngApiKeys,
+    [SettingsKey.Concurrency]: concurrency,
+    [SettingsKey.CompressionMode]: compressionMode,
+    [SettingsKey.CompressionOutput]: outputMode,
+    [SettingsKey.CompressionOutputSaveToFolder]: saveToFolder,
+    [SettingsKey.CompressionOutputSaveAsFileSuffix]: saveAsFileSuffix,
+    [SettingsKey.CompressionThresholdEnable]: saveCompressRateLimit,
+    [SettingsKey.CompressionThresholdValue]: saveCompressRateLimitThreshold,
+    [SettingsKey.CompressionType]: compressionType,
+    [SettingsKey.CompressionLevel]: compressionLevel,
   } = useSettingsStore(
     useSelector([
-      SettingsKey.compression_tinypng_api_keys,
-      SettingsKey.compression_tasks_concurrency,
-      SettingsKey.compression_action,
-      SettingsKey.compression_tasks_output_mode,
-      SettingsKey.compression_tasks_output_mode_save_to_folder,
-      SettingsKey.compression_tasks_output_mode_save_as_file_suffix,
-      SettingsKey.compression_tasks_save_compress_rate_limit,
-      SettingsKey.compression_tasks_save_compress_rate_limit_threshold,
-      SettingsKey.compression_local_quality_mode,
-      SettingsKey.compression_local_quality_level,
+      SettingsKey.TinypngApiKeys,
+      SettingsKey.Concurrency,
+      SettingsKey.CompressionMode,
+      SettingsKey.CompressionOutput,
+      SettingsKey.CompressionOutputSaveToFolder,
+      SettingsKey.CompressionOutputSaveAsFileSuffix,
+      SettingsKey.CompressionThresholdEnable,
+      SettingsKey.CompressionThresholdValue,
+      SettingsKey.CompressionType,
+      SettingsKey.CompressionLevel,
     ]),
   );
   const navigate = useNavigate();
@@ -75,7 +70,7 @@ function ToolbarCompress() {
     );
 
   const handleCompress = async () => {
-    if (compressionAction !== SettingsCompressionAction.Local && !isValidArray(tinypngApiKeys)) {
+    if (compressionMode !== CompressionMode.Local && !isValidArray(tinypngApiKeys)) {
       const result = await ask('', {
         title: t('tips.tinypng_api_keys_not_configured'),
         okLabel: t('goToSettings'),
@@ -89,7 +84,7 @@ function ToolbarCompress() {
       return;
     }
 
-    if (outputMode === SettingsCompressionTaskConfigOutputMode.SaveToNewFolder && !saveToFolder) {
+    if (outputMode === CompressionOutputMode.SaveToNewFolder && !saveToFolder) {
       const result = await ask('', {
         title: t('tips.save_to_folder_not_configured'),
         okLabel: t('goToSettings'),
@@ -126,11 +121,11 @@ function ToolbarCompress() {
     const tempDir = await join(appCacheDirPath, 'picsharp_temp');
     const compressor = new Compressor({
       concurrency,
-      action: compressionAction,
+      action: compressionMode,
       limitCompressRate: saveCompressRateLimit ? saveCompressRateLimitThreshold : undefined,
       tinifyApiKeys: tinypngApiKeys.map((key) => key.api_key),
       compressionLevel: compressionLevel,
-      compressionMode: compressionMode,
+      compressionType,
       save: {
         mode: outputMode,
         newFileSuffix: saveAsFileSuffix,

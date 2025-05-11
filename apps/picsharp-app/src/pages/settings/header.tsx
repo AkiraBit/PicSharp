@@ -1,23 +1,24 @@
 import { cn } from '@/lib/utils';
-import { memo } from 'react';
+import { ReactNode } from 'react';
 interface SettingsHeaderProps {
-  heading: string;
-  text?: string;
+  title: ReactNode;
+  description?: ReactNode;
   className?: string;
-  children?: React.ReactNode;
+  children?: ReactNode;
 }
-
-export const SettingsHeader = memo(function SettingsHeader({ heading, text, className, children }: SettingsHeaderProps) {
+export default function SettingsHeader({
+  title,
+  description,
+  className,
+  children,
+}: SettingsHeaderProps) {
   return (
-    <div className={cn('flex items-center justify-between', className)}>
-      <div className="grid gap-1">
-          <h1 className="font-heading text-xl font-bold">{heading}</h1>
-          {text && <p className="text-md font-light text-muted-foreground">{text}</p>}
-        </div>
-        {children}
+    <header className={cn('flex items-center justify-between', className)}>
+      <div className='grid gap-1'>
+        <h1 className='font-heading text-xl font-bold'>{title}</h1>
+        {description && <p className='text-md text-muted-foreground'>{description}</p>}
       </div>
-    );
-  }
-);
-
-SettingsHeader.displayName = 'SettingsHeader';
+      <div className='flex items-center gap-x-1'>{children}</div>
+    </header>
+  );
+}
