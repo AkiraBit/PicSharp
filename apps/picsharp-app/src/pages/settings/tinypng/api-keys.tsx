@@ -63,7 +63,7 @@ export default memo(function SettingsCompressionTinyPngApiKeys() {
     {
       accessorKey: 'name',
       id: 'name',
-      header: t('settings.compression.tinypng_api_keys.table.name'),
+      header: t('settings.tinypng.api_keys.table.name'),
       cell: ({ row }) => (
         <div className='min-w-[10%] max-w-[80%] truncate'>{row.original.name}</div>
       ),
@@ -71,7 +71,7 @@ export default memo(function SettingsCompressionTinyPngApiKeys() {
     {
       accessorKey: 'api_key',
       id: 'api_key',
-      header: t('settings.compression.tinypng_api_keys.table.api_key'),
+      header: t('settings.tinypng.api_keys.table.api_key'),
       cell: ({ row }) => (
         <div className='min-w-[10%] max-w-[80%] cursor-pointer truncate'>
           {row.original.api_key}
@@ -81,7 +81,7 @@ export default memo(function SettingsCompressionTinyPngApiKeys() {
     {
       accessorKey: 'usage',
       id: 'usage',
-      header: t('settings.compression.tinypng_api_keys.table.usage'),
+      header: t('settings.tinypng.api_keys.table.usage'),
       cell: ({ row }) => (
         <div className='min-w-[50px] cursor-pointer'>{row.original.usage || 0}</div>
       ),
@@ -89,7 +89,7 @@ export default memo(function SettingsCompressionTinyPngApiKeys() {
     {
       accessorKey: 'status',
       id: 'status',
-      header: t('settings.compression.tinypng_api_keys.table.status'),
+      header: t('settings.tinypng.api_keys.table.status'),
       cell: ({ row }) => (
         <div className='text-nowrap'>
           {row.original.status === 'valid' ? (
@@ -103,7 +103,7 @@ export default memo(function SettingsCompressionTinyPngApiKeys() {
     // {
     //   accessorKey: 'created_at',
     //   id: 'created_at',
-    //   header: t('settings.compression.tinypng_api_keys.table.created_at'),
+    //   header: t('settings.tinypng.api_keys.table.created_at'),
     //   cell: ({ row }) => (
     //     <div className='min-w-[10%] max-w-[80%] truncate'>
     //       {dayjs(Number(row.original.created_at)).format('YYYY-MM-DD HH:mm:ss')}
@@ -111,7 +111,7 @@ export default memo(function SettingsCompressionTinyPngApiKeys() {
     //   ),
     // },
     {
-      header: t('settings.compression.tinypng_api_keys.table.actions'),
+      header: t('settings.tinypng.api_keys.table.actions'),
       id: 'actions',
       cell: ({ row }) => (
         <Button
@@ -119,10 +119,10 @@ export default memo(function SettingsCompressionTinyPngApiKeys() {
           size='sm'
           onClick={() => {
             showAlertDialog({
-              title: t('settings.compression.tinypng_api_keys.table.delete_description'),
+              title: t('settings.tinypng.api_keys.table.delete_description'),
               description: '',
               // description: t(
-              //   "settings.compression.tinypng_api_keys.table.delete_description"
+              //   "settings.tinypng.api_keys.table.delete_description"
               // ),
               okText: t('confirm'),
               cancelText: t('cancel'),
@@ -163,18 +163,14 @@ export default memo(function SettingsCompressionTinyPngApiKeys() {
   return (
     <>
       <SettingItem
-        title={t('settings.compression.tinypng_api_keys.title')}
+        title={t('settings.tinypng.api_keys.title')}
         description={
           <Trans
             // @ts-ignore
-            i18nKey='settings.compression.tinypng_api_keys.description'
+            i18nKey='settings.tinypng.api_keys.description'
             components={{
               tinypng: (
-                <a
-                  target='_blank'
-                  href='https://tinypng.com/developers'
-                  className='text-blue-500 underline'
-                />
+                <a target='_blank' href='https://tinypng.com' className='text-blue-500 underline' />
               ),
               here: (
                 <a
@@ -194,7 +190,7 @@ export default memo(function SettingsCompressionTinyPngApiKeys() {
           <AddApiKeyDialog />
         </div>
       </SettingItem>
-      <CardContent className='pb-0'>
+      <CardContent className='px-4 pb-0'>
         {isValidArray(tinypngApiKeys) ? (
           loading ? (
             <div className='w-full space-y-2'>
@@ -209,7 +205,7 @@ export default memo(function SettingsCompressionTinyPngApiKeys() {
           <div className='flex flex-col items-center justify-center text-center'>
             <KeyRound className='text-muted-foreground h-12 w-12' />
             <h3 className='mt-4 text-lg font-semibold'>
-              {t('settings.compression.tinypng_api_keys.no_api_keys')}
+              {t('settings.tinypng.api_keys.no_api_keys')}
             </h3>
           </div>
         )}
@@ -249,7 +245,7 @@ const nameValidationStrategy: ValidationStrategy = {
       error: exists
         ? {
             field: 'name',
-            msgKey: 'settings.compression.tinypng_api_keys.form.name_already_exists',
+            msgKey: 'settings.tinypng.api_keys.form.name_already_exists',
           }
         : undefined,
     };
@@ -265,7 +261,7 @@ const apiKeyValidationStrategy: ValidationStrategy = {
       error: exists
         ? {
             field: 'api_key',
-            msgKey: 'settings.compression.tinypng_api_keys.form.api_already_exists',
+            msgKey: 'settings.tinypng.api_keys.form.api_already_exists',
           }
         : undefined,
     };
@@ -281,7 +277,7 @@ const apiKeyValidityStrategy: ValidationStrategy = {
       error: !ok
         ? {
             field: 'api_key',
-            msgKey: 'settings.compression.tinypng_api_keys.form.invalid_api_key',
+            msgKey: 'settings.tinypng.api_keys.form.invalid_api_key',
           }
         : undefined,
       payload: {
@@ -363,19 +359,19 @@ function AddApiKeyDialog() {
     {
       accessorKey: 'name',
       id: 'name',
-      header: t('settings.compression.tinypng_api_keys.table.name'),
+      header: t('settings.tinypng.api_keys.table.name'),
       cell: ({ row }) => <div>{row.original.name}</div>,
     },
     {
       accessorKey: 'api_key',
       id: 'api_key',
-      header: t('settings.compression.tinypng_api_keys.table.api_key'),
+      header: t('settings.tinypng.api_keys.table.api_key'),
       cell: ({ row }) => <div>{row.original.api_key}</div>,
     },
     {
       accessorKey: 'err_msg',
       id: 'errMsg',
-      header: t('settings.compression.tinypng_api_keys.table.err_msg'),
+      header: t('settings.tinypng.api_keys.table.err_msg'),
       cell: ({ row }) => <div className='text-nowrap'>{row.original.err_msg}</div>,
     },
   ];
@@ -494,16 +490,16 @@ function AddApiKeyDialog() {
       <DialogTrigger asChild>
         <DropdownButton placement='bottomLeft' size='sm' items={dropdownItems} loading={isLoading}>
           <PlusCircle className='mr-2 h-4 w-4' />
-          {t('settings.compression.tinypng_api_keys.form.add')}
+          {t('settings.tinypng.api_keys.form.add')}
         </DropdownButton>
       </DialogTrigger>
       <DialogContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)}>
             <DialogHeader>
-              <DialogTitle>{t('settings.compression.tinypng_api_keys.form.add_title')}</DialogTitle>
+              <DialogTitle>{t('settings.tinypng.api_keys.form.add_title')}</DialogTitle>
               <DialogDescription>
-                {t('settings.compression.tinypng_api_keys.form.add_description')}
+                {t('settings.tinypng.api_keys.form.add_description')}
               </DialogDescription>
             </DialogHeader>
             <div className='mt-4 flex flex-col gap-2'>
@@ -513,13 +509,11 @@ function AddApiKeyDialog() {
                   name='name'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('settings.compression.tinypng_api_keys.form.name')}</FormLabel>
+                      <FormLabel>{t('settings.tinypng.api_keys.form.name')}</FormLabel>
                       <FormControl>
                         <Input
                           type='text'
-                          placeholder={t(
-                            'settings.compression.tinypng_api_keys.form.name_placeholder',
-                          )}
+                          placeholder={t('settings.tinypng.api_keys.form.name_placeholder')}
                           {...field}
                         />
                       </FormControl>
@@ -534,15 +528,11 @@ function AddApiKeyDialog() {
                   name='api_key'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>
-                        {t('settings.compression.tinypng_api_keys.form.api_key')}
-                      </FormLabel>
+                      <FormLabel>{t('settings.tinypng.api_keys.form.api_key')}</FormLabel>
                       <FormControl>
                         <Input
                           type='text'
-                          placeholder={t(
-                            'settings.compression.tinypng_api_keys.form.api_key_placeholder',
-                          )}
+                          placeholder={t('settings.tinypng.api_keys.form.api_key_placeholder')}
                           {...field}
                         />
                       </FormControl>
@@ -554,9 +544,7 @@ function AddApiKeyDialog() {
             </div>
             <DialogFooter className='mt-4'>
               <DialogTrigger asChild>
-                <Button variant='outline'>
-                  {t('settings.compression.tinypng_api_keys.form.cancel')}
-                </Button>
+                <Button variant='outline'>{t('settings.tinypng.api_keys.form.cancel')}</Button>
               </DialogTrigger>
               <Button type='submit' disabled={isSubmiting}>
                 {isSubmiting ? (
@@ -567,7 +555,7 @@ function AddApiKeyDialog() {
                 ) : (
                   <>
                     <PlusCircle className='h-4 w-4' />
-                    {t('settings.compression.tinypng_api_keys.form.add')}
+                    {t('settings.tinypng.api_keys.form.add')}
                   </>
                 )}
               </Button>

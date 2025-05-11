@@ -102,6 +102,7 @@
       ]
     },
     "shell:allow-kill",
-    "shell:allow-execute"
+    "shell:allow-execute",
+    "shell:allow-open"
   ]
 }

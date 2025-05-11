@@ -17,8 +17,8 @@ export default memo(function SettingsConcurrency() {
 
   return (
     <SettingItem
-      title={t('settings.compression.task_config.concurrency.title')}
-      description={t('settings.compression.task_config.concurrency.description')}
+      title={t('settings.compression.concurrency.title')}
+      description={t('settings.compression.concurrency.description')}
     >
       <Input
         type='number'

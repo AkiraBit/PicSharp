@@ -1,13 +1,13 @@
 import Scheduler from './scheduler';
 import { CompressionMode, VALID_TINYPNG_IMAGE_EXTS } from '../constants';
 import { CompressionOutputMode, CompressionType } from '../constants';
-import * as logger from '@tauri-apps/plugin-log';
+import { error } from '@tauri-apps/plugin-log';
 import { draw, isFunction } from 'radash';
 
 export namespace ICompressor {
   export type Options = {
     concurrency?: number;
-    action?: CompressionMode;
+    compressionMode?: CompressionMode;
     limitCompressRate?: number;
     tinifyApiKeys?: string[];
     compressionLevel?: number;
@@ -455,8 +455,8 @@ export default class Compressor {
   constructor(options?: ICompressor.Options) {
     this.options = Object.assign(
       {
-        concurrency: 6,
-        action: CompressionMode.Auto,
+        concurrency: 10,
+        compressionMode: CompressionMode.Auto,
         save: {
           mode: CompressionOutputMode.Overwrite,
         },
@@ -478,8 +478,8 @@ export default class Compressor {
   }
 
   private selectHandler = (file: FileInfo) => {
-    return this.handlers[file.ext](file).catch((error) => {
-      logger.error(`[Local compress handler error]: ${error.message}\n\n${error.stack}`);
+    return this.handlers[file.ext](file).catch((err) => {
+      error(`[Local compress handler error]: ${err.message}\n\n${err.stack}`);
       return Promise.reject({
         input_path: file.path,
         error,
@@ -488,7 +488,7 @@ export default class Compressor {
   };
 
   private createTasks = (files: FileInfo[]) => {
-    switch (this.options.action) {
+    switch (this.options.compressionMode) {
       case CompressionMode.Auto: {
         return files.map((file) => () => {
           if (VALID_TINYPNG_IMAGE_EXTS.includes(file.ext)) {
@@ -595,6 +595,7 @@ export default class Compressor {
       process_options: {
         ...WEBP_COMPRESSION_LEVEL_PRESET[this.options.compressionLevel],
         force: true,
+        lossless: this.options.compressionType === CompressionType.Lossless,
       },
     });
   };
@@ -604,6 +605,7 @@ export default class Compressor {
       input_path: file.path,
       process_options: {
         ...AVIF_COMPRESSION_LEVEL_PRESET[this.options.compressionLevel],
+        lossless: this.options.compressionType === CompressionType.Lossless,
       },
     });
   };

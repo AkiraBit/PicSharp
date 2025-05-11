@@ -58,17 +58,17 @@ export default function SidebarNav() {
   const themes = [
     {
       value: Theme.Light,
-      label: t('settings.general.theme.light'),
+      label: t('settings.general.theme.option.light'),
       icon: <Sun className='size-4' />,
     },
     {
       value: Theme.Dark,
-      label: t('settings.general.theme.dark'),
+      label: t('settings.general.theme.option.dark'),
       icon: <Moon className='size-4' />,
     },
     {
       value: Theme.System,
-      label: t('settings.general.theme.system'),
+      label: t('settings.general.theme.option.system'),
       icon: <MonitorCog className='size-4' />,
     },
   ];
@@ -107,7 +107,7 @@ export default function SidebarNav() {
                     {theme === Theme.System && <MonitorCog className='size-4' />}
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent side='right'>{t('settings.general.theme')}</TooltipContent>
+                <TooltipContent side='right'>{t('settings.general.theme.title')}</TooltipContent>
               </Tooltip>
             </DropdownMenuTrigger>
             <DropdownMenuContent align='start'>

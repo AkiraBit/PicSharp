@@ -36,6 +36,7 @@ export default memo(function SettingsCompressionThreshold() {
       description={t('settings.compression.threshold.description')}
     >
       <div className='flex items-center gap-x-2'>
+        <Switch checked={enable} onCheckedChange={handleCheckedChange} />
         <Input
           type='number'
           value={value}
@@ -47,7 +48,6 @@ export default memo(function SettingsCompressionThreshold() {
           disabled={!enable}
         />
         <span>%</span>
-        <Switch checked={enable} onCheckedChange={handleCheckedChange} />
       </div>
     </SettingItem>
   );

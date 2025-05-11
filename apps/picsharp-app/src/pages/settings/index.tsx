@@ -35,8 +35,7 @@ export default function SettingsLayout() {
 
   const handleReset = () => {
     showAlertDialog({
-      title: t('settings.reset_all'),
-      description: t('settings.reset_all_confirm'),
+      title: t('settings.reset_all_confirm'),
       cancelText: t('cancel'),
       okText: t('confirm'),
       onConfirm: async () => {

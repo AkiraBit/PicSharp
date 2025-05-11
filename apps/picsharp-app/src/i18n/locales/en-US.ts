@@ -7,14 +7,20 @@ const enUS = {
   // Settings
   'settings.title': 'Settings',
   'settings.description': 'Manage application settings and preferences.',
+  'settings.reset_all': 'Reset',
+  'settings.reset_all_confirm': 'Are you sure you want to reset all application configurations?',
   // Settings.General
   'settings.general.title': 'General',
+  'settings.general.theme.title': 'Theme',
+  'settings.general.theme.option.light': 'Light',
+  'settings.general.theme.option.dark': 'Dark',
+  'settings.general.theme.option.system': 'System',
   // Settings.General.Language
   'settings.general.language.title': 'Language',
-  'settings.general.language.description': 'Default use system language',
+  'settings.general.language.description': 'Default use system language.',
   // Settings.General.Notification
   'settings.general.notification.title': 'Notification',
-  'settings.general.notification.description': `Allow the application to send system notifications`,
+  'settings.general.notification.description': `Allow the application to send system notifications.`,
   'settings.general.notification.got_to_set': 'System Preferences',
   // Settings.General.Autostart
   'settings.general.autostart.title': 'Launch at Startup',
@@ -22,6 +28,9 @@ const enUS = {
     'Automatically start the application when the system starts.',
   // Settings.Compression
   'settings.compression.title': 'Compression',
+  // Settings.Compression.Concurrency
+  'settings.compression.concurrency.title': 'Concurrency',
+  'settings.compression.concurrency.description': 'The number of concurrent compression tasks.',
   // Settings.Compression.Mode
   'settings.compression.mode.title': 'Compression Mode',
   'settings.compression.mode.description.auto':
@@ -70,70 +79,36 @@ const enUS = {
   // Settings.Tinypng.ApiKeys
   'settings.tinypng.api_keys.title': 'Api Keys',
   'settings.tinypng.api_keys.description':
-    '<tinypng>Tinypng</tinypng> is a tool that helps you compress images. You can click <here>here</here> to get your API key.',
+    '<tinypng>TinyPNG</tinypng> is a popular online image compression tool. You can click <here>here</here> to get your API key.',
   'settings.tinypng.api_keys.here': 'here',
+  'settings.tinypng.api_keys.form.add_title': 'Add API Key',
+  'settings.tinypng.api_keys.form.add_description': 'Add a new API Key to the system.',
+  'settings.tinypng.api_keys.form.name': 'Name',
+  'settings.tinypng.api_keys.form.name_placeholder': 'Enter name',
+  'settings.tinypng.api_keys.form.api_key': 'API Key',
+  'settings.tinypng.api_keys.form.api_key_placeholder': 'Enter API Key',
+  'settings.tinypng.api_keys.form.api_already_exists': 'API Key already exists',
+  'settings.tinypng.api_keys.form.name_already_exists': 'Name already exists',
+  'settings.tinypng.api_keys.form.cancel': 'Cancel',
+  'settings.tinypng.api_keys.form.add': 'Add',
+  'settings.tinypng.api_keys.form.invalid_api_key': 'Invalid API Key',
+  'settings.tinypng.api_keys.no_api_keys': 'No API keys defined yet',
+  'settings.tinypng.api_keys.table.name': 'Name',
+  'settings.tinypng.api_keys.table.api_key': 'API Key',
+  'settings.tinypng.api_keys.table.usage': 'Usage',
+  'settings.tinypng.api_keys.table.status': 'Status',
+  'settings.tinypng.api_keys.table.created_at': 'Created At',
+  'settings.tinypng.api_keys.table.actions': 'Actions',
+  'settings.tinypng.api_keys.table.delete_title': 'Delete TinyPNG API Key',
+  'settings.tinypng.api_keys.table.err_msg': 'Error Message',
+  'settings.tinypng.api_keys.table.delete_description': 'Are you sure you want to delete this key?',
+  // Settings.Tinypng.Metadata
+  'settings.tinypng.metadata.title': 'Preserve Metadata',
+  'settings.tinypng.metadata.description': 'Select the metadata to preserve during compression.',
+  'settings.tinypng.metadata.copyright': 'Copyright',
+  'settings.tinypng.metadata.creator': 'Creator',
+  'settings.tinypng.metadata.location': 'Location',
   //
-
-  'settings.reset_all': 'Reset',
-  'settings.reset_all_confirm': 'Are you sure you want to reset all application configurations?',
-  'settings.compression.description': 'Manage image compression configurations and preferences.',
-  'settings.compression.tinypng_api_keys.title': 'TinyPNG Api Keys',
-  'settings.compression.tinypng_api_keys.description':
-    '<tinypng>Tinypng</tinypng> is a tool that helps you compress images. You can click <here>here</here> to get your API key.',
-  'settings.compression.tinypng_api_keys.description.here': 'here',
-  'settings.compression.tinypng_api_keys.form.add_title': 'Add API Key',
-  'settings.compression.tinypng_api_keys.form.add_description': 'Add a new API Key to the system.',
-  'settings.compression.tinypng_api_keys.form.name': 'Name',
-  'settings.compression.tinypng_api_keys.form.name_placeholder': 'Enter name',
-  'settings.compression.tinypng_api_keys.form.api_key': 'API Key',
-  'settings.compression.tinypng_api_keys.form.api_key_placeholder': 'Enter API Key',
-  'settings.compression.tinypng_api_keys.form.api_already_exists': 'API Key already exists',
-  'settings.compression.tinypng_api_keys.form.name_already_exists': 'Name already exists',
-  'settings.compression.tinypng_api_keys.form.cancel': 'Cancel',
-  'settings.compression.tinypng_api_keys.form.add': 'Add',
-  'settings.compression.tinypng_api_keys.form.invalid_api_key': 'Invalid API Key',
-  'settings.compression.tinypng_api_keys.no_api_keys': 'No API keys defined yet',
-  'settings.compression.tinypng_api_keys.table.name': 'Name',
-  'settings.compression.tinypng_api_keys.table.api_key': 'API Key',
-  'settings.compression.tinypng_api_keys.table.usage': 'Usage',
-  'settings.compression.tinypng_api_keys.table.status': 'Status',
-  'settings.compression.tinypng_api_keys.table.created_at': 'Created At',
-  'settings.compression.tinypng_api_keys.table.actions': 'Actions',
-  'settings.compression.tinypng_api_keys.table.delete_title': 'Delete TinyPNG API Key',
-  'settings.compression.tinypng_api_keys.table.err_msg': 'Error Message',
-  'settings.compression.tinypng_api_keys.table.delete_description':
-    'Are you sure you want to delete this key?',
-  'settings.compression.task_config.title': 'Task Configuration',
-  'settings.compression.task_config.description':
-    'Manage task configurations and preferences for image compression.',
-  'settings.compression.task_config.concurrency.title': 'Concurrency',
-  'settings.compression.task_config.concurrency.description':
-    'Maximum number of concurrent tasks for batch compression.',
-  'settings.compression.task_config.output.title': 'Save Type',
-  'settings.compression.task_config.output.description':
-    'How to save compressed images to the file system.',
-  'settings.compression.task_config.output.mode.new_file': 'Save as New File',
-  'settings.compression.task_config.output.mode.overwrite': 'Overwrite',
-  'settings.compression.task_config.output.mode.new_folder': 'Save to New Folder',
-  'settings.compression.task_config.output.mode.new_file.title': 'New Filename Suffix',
-  'settings.compression.task_config.output.mode.new_file.description':
-    'if the original filename is example.jpg and the suffix is _compressed, the new filename will be example_compressed.jpg.',
-  'settings.compression.task_config.output.mode.new_folder.title': 'Save Location',
-  'settings.compression.task_config.output.mode.new_folder.description':
-    'The folder for saving compressed images.',
-  'settings.compression.task_config.output.mode.new_folder.choose': 'Choose Folder',
-  'settings.compression.task_config.metadata.title': 'Metadata',
-  'settings.compression.task_config.metadata.description':
-    'Whether to preserve image metadata during compression.',
-  'settings.compression.task_config.metadata.copyright': 'Copyright Information',
-  'settings.compression.task_config.metadata.creator': 'Creator Information',
-  'settings.compression.task_config.metadata.location': 'Location Information',
-  'settings.compression.task_config.quick_save.title': 'Quick Save',
-  'settings.compression.task_config.quick_save.description':
-    'Whether to automatically save to the file system after compression is completed.',
-  'settings.compression.task_config.save_compress_rate.title': 'Compression Rate Threshold',
-  'settings.compression.task_config.save_compress_rate.description':
-    'When enabled, during the save operation, if the image compression rate is below the set threshold, saving will not be performed.',
   'page.compression.process.actions.save': 'Save',
   'page.compression.process.actions.compress': 'Compress',
   'compression.file_action.open_file': 'View',

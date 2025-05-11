@@ -11,9 +11,9 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-} from "@tanstack/react-table";
-import * as React from "react";
-import { FileText } from "lucide-react";
+} from '@tanstack/react-table';
+import * as React from 'react';
+import { FileText } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -21,11 +21,11 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from '@/components/ui/table';
 
-import type { DataTableFacetedFilterProps } from "./data-table-faceted-filter";
-import { DataTableToolbar } from "./data-table-toolbar";
-import { isNumber } from "radash";
+import type { DataTableFacetedFilterProps } from './data-table-faceted-filter';
+import { DataTableToolbar } from './data-table-toolbar';
+import { isNumber } from 'radash';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -51,14 +51,11 @@ export function DataTable<TData, TValue>({
   maxHeight = 300,
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = React.useState({});
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>(defaultColumnVisibility || {});
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
+  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>(
+    defaultColumnVisibility || {},
   );
-  const [sorting, setSorting] = React.useState<SortingState>(
-    defaultSorting || []
-  );
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
+  const [sorting, setSorting] = React.useState<SortingState>(defaultSorting || []);
 
   const table = useReactTable({
     data,
@@ -91,10 +88,10 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <div className="space-y-4">
+    <div className='space-y-4'>
       <DataTableToolbar table={table} searchBy={searchBy} filters={filters} />
       <div
-        className={`rounded-md border ${scrollable ? "overflow-y-auto" : ""}`}
+        className={`rounded-md border ${scrollable ? 'overflow-y-auto' : ''}`}
         style={{
           maxHeight: isNumber(maxHeight) ? `${maxHeight}px` : maxHeight,
         }}
@@ -102,16 +99,13 @@ export function DataTable<TData, TValue>({
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
+              <TableRow key={headerGroup.id} className='dark:hover:bg-neutral-700/30'>
                 {headerGroup.headers.map((header) => {
                   return (
                     <TableHead key={header.id}>
                       {header.isPlaceholder
                         ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                        : flexRender(header.column.columnDef.header, header.getContext())}
                     </TableHead>
                   );
                 })}
@@ -123,29 +117,22 @@ export function DataTable<TData, TValue>({
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
+                  data-state={row.getIsSelected() && 'selected'}
+                  className='dark:hover:bg-neutral-700/30'
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  <div className="flex flex-col items-center justify-center">
-                    <FileText className="mb-2 h-10 w-10 text-muted-foreground" />
-                    <p className="text-sm text-muted-foreground">
-                      No results found.
-                    </p>
+                <TableCell colSpan={columns.length} className='h-24 text-center'>
+                  <div className='flex flex-col items-center justify-center'>
+                    <FileText className='text-muted-foreground mb-2 h-10 w-10' />
+                    <p className='text-muted-foreground text-sm'>No results found.</p>
                   </div>
                 </TableCell>
               </TableRow>

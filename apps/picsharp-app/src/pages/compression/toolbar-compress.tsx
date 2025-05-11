@@ -34,19 +34,17 @@ function ToolbarCompress() {
     );
   const {
     [SettingsKey.TinypngApiKeys]: tinypngApiKeys,
-    [SettingsKey.Concurrency]: concurrency,
     [SettingsKey.CompressionMode]: compressionMode,
     [SettingsKey.CompressionOutput]: outputMode,
     [SettingsKey.CompressionOutputSaveToFolder]: saveToFolder,
     [SettingsKey.CompressionOutputSaveAsFileSuffix]: saveAsFileSuffix,
-    [SettingsKey.CompressionThresholdEnable]: saveCompressRateLimit,
-    [SettingsKey.CompressionThresholdValue]: saveCompressRateLimitThreshold,
+    [SettingsKey.CompressionThresholdEnable]: thresholdEnable,
+    [SettingsKey.CompressionThresholdValue]: thresholdValue,
     [SettingsKey.CompressionType]: compressionType,
     [SettingsKey.CompressionLevel]: compressionLevel,
   } = useSettingsStore(
     useSelector([
       SettingsKey.TinypngApiKeys,
-      SettingsKey.Concurrency,
       SettingsKey.CompressionMode,
       SettingsKey.CompressionOutput,
       SettingsKey.CompressionOutputSaveToFolder,
@@ -77,7 +75,7 @@ function ToolbarCompress() {
         cancelLabel: t('cancel'),
       });
       if (result) {
-        navigate('/settings/compression', {
+        navigate('/settings/tinypng', {
           confirm: false,
         });
       }
@@ -120,12 +118,11 @@ function ToolbarCompress() {
     const appCacheDirPath = await appCacheDir();
     const tempDir = await join(appCacheDirPath, 'picsharp_temp');
     const compressor = new Compressor({
-      concurrency,
-      action: compressionMode,
-      limitCompressRate: saveCompressRateLimit ? saveCompressRateLimitThreshold : undefined,
-      tinifyApiKeys: tinypngApiKeys.map((key) => key.api_key),
-      compressionLevel: compressionLevel,
+      compressionMode,
+      compressionLevel,
       compressionType,
+      limitCompressRate: thresholdEnable ? thresholdValue : undefined,
+      tinifyApiKeys: tinypngApiKeys.map((key) => key.api_key),
       save: {
         mode: outputMode,
         newFileSuffix: saveAsFileSuffix,

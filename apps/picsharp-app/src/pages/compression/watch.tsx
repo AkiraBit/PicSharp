@@ -28,7 +28,6 @@ function CompressionWatch() {
     const { fileMap, eventEmitter } = useCompressionStore.getState();
     const {
       [SettingsKey.TinypngApiKeys]: tinypngApiKeys,
-      [SettingsKey.Concurrency]: concurrency,
       [SettingsKey.CompressionMode]: compressionMode,
       [SettingsKey.CompressionOutput]: outputMode,
       [SettingsKey.CompressionOutputSaveToFolder]: saveToFolder,
@@ -49,12 +48,11 @@ function CompressionWatch() {
     const tempDir = await join(appCacheDirPath, 'picsharp_temp');
 
     const compressor = new Compressor({
-      concurrency,
-      action: compressionMode,
+      compressionMode,
       limitCompressRate: saveCompressRateLimit ? saveCompressRateLimitThreshold : undefined,
       tinifyApiKeys: tinypngApiKeys.map((key) => key.api_key),
-      compressionLevel: compressionLevel,
-      compressionType: compressionType,
+      compressionLevel,
+      compressionType,
       save: {
         mode: outputMode,
         newFileSuffix: saveAsFileSuffix,
