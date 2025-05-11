@@ -15,7 +15,10 @@ export default memo(function SettingsGeneralNotification() {
   };
 
   return (
-    <SettingItem title={t('settings.general.notification.title')}>
+    <SettingItem
+      title={t('settings.general.notification.title')}
+      description={t('settings.general.notification.description')}
+    >
       {isMacOS && (
         <Button variant='outline' onClick={handleChangeNotification} className='w-full'>
           {t('settings.general.notification.got_to_set')}

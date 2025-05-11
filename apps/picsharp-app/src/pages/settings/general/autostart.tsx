@@ -32,7 +32,10 @@ export default memo(function SettingsGeneralAutostart() {
   }, []);
 
   return (
-    <SettingItem title={t('settings.general.autostart.title')}>
+    <SettingItem
+      title={t('settings.general.autostart.title')}
+      description={t('settings.general.autostart.description')}
+    >
       <Switch checked={autostart} onCheckedChange={handleChangeAutostart} />
     </SettingItem>
   );

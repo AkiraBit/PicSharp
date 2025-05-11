@@ -23,11 +23,11 @@ export default memo(function SettingsCompressionType() {
   const options = [
     {
       value: CompressionType.Lossless,
-      label: t('lossless_compression'),
+      label: t('settings.compression.type.option.lossless'),
     },
     {
       value: CompressionType.Lossy,
-      label: t('lossy_compression'),
+      label: t('settings.compression.type.option.lossy'),
     },
   ];
 
@@ -39,16 +39,16 @@ export default memo(function SettingsCompressionType() {
     <SettingItem
       title={
         <>
-          <span>{t('settings.compression.compression_type.title')}</span>
-          <Badge variant='third'>{t('local_compression')}</Badge>
+          <span>{t('settings.compression.type.title')}</span>
+          <Badge variant='third'>{t(`settings.compression.mode.option.local`)}</Badge>
         </>
       }
       titleClassName='flex flex-row items-center gap-x-2'
-      description={t('settings.compression.compression_type.description')}
+      description={t(`settings.compression.type.description.${type}`)}
     >
       <Select value={type} onValueChange={handleChange}>
         <SelectTrigger>
-          <SelectValue placeholder={t('settings.compression.compression_type.title')} />
+          <SelectValue placeholder={t('settings.compression.type.title')} />
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>

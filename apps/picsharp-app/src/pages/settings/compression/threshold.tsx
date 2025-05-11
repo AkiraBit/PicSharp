@@ -32,24 +32,21 @@ export default memo(function SettingsCompressionThreshold() {
 
   return (
     <SettingItem
-      title={t('settings.compression.task_config.save_compress_rate.title')}
-      description={t('settings.compression.task_config.save_compress_rate.description')}
+      title={t('settings.compression.threshold.title')}
+      description={t('settings.compression.threshold.description')}
     >
       <div className='flex items-center gap-x-2'>
-        {enable && (
-          <>
-            <Input
-              type='number'
-              value={value}
-              onChange={handleValueChange}
-              className='h-7 w-[100px]'
-              min={1}
-              max={99}
-              step={1}
-            />
-            <span>%</span>
-          </>
-        )}
+        <Input
+          type='number'
+          value={value}
+          onChange={handleValueChange}
+          className='h-7 w-[100px]'
+          min={1}
+          max={99}
+          step={1}
+          disabled={!enable}
+        />
+        <span>%</span>
         <Switch checked={enable} onCheckedChange={handleCheckedChange} />
       </div>
     </SettingItem>

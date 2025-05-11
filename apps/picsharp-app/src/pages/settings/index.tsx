@@ -17,17 +17,17 @@ export default function SettingsLayout() {
 
   const sidebarNavItems = [
     {
-      title: t('general'),
+      title: t('settings.general.title'),
       href: '/settings/general',
       icon: <Settings2 />,
     },
     {
-      title: t('compression'),
+      title: t('settings.compression.title'),
       href: '/settings/compression',
       icon: <FileArchive />,
     },
     {
-      title: 'TinyPNG',
+      title: t('settings.tinypng.title'),
       href: '/settings/tinypng',
       icon: <Panda />,
     },
@@ -49,7 +49,7 @@ export default function SettingsLayout() {
 
   return (
     <div className='flex h-full flex-col pt-5'>
-      <Header title={t('settings')} description={t('settings.description')} className='px-5'>
+      <Header title={t('settings.title')} description={t('settings.description')} className='px-5'>
         <Button variant='default' size='sm' onClick={handleReset}>
           <ListRestart className='h-5 w-5' />
           {t('settings.reset_all')}

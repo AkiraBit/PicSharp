@@ -22,15 +22,15 @@ export default memo(function SettingsCompressionMode() {
   const modes = [
     {
       value: Mode.Auto,
-      label: t('settings.compression.mode.auto'),
+      label: t('settings.compression.mode.option.auto'),
     },
     {
       value: Mode.Remote,
-      label: t('settings.compression.mode.remote'),
+      label: t('settings.compression.mode.option.remote'),
     },
     {
       value: Mode.Local,
-      label: t('settings.compression.mode.local'),
+      label: t('settings.compression.mode.option.local'),
     },
   ];
 

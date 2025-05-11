@@ -29,10 +29,13 @@ export default memo(function SettingsGeneralLanguage() {
     i18n.changeLanguage(value);
   };
   return (
-    <SettingItem title={t('settings.general.language')}>
+    <SettingItem
+      title={t('settings.general.language.title')}
+      description={t('settings.general.language.description')}
+    >
       <Select value={language} onValueChange={handleChangeLanguage}>
         <SelectTrigger>
-          <SelectValue placeholder={t('settings.general.language')} />
+          <SelectValue placeholder={t('settings.general.language.title')} />
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>

@@ -42,15 +42,15 @@ function SettingsCompressionOutput() {
   const outputModes = [
     {
       value: CompressionOutputMode.Overwrite,
-      label: t('settings.compression.task_config.output.mode.overwrite'),
+      label: t('settings.compression.output.option.overwrite'),
     },
     {
       value: CompressionOutputMode.SaveAsNewFile,
-      label: t('settings.compression.task_config.output.mode.new_file'),
+      label: t('settings.compression.output.option.save_as_new_file'),
     },
     {
       value: CompressionOutputMode.SaveToNewFolder,
-      label: t('settings.compression.task_config.output.mode.new_folder'),
+      label: t('settings.compression.output.option.save_to_new_folder'),
     },
   ];
 
@@ -80,8 +80,8 @@ function SettingsCompressionOutput() {
   return (
     <>
       <SettingItem
-        title={t('settings.compression.task_config.output.title')}
-        description={t('settings.compression.task_config.output.description')}
+        title={t('settings.compression.output.title')}
+        description={t('settings.compression.output.description')}
       >
         <Select value={outputMode} onValueChange={handleModeChange}>
           <SelectTrigger className='flex-shrink-0'>
@@ -100,12 +100,12 @@ function SettingsCompressionOutput() {
       </SettingItem>
       {outputMode === CompressionOutputMode.SaveAsNewFile && (
         <SettingItem
-          title={t('settings.compression.task_config.output.mode.new_file.title')}
-          description={t('settings.compression.task_config.output.mode.new_file.description')}
+          title={t('settings.compression.output.option.save_as_new_file.title')}
+          description={t('settings.compression.output.option.save_as_new_file.description')}
         >
           <Input
             type='text'
-            placeholder={t('settings.compression.task_config.output.mode.new_file.title')}
+            placeholder={t('settings.compression.output.option.save_as_new_file.title')}
             className='flex-shrink-0'
             value={saveAsFileSuffix || ''}
             onChange={handleSuffixChange}
@@ -114,12 +114,12 @@ function SettingsCompressionOutput() {
       )}
       {outputMode === CompressionOutputMode.SaveToNewFolder && (
         <SettingItem
-          title={t('settings.compression.task_config.output.mode.new_folder.title')}
-          description={t('settings.compression.task_config.output.mode.new_folder.description')}
+          title={t('settings.compression.output.option.save_to_new_folder.title')}
+          description={t('settings.compression.output.option.save_to_new_folder.description')}
         >
           <div className='flex flex-col items-end gap-y-2'>
             <Button className='w-[auto]' size={'sm'} onClick={handleChooseFolder}>
-              {t('settings.compression.task_config.output.mode.new_folder.choose')}
+              {t('settings.compression.output.option.save_to_new_folder.choose')}
             </Button>
             <div className='flex items-center gap-x-2'>
               <Tooltip>

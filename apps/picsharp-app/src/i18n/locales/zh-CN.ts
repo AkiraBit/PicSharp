@@ -1,40 +1,80 @@
 export default {
+  // Nav
   'nav.home': '首页',
   'nav.compression': '批量压缩',
   'nav.watch': '监听文件夹并自动压缩',
   'nav.settings': '设置',
-  home: '首页',
-  settings: '设置',
+  // Settings
+  'settings.title': '设置',
   'settings.description': '管理应用设置和偏好。',
-  'settings.general.language': '语言',
-  'settings.general.language.description': '选择您偏好的应用语言。',
-  'settings.general.theme': '主题',
-  'settings.general.theme.description': '选择您偏好的应用主题。',
-  'settings.general.theme.dark': '深色',
-  'settings.general.theme.light': '浅色',
-  'settings.general.theme.system': '系统',
-  'settings.general.notification.title': '系统通知横幅',
+  // Settings.General
+  'settings.general.title': '通用设置',
+  'settings.general.description': '管理应用的通用设置和偏好。',
+  // Settings.General.Language
+  'settings.general.language.title': '语言',
+  'settings.general.language.description': '默认使用系统语言',
+  // Settings.General.Notification
+  'settings.general.notification.title': '系统通知',
+  'settings.general.notification.description': `允许应用发送系统通知`,
   'settings.general.notification.got_to_set': '前往系统偏好设置',
-  'settings.general.notification.description_macos': `应用在任务完成后，通过系统通知横幅通知您。需前往"系统偏好设置"->"通知"->"PicSharp"进行设置`,
-  'settings.general.notification.description_other': '应用在任务完成后，通过系统通知横幅通知您。',
+  // General.Autostart
   'settings.general.autostart.title': '开机自动启动',
-  'settings.general.autostart.description': '开机时自动启动应用。',
-  general: '通用设置',
-  'general.description': '管理应用的通用设置和偏好。',
-  compression: '压缩设置',
-  'settings.reset_all': '重置',
-  'settings.reset_all_confirm': '确定要重置所有应用配置吗？',
-  'settings.compression.title': '图片压缩',
-  'settings.compression.description': '管理图片压缩的配置和偏好。',
+  'settings.general.autostart.description': '开机后自动启动应用',
+  // Settings.Compression
+  'settings.compression.title': '压缩设置',
+  // Settings.Compression.Mode
   'settings.compression.mode.title': '压缩模式',
   'settings.compression.mode.description.auto':
-    '优先选择Tinypng压缩，如果Tinypng压缩失败，则切换成本地压缩进行重试。',
-  'settings.compression.mode.description.remote': '仅使用Tinypng压缩，压缩效果好，需要联网。',
-  'settings.compression.mode.description.local':
-    '仅使用本地压缩，压缩效果较Tinypng较弱，无需联网，且对于大批量图片压缩的场景，处理效率极高。',
-  'settings.compression.mode.auto': '自动选择',
-  'settings.compression.mode.remote': 'TinyPNG',
-  'settings.compression.mode.local': '本地压缩',
+    '默认使用TinyPNG，当Tinypng压缩失败时，使用本地压缩重试。',
+  'settings.compression.mode.description.remote': '仅使用TinyPNG',
+  'settings.compression.mode.description.local': '仅使用本地压缩',
+  'settings.compression.mode.option.auto': '自动选择',
+  'settings.compression.mode.option.remote': 'TinyPNG',
+  'settings.compression.mode.option.local': '本地压缩',
+  // Settings.Compression.Type
+  'settings.compression.type.title': '压缩类型',
+  'settings.compression.type.description.lossless':
+    '无损压缩可保留完整图像细节但压缩率低，文件体积较大，仅支持WebP、AVIF格式，当无损压缩无效时，使用有损压缩。',
+  'settings.compression.type.description.lossy':
+    '有损压缩通过牺牲部分图像细节来显著减小文件体积，所有格式均支持。',
+  'settings.compression.type.option.lossless': '无损压缩',
+  'settings.compression.type.option.lossy': '有损压缩',
+  // Settings.Compression.Level
+  'settings.compression.level.title': '压缩等级',
+  'settings.compression.level.description':
+    '使用有损压缩时，合理设置压缩等级可达到视觉上的最佳效果。',
+  'settings.compression.level.option.1': '微弱',
+  'settings.compression.level.option.2': '轻度',
+  'settings.compression.level.option.3': '均衡',
+  'settings.compression.level.option.4': '高',
+  'settings.compression.level.option.5': '极高',
+  //Settings.Compression.Output
+  'settings.compression.output.title': '保存方式',
+  'settings.compression.output.description': '图片压缩完成后的保存方式',
+  'settings.compression.output.option.overwrite': '覆盖原文件',
+  'settings.compression.output.option.save_as_new_file': '保存为新文件',
+  'settings.compression.output.option.save_to_new_folder': '保存到指定文件夹',
+  'settings.compression.output.option.save_as_new_file.title': '新文件的名称后缀',
+  'settings.compression.output.option.save_as_new_file.description':
+    '原文件名是example.jpg，后缀是_compressed，则新文件名为example_compressed.jpg。',
+  'settings.compression.output.option.save_to_new_folder.title': '指定文件夹',
+  'settings.compression.output.option.save_to_new_folder.description':
+    '指定已压缩图片的存放文件夹，默认为系统下载文件夹',
+  'settings.compression.output.option.save_to_new_folder.choose': '选择文件夹',
+  //Settings.Compression.Threshold
+  'settings.compression.threshold.title': '压缩率限制',
+  'settings.compression.threshold.description': '当图片压缩率低于设置阈值时，不进行保存',
+  // Settings.Tinypng
+  'settings.tinypng.title': 'TinyPNG',
+  // Settings.Tinypng.ApiKeys
+  'settings.tinypng.api_keys.title': 'API 密钥',
+  'settings.tinypng.api_keys.description':
+    '<tinypng>TinyPNG</tinypng> is a tool that helps you compress images. You can click <here>here</here> to get your API key.',
+  'settings.tinypng.api_keys.here': 'here',
+
+  'settings.reset_all': '重置',
+  'settings.reset_all_confirm': '确定要重置所有应用配置吗？',
+  'settings.compression.description': '管理图片压缩的配置和偏好。',
   'settings.compression.tinypng_api_keys.title': 'TinyPNG API密钥',
   'settings.compression.tinypng_api_keys.description':
     '<tinypng>Tinypng</tinypng> 是一个帮助你压缩图片的工具。你可以点击 <here>这里</here> 获取你的 API 密钥。',
@@ -86,20 +126,6 @@ export default {
   'settings.compression.task_config.save_compress_rate.title': '压缩率阈值',
   'settings.compression.task_config.save_compress_rate.description':
     '开启后，执行保存操作时，如果图片压缩率低于设置的阈值时，不进行保存。',
-  'settings.compression.compression_type.title': '压缩类型',
-  'settings.compression.compression_type.description':
-    'PNG、WebP支持有损和无损压缩。无损压缩可保持原画质，但压缩率较低；有损压缩可根据实际场景设置压缩等级来控制压缩率，达到文件大小与画质上的平衡。',
-  'settings.compression.level.title': '压缩等级',
-  'settings.compression.level.description':
-    '对于支持有损压缩的图像格式（PNG、JPG/JPEG、WebP），合理设置压缩等级可达到视觉上的最佳效果。',
-  'settings.compression.level.1': '微弱',
-  'settings.compression.level.2': '轻度',
-  'settings.compression.level.3': '均衡',
-  'settings.compression.level.4': '高',
-  'settings.compression.level.5': '极高',
-  local_compression: '本地压缩',
-  lossless_compression: '无损压缩',
-  lossy_compression: '有损压缩',
   'page.compression.process.actions.save': '保存',
   'page.compression.process.actions.compress': '压缩',
   'compression.file_action.open_file': '查看',

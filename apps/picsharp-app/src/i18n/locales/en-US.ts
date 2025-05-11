@@ -1,43 +1,82 @@
 const enUS = {
+  // Nav
   'nav.home': 'Home',
   'nav.compression': 'Compression',
   'nav.watch': 'Watch & Auto-Compress',
   'nav.settings': 'Settings',
-  home: 'Home',
-  settings: 'Settings',
+  // Settings
+  'settings.title': 'Settings',
   'settings.description': 'Manage application settings and preferences.',
-  'settings.general.language': 'Language',
-  'settings.general.language.description': 'Choose your preferred application language.',
-  'settings.general.theme': 'Theme',
-  'settings.general.theme.description': 'Choose your preferred application theme.',
-  'settings.general.theme.dark': 'Dark',
-  'settings.general.theme.light': 'Light',
-  'settings.general.theme.system': 'System',
+  // Settings.General
+  'settings.general.title': 'General',
+  // Settings.General.Language
+  'settings.general.language.title': 'Language',
+  'settings.general.language.description': 'Default use system language',
+  // Settings.General.Notification
   'settings.general.notification.title': 'Notification',
+  'settings.general.notification.description': `Allow the application to send system notifications`,
   'settings.general.notification.got_to_set': 'System Preferences',
-  'settings.general.notification.description_macos': `Notify you via system notification banners when application operations are completed. Need to set in "System Preferences"->"Notifications"->"PicSharp"`,
-  'settings.general.notification.description_other':
-    'Notify you via system notification banners when application operations are completed.',
+  // Settings.General.Autostart
   'settings.general.autostart.title': 'Launch at Startup',
   'settings.general.autostart.description':
     'Automatically start the application when the system starts.',
-  general: 'General',
-  'general.description': 'Manage the general application settings and preferences.',
-  compression: 'Compression',
-  'settings.reset_all': 'Reset',
-  'settings.reset_all_confirm': 'Are you sure you want to reset all application configurations?',
-  'settings.compression.title': 'Image Compression',
-  'settings.compression.description': 'Manage image compression configurations and preferences.',
+  // Settings.Compression
+  'settings.compression.title': 'Compression',
+  // Settings.Compression.Mode
   'settings.compression.mode.title': 'Compression Mode',
   'settings.compression.mode.description.auto':
-    'Prioritize Tinypng compression; if Tinypng compression fails, switch to local compression for retry.',
-  'settings.compression.mode.description.remote':
-    'Use Tinypng compression only, which provides better compression effect but requires internet connection.',
-  'settings.compression.mode.description.local':
-    "Use local compression only, which has a weaker compression effect than Tinypng but doesn't require internet connection. For batch image compression scenarios, it has extremely high processing efficiency.",
-  'settings.compression.mode.auto': 'Automatic',
-  'settings.compression.mode.remote': 'TinyPNG',
-  'settings.compression.mode.local': 'Local Compression',
+    'Default use Tinypng, if Tinypng compression fails, switch to local compression for retry.',
+  'settings.compression.mode.description.remote': 'Use Tinypng compression only',
+  'settings.compression.mode.description.local': 'Use local compression only',
+  'settings.compression.mode.option.auto': 'Auto',
+  'settings.compression.mode.option.remote': 'Tinypng',
+  'settings.compression.mode.option.local': 'Local',
+  // Settings.Compression.Type
+  'settings.compression.type.title': 'Compression Type',
+  'settings.compression.type.description.lossless':
+    'Lossless compression can maintain the original image quality but has a lower compression rate; lossy compression can significantly reduce file size but may lose some image quality.',
+  'settings.compression.type.description.lossy':
+    'Lossy compression significantly reduces file size by sacrificing some image quality, all formats are supported.',
+  'settings.compression.type.option.lossless': 'Lossless',
+  'settings.compression.type.option.lossy': 'Lossy',
+  // Settings.Compression.Level
+  'settings.compression.level.title': 'Compression Level',
+  'settings.compression.level.description':
+    'When using lossy compression, setting a reasonable compression level can achieve the best visual effect.',
+  'settings.compression.level.option.1': 'Very Low',
+  'settings.compression.level.option.2': 'Low',
+  'settings.compression.level.option.3': 'Medium',
+  'settings.compression.level.option.4': 'High',
+  'settings.compression.level.option.5': 'Excellent',
+  //Settings.Compression.Output
+  'settings.compression.output.title': 'Save Type',
+  'settings.compression.output.description': 'How to save compressed images after compression.',
+  'settings.compression.output.option.overwrite': 'Overwrite',
+  'settings.compression.output.option.save_as_new_file': 'Save as New File',
+  'settings.compression.output.option.save_to_new_folder': 'Save to New Folder',
+  'settings.compression.output.option.save_as_new_file.title': 'New Filename Suffix',
+  'settings.compression.output.option.save_as_new_file.description':
+    'The original filename is example.jpg, and the suffix is _compressed, then the new filename will be example_compressed.jpg.',
+  'settings.compression.output.option.save_to_new_folder.title': 'New Folder',
+  'settings.compression.output.option.save_to_new_folder.description':
+    'Specify the folder for storing compressed images, default to the system download folder.',
+  'settings.compression.output.option.save_to_new_folder.choose': 'Choose Folder',
+  //Settings.Compression.Threshold
+  'settings.compression.threshold.title': 'Compression Rate Limit',
+  'settings.compression.threshold.description':
+    'When the image compression rate is below the set threshold, saving will not be performed.',
+  // Settings.Tinypng
+  'settings.tinypng.title': 'TinyPNG',
+  // Settings.Tinypng.ApiKeys
+  'settings.tinypng.api_keys.title': 'Api Keys',
+  'settings.tinypng.api_keys.description':
+    '<tinypng>Tinypng</tinypng> is a tool that helps you compress images. You can click <here>here</here> to get your API key.',
+  'settings.tinypng.api_keys.here': 'here',
+  //
+
+  'settings.reset_all': 'Reset',
+  'settings.reset_all_confirm': 'Are you sure you want to reset all application configurations?',
+  'settings.compression.description': 'Manage image compression configurations and preferences.',
   'settings.compression.tinypng_api_keys.title': 'TinyPNG Api Keys',
   'settings.compression.tinypng_api_keys.description':
     '<tinypng>Tinypng</tinypng> is a tool that helps you compress images. You can click <here>here</here> to get your API key.',
@@ -95,20 +134,6 @@ const enUS = {
   'settings.compression.task_config.save_compress_rate.title': 'Compression Rate Threshold',
   'settings.compression.task_config.save_compress_rate.description':
     'When enabled, during the save operation, if the image compression rate is below the set threshold, saving will not be performed.',
-  'settings.compression.compression_type.title': 'Compression Type',
-  'settings.compression.compression_type.description':
-    'PNG、WebP support lossless and lossy compression. Lossless compression can maintain the original image quality but has a lower compression rate; lossy compression can significantly reduce file size but may lose some image quality.',
-  'settings.compression.level.title': 'Compression Level',
-  'settings.compression.level.description':
-    'For image formats that support lossy compression (PNG, JPG/JPEG, WebP), setting a reasonable compression level can achieve the best visual effect.',
-  'settings.compression.level.1': 'Very Low',
-  'settings.compression.level.2': 'Low',
-  'settings.compression.level.3': 'Medium',
-  'settings.compression.level.4': 'High',
-  'settings.compression.level.5': 'Excellent',
-  local_compression: 'Local Compression',
-  lossless_compression: 'Lossless',
-  lossy_compression: 'Lossy',
   'page.compression.process.actions.save': 'Save',
   'page.compression.process.actions.compress': 'Compress',
   'compression.file_action.open_file': 'View',
