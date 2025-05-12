@@ -482,7 +482,7 @@ export default class Compressor {
       error(`[Local compress handler error]: ${err.message}\n\n${err.stack}`);
       return Promise.reject({
         input_path: file.path,
-        error,
+        error: err,
       });
     });
   };
