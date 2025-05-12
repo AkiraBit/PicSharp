@@ -1,10 +1,9 @@
 import { open } from '@tauri-apps/plugin-dialog';
 import useSelector from '@/hooks/useSelector';
-import { FolderOpen, OctagonAlert, FolderClock } from 'lucide-react';
+import { FolderOpen, FolderClock } from 'lucide-react';
 import useCompressionStore from '../../store/compression';
 import { useNavigate } from '@/hooks/useNavigate';
 import { useI18n } from '../../i18n';
-import BackgroundPattern from '@/components/background-pattern';
 import {
   Select,
   SelectContent,
@@ -52,7 +51,8 @@ function WatchCompressionGuide() {
     });
     if (path) {
       if (!(await exists(path))) {
-        message(t('tips.path_not_exists'), {
+        message('', {
+          title: t('tips.path_not_exists'),
           kind: 'error',
         });
         return;
@@ -62,7 +62,8 @@ function WatchCompressionGuide() {
         state.compression_output === CompressionOutputMode.SaveToNewFolder &&
         state.compression_output_save_to_folder === path
       ) {
-        message(t('tips.watch_and_save_same_folder'), {
+        message('', {
+          title: t('tips.watch_and_save_same_folder'),
           kind: 'warning',
         });
         return;
@@ -84,7 +85,8 @@ function WatchCompressionGuide() {
         state.compression_output === CompressionOutputMode.SaveToNewFolder &&
         state.compression_output_save_to_folder === path
       ) {
-        message(t('tips.watch_and_save_same_folder'), {
+        message('', {
+          title: t('tips.watch_and_save_same_folder'),
           kind: 'warning',
         });
         return;
@@ -103,7 +105,8 @@ function WatchCompressionGuide() {
       history.splice(targetIndex, 1);
       localStorage.setItem(WATCH_HISTORY_KEY, JSON.stringify(history));
       setHistory([...history]);
-      message(t('tips.file_not_exists'), {
+      message('', {
+        title: t('tips.file_not_exists'),
         kind: 'error',
       });
     }
@@ -168,7 +171,7 @@ function WatchCompressionGuide() {
                 </p>
                 <div className='flex flex-wrap justify-center gap-2'>
                   {['PNG/Animated PNG', 'JPEG', 'WebP', 'AVIF'].map((format) => (
-                    <Badge key={format} variant='minor'>
+                    <Badge key={format} variant='minor' className='font-normal'>
                       {format}
                     </Badge>
                   ))}
@@ -181,7 +184,7 @@ function WatchCompressionGuide() {
                 <div className='flex flex-wrap justify-center gap-2'>
                   {['PNG', 'JPEG', 'WebP/Animated WebP', 'AVIF', 'TIFF', 'GIF', 'SVG'].map(
                     (format) => (
-                      <Badge key={format} variant='minor'>
+                      <Badge key={format} variant='minor' className='font-normal'>
                         {format}
                       </Badge>
                     ),

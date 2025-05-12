@@ -107,7 +107,7 @@ app.post('/', zValidator('json', PayloadSchema), async (context) => {
     });
     await pipeline(response.body, createWriteStream(newOutputPath));
   } else {
-    if (options.save.mode !== SaveMode.Overwrite && input_path !== newOutputPath) {
+    if (input_path !== newOutputPath) {
       await copyFile(input_path, newOutputPath);
     }
   }
@@ -116,12 +116,18 @@ app.post('/', zValidator('json', PayloadSchema), async (context) => {
     input_path,
     input_size: data.input.size,
     output_path: newOutputPath,
-    output_converted_path: await convertFileSrc(newOutputPath),
-    output_size: data.output.size,
-    compression_rate: compressRatio,
+    output_converted_path: convertFileSrc(newOutputPath),
+    output_size: availableCompressRate ? data.output.size : data.input.size,
+    compression_rate: availableCompressRate ? compressRatio : 0,
     original_temp_path: tempFilePath,
-    original_temp_converted_path: await convertFileSrc(tempFilePath),
+    original_temp_converted_path: convertFileSrc(tempFilePath),
     available_compress_rate: availableCompressRate,
+    debug: {
+      compressedSize: data.output.size,
+      compressionRate: compressRatio,
+      options,
+      process_options,
+    },
   });
 });
 

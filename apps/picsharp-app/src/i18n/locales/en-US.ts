@@ -1,4 +1,7 @@
 const enUS = {
+  // Common
+  'common.no_image_to_compress': 'No images to compress',
+  'common.drag_and_drop': 'Drop to compress',
   // Nav
   'nav.home': 'Home',
   'nav.compression': 'Compression',

@@ -1,4 +1,7 @@
 export default {
+  // Common
+  'common.no_image_to_compress': '未识别到可压缩的图片',
+  'common.drag_and_drop': '鼠标松开进行压缩',
   // Nav
   'nav.home': '首页',
   'nav.compression': '批量压缩',

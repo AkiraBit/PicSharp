@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { SettingsKey } from '@/constants';
 import { Switch } from '@/components/ui/switch';
 import SettingItem from '../setting-item';
+import { correctFloat } from '@/utils';
 
 export default memo(function SettingsCompressionThreshold() {
   const t = useI18n();
@@ -26,8 +27,13 @@ export default memo(function SettingsCompressionThreshold() {
   };
 
   const handleValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = Number(e.target.value);
-    set(SettingsKey.CompressionThresholdValue, value);
+    let value = Number(e.target.value);
+    if (value > 99) {
+      value = 99;
+    } else if (value < 1) {
+      value = 1;
+    }
+    set(SettingsKey.CompressionThresholdValue, correctFloat(value / 100));
   };
 
   return (
@@ -39,7 +45,7 @@ export default memo(function SettingsCompressionThreshold() {
         <Switch checked={enable} onCheckedChange={handleCheckedChange} />
         <Input
           type='number'
-          value={value}
+          value={value * 100}
           onChange={handleValueChange}
           className='h-7 w-[100px]'
           min={1}

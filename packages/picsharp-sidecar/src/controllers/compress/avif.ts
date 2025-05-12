@@ -82,7 +82,7 @@ app.post('/', zValidator('json', PayloadSchema), async (context) => {
   if (availableCompressRate) {
     await writeFile(newOutputPath, compressedImageBuffer);
   } else {
-    if (options.save.mode !== SaveMode.Overwrite && input_path !== newOutputPath) {
+    if (input_path !== newOutputPath) {
       await copyFile(input_path, newOutputPath);
     }
   }
@@ -92,11 +92,17 @@ app.post('/', zValidator('json', PayloadSchema), async (context) => {
     input_size: originalSize,
     output_path: newOutputPath,
     output_converted_path: await convertFileSrc(newOutputPath),
-    output_size: compressedSize,
-    compression_rate: compressionRate,
+    output_size: availableCompressRate ? compressedSize : originalSize,
+    compression_rate: availableCompressRate ? compressionRate : 0,
     original_temp_path: tempFilePath,
     original_temp_converted_path: await convertFileSrc(tempFilePath),
     available_compress_rate: availableCompressRate,
+    debug: {
+      compressedSize,
+      compressionRate,
+      options,
+      process_options,
+    },
   });
 });
 

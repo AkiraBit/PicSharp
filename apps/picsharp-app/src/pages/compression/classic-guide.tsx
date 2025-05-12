@@ -27,7 +27,8 @@ function ClassicCompressionGuide() {
     const files = await parsePaths(paths!, VALID_IMAGE_EXTS);
     if (!isValidArray(files)) {
       progressRef.current?.done();
-      await message(t('tips.invalid_paths'), {
+      await message('', {
+        title: t('common.no_image_to_compress'),
         kind: 'error',
       });
       return;
@@ -98,7 +99,7 @@ function ClassicCompressionGuide() {
       className='relative flex min-h-screen flex-col items-center justify-center p-6 transition-all duration-300 [&.drag-active]:from-indigo-50/50 [&.drag-active]:to-indigo-100/50'
     >
       <div className='relative text-center'>
-        <h1 className='mb-6 text-3xl font-bold dark:text-foreground'>✨PicSharp✨</h1>
+        <h1 className='dark:text-foreground mb-6 text-3xl font-bold'>✨PicSharp✨</h1>
         <p className='mx-auto max-w-2xl text-lg'>
           {t('page.compression.classic.upload_description')}
         </p>
@@ -122,25 +123,25 @@ function ClassicCompressionGuide() {
               </div>
 
               <div className='mt-2 text-center'>
-                <p className='mb-2 text-sm text-slate-500 dark:text-foreground'>
+                <p className='dark:text-foreground mb-2 text-sm text-slate-500'>
                   {t('page.compression.classic.tinypng_supported_formats')}
                 </p>
                 <div className='flex flex-wrap justify-center gap-2'>
                   {['PNG/Animated PNG', 'JPEG', 'WebP', 'AVIF'].map((format) => (
-                    <Badge key={format} variant='minor'>
+                    <Badge key={format} variant='minor' className='font-normal'>
                       {format}
                     </Badge>
                   ))}
                 </div>
               </div>
               <div className='mt-2 text-center'>
-                <p className='mb-2 text-sm text-slate-500 dark:text-foreground'>
+                <p className='dark:text-foreground mb-2 text-sm text-slate-500'>
                   {t('page.compression.classic.local_supported_formats')}
                 </p>
                 <div className='flex flex-wrap justify-center gap-2'>
                   {['PNG', 'JPEG', 'WebP/Animated WebP', 'AVIF', 'TIFF', 'GIF', 'SVG'].map(
                     (format) => (
-                      <Badge key={format} variant='minor'>
+                      <Badge key={format} variant='minor' className='font-normal'>
                         {format}
                       </Badge>
                     ),

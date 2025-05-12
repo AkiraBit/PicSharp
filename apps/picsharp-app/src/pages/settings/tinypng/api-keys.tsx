@@ -45,6 +45,7 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 import SettingItem from '../setting-item';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 export default memo(function SettingsCompressionTinyPngApiKeys() {
   const t = useI18n();
@@ -65,7 +66,12 @@ export default memo(function SettingsCompressionTinyPngApiKeys() {
       id: 'name',
       header: t('settings.tinypng.api_keys.table.name'),
       cell: ({ row }) => (
-        <div className='min-w-[10%] max-w-[80%] truncate'>{row.original.name}</div>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className='min-w-[10%] max-w-[80%] truncate'>{row.original.name}</div>
+          </TooltipTrigger>
+          <TooltipContent>{row.original.name}</TooltipContent>
+        </Tooltip>
       ),
     },
     {
@@ -73,9 +79,14 @@ export default memo(function SettingsCompressionTinyPngApiKeys() {
       id: 'api_key',
       header: t('settings.tinypng.api_keys.table.api_key'),
       cell: ({ row }) => (
-        <div className='min-w-[10%] max-w-[80%] cursor-pointer truncate'>
-          {row.original.api_key}
-        </div>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className='min-w-[10%] max-w-[80%] cursor-pointer truncate'>
+              {row.original.api_key}
+            </div>
+          </TooltipTrigger>
+          <TooltipContent>{row.original.api_key}</TooltipContent>
+        </Tooltip>
       ),
     },
     {
@@ -120,10 +131,6 @@ export default memo(function SettingsCompressionTinyPngApiKeys() {
           onClick={() => {
             showAlertDialog({
               title: t('settings.tinypng.api_keys.table.delete_description'),
-              description: '',
-              // description: t(
-              //   "settings.tinypng.api_keys.table.delete_description"
-              // ),
               okText: t('confirm'),
               cancelText: t('cancel'),
               onConfirm: async () => {

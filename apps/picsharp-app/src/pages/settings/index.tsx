@@ -10,6 +10,7 @@ import { sleep } from '@/utils';
 import { toast } from 'sonner';
 import { showAlertDialog } from '@/components/ui/alert-dialog';
 import Header from './header';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 export default function SettingsLayout() {
   const t = useI18n();
@@ -54,14 +55,14 @@ export default function SettingsLayout() {
           {t('settings.reset_all')}
         </Button>
       </Header>
-      <Separator className='my-5' />
-      <div className='flex flex-1 flex-col space-y-8 overflow-auto lg:flex-row lg:space-y-0'>
+      <Separator className='my-4' />
+      <div className='flex flex-1 flex-col space-y-4 overflow-auto lg:flex-row lg:space-y-0'>
         <aside className='px-6 lg:w-1/6'>
           <SidebarNav items={sidebarNavItems} />
         </aside>
-        <div className='mx-0 w-full flex-1'>
+        <ScrollArea className='mx-0 w-full flex-1'>
           <Outlet />
-        </div>
+        </ScrollArea>
       </div>
     </div>
   );

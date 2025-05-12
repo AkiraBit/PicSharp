@@ -19,7 +19,7 @@ export default function AppRoutes() {
   return (
     <TooltipProvider delayDuration={100}>
       <Toaster
-        position='bottom-right'
+        position='top-center'
         theme={theme}
         offset={{
           top: '24px',

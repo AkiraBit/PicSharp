@@ -80,7 +80,7 @@ export default function SidebarNav() {
   return (
     <TooltipProvider delayDuration={500}>
       <div
-        className='light:border-gray-200 flex h-screen w-[67px] flex-shrink-0 flex-col justify-between border-r bg-neutral-50 pb-4 pt-12 dark:bg-neutral-800'
+        className='light:border-gray-200 flex h-screen w-[73px] flex-shrink-0 flex-col justify-between border-r bg-neutral-50 pb-4 pt-12 dark:bg-neutral-800'
         data-tauri-drag-region='true'
       >
         <div className='flex flex-col items-center justify-center gap-2'>
