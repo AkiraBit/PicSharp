@@ -3,6 +3,7 @@ import { CompressionMode, VALID_TINYPNG_IMAGE_EXTS } from '../constants';
 import { CompressionOutputMode, CompressionType } from '../constants';
 import { error } from '@tauri-apps/plugin-log';
 import { draw, isFunction } from 'radash';
+import { isProd } from '.';
 
 export namespace ICompressor {
   export type Options = {
@@ -479,7 +480,9 @@ export default class Compressor {
 
   private selectHandler = (file: FileInfo) => {
     return this.handlers[file.ext](file).catch((err) => {
-      error(`[Local compress handler error]: ${err.message}\n\n${err.stack}`);
+      if (isProd) {
+        error(`[Compress Handler Error]: ${err.message}\n\n${err.stack}`);
+      }
       return Promise.reject({
         input_path: file.path,
         error: err,

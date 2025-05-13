@@ -24,139 +24,109 @@ function CompressionWatch() {
   const t = useI18n();
 
   const handleCompress = async (files: FileInfo[]) => {
-    const { sidecar } = useAppStore.getState();
-    const { fileMap, eventEmitter } = useCompressionStore.getState();
-    const {
-      [SettingsKey.TinypngApiKeys]: tinypngApiKeys,
-      [SettingsKey.CompressionMode]: compressionMode,
-      [SettingsKey.CompressionOutput]: outputMode,
-      [SettingsKey.CompressionOutputSaveToFolder]: saveToFolder,
-      [SettingsKey.CompressionOutputSaveAsFileSuffix]: saveAsFileSuffix,
-      [SettingsKey.CompressionThresholdEnable]: saveCompressRateLimit,
-      [SettingsKey.CompressionThresholdValue]: saveCompressRateLimitThreshold,
-      [SettingsKey.CompressionLevel]: compressionLevel,
-      [SettingsKey.CompressionType]: compressionType,
-    } = useSettingsStore.getState();
+    try {
+      const { sidecar } = useAppStore.getState();
+      const { fileMap, eventEmitter } = useCompressionStore.getState();
 
-    eventEmitter.emit('update_file_item', 'all');
+      const {
+        [SettingsKey.TinypngApiKeys]: tinypngApiKeys,
+        [SettingsKey.CompressionMode]: compressionMode,
+        [SettingsKey.CompressionOutput]: outputMode,
+        [SettingsKey.CompressionOutputSaveToFolder]: saveToFolder,
+        [SettingsKey.CompressionOutputSaveAsFileSuffix]: saveAsFileSuffix,
+        [SettingsKey.CompressionThresholdEnable]: thresholdEnable,
+        [SettingsKey.CompressionThresholdValue]: thresholdValue,
+        [SettingsKey.CompressionLevel]: compressionLevel,
+        [SettingsKey.CompressionType]: compressionType,
+      } = useSettingsStore.getState();
 
-    const toastId = toast('Compress');
-    let fulfilled = 0;
-    let rejected = 0;
+      eventEmitter.emit('update_file_item', 'all');
 
-    const appCacheDirPath = await appCacheDir();
-    const tempDir = await join(appCacheDirPath, 'picsharp_temp');
-
-    const compressor = new Compressor({
-      compressionMode,
-      limitCompressRate: saveCompressRateLimit ? saveCompressRateLimitThreshold : undefined,
-      tinifyApiKeys: tinypngApiKeys.map((key) => key.api_key),
-      compressionLevel,
-      compressionType,
-      save: {
-        mode: outputMode,
-        newFileSuffix: saveAsFileSuffix,
-        newFolderPath: saveToFolder,
-      },
-      tempDir,
-      sidecarDomain: sidecar?.origin,
-    }).compress(
-      files,
-      (res) => {
-        const targetFile = fileMap.get(res.input_path);
-        if (targetFile) {
-          fulfilled++;
-          toast(
-            t('tips.compressing', {
-              fulfilled,
-              rejected,
-              total: files.length,
-            }),
-            {
-              id: toastId,
-            },
-          );
-          targetFile.status = ICompressor.Status.Completed;
-          if (res.compression_rate > 0) {
-            targetFile.compressedBytesSize = res.output_size;
-            targetFile.compressedDiskSize = res.output_size;
-            targetFile.formattedCompressedBytesSize = humanSize(res.output_size);
-            targetFile.compressRate = `${correctFloat(res.compression_rate * 100)}%`;
+      let fulfilled = 0;
+      let rejected = 0;
+      const tempDir = await join(await appCacheDir(), 'picsharp_temp');
+      await new Compressor({
+        compressionMode,
+        compressionLevel,
+        compressionType,
+        limitCompressRate: thresholdEnable ? thresholdValue : undefined,
+        tinifyApiKeys: tinypngApiKeys.map((key) => key.api_key),
+        save: {
+          mode: outputMode,
+          newFileSuffix: saveAsFileSuffix,
+          newFolderPath: saveToFolder,
+        },
+        tempDir,
+        sidecarDomain: sidecar?.origin,
+      }).compress(
+        files,
+        (res) => {
+          const targetFile = fileMap.get(res.input_path);
+          if (targetFile) {
+            fulfilled++;
+            targetFile.status = ICompressor.Status.Completed;
+            if (res.compression_rate > 0) {
+              targetFile.compressedBytesSize = res.output_size;
+              targetFile.compressedDiskSize = res.output_size;
+              targetFile.formattedCompressedBytesSize = humanSize(res.output_size);
+              targetFile.compressRate = `${correctFloat(res.compression_rate * 100)}%`;
+            } else {
+              targetFile.compressedBytesSize = targetFile.bytesSize;
+              targetFile.compressedDiskSize = targetFile.diskSize;
+              targetFile.formattedCompressedBytesSize = humanSize(targetFile.bytesSize);
+              targetFile.compressRate = '0%';
+            }
+            targetFile.assetPath = res.output_converted_path;
+            targetFile.outputPath = res.output_path;
+            targetFile.originalTempPath = res.original_temp_converted_path;
           } else {
-            targetFile.compressedBytesSize = targetFile.bytesSize;
-            targetFile.compressedDiskSize = targetFile.diskSize;
-            targetFile.formattedCompressedBytesSize = humanSize(targetFile.bytesSize);
-            targetFile.compressRate = '0%';
+            rejected++;
+            targetFile.status = ICompressor.Status.Failed;
+            targetFile.errorMessage = 'Process failed,Please try again';
           }
-          targetFile.assetPath = res.output_converted_path;
-          targetFile.outputPath = res.output_path;
-          targetFile.originalTempPath = res.original_temp_converted_path;
           eventEmitter.emit('update_file_item', targetFile.path);
-        }
-      },
-      (res) => {
-        console.error('#2', res);
-        const targetFile = fileMap.get(res.input_path);
-        if (targetFile) {
+        },
+        (res) => {
           rejected++;
-          toast(
-            t('tips.compressing', {
-              fulfilled,
-              rejected,
-              total: files.length,
-            }),
-            {
-              id: toastId,
-            },
-          );
-          targetFile.status = ICompressor.Status.Failed;
-          if (isString(res.error)) {
-            targetFile.errorMessage = res.error;
-          } else {
-            targetFile.errorMessage = res.error.toString();
+          const targetFile = fileMap.get(res.input_path);
+          if (targetFile) {
+            targetFile.status = ICompressor.Status.Failed;
+            if (isString(res.error)) {
+              targetFile.errorMessage = res.error;
+            } else {
+              targetFile.errorMessage = res.error.toString();
+            }
+            eventEmitter.emit('update_file_item', targetFile.path);
           }
-          eventEmitter.emit('update_file_item', targetFile.path);
-        }
-      },
-    );
-    toast.promise(compressor, {
-      loading: t('tips.compressing', {
-        fulfilled,
-        rejected,
-        total: files.length,
-      }),
-      id: toastId,
-      success: () => {
-        sendTextNotification(
-          'PicSharp',
-          t('tips.compress_completed', {
-            fulfilled,
-            rejected,
-            total: files.length,
-          }),
-        );
-        return t('tips.compress_completed', {
+        },
+      );
+      toast.info(
+        t('tips.compress_completed', {
           fulfilled,
           rejected,
           total: files.length,
-        });
-      },
-      error: () => {
-        sendTextNotification(
-          'PicSharp',
-          t('tips.compress_completed', {
-            fulfilled,
-            rejected,
-            total: files.length,
-          }),
-        );
-        return t('tips.compress_completed', {
+        }),
+        {
+          richColors: true,
+        },
+      );
+      sendTextNotification(
+        `PicSharp - ${t('common.compress_completed')}`,
+        t('tips.compress_completed', {
           fulfilled,
           rejected,
           total: files.length,
-        });
-      },
-    });
+        }),
+      );
+    } catch (_) {
+      toast.error(t('common.compress_failed_msg'), {
+        richColors: true,
+      });
+      sendTextNotification(
+        `PicSharp - ${t('common.compress_failed')}`,
+        t('common.compress_failed_msg'),
+      );
+    }
   };
 
   const throttledProcessData = debounce({ delay: 1000 }, () => {

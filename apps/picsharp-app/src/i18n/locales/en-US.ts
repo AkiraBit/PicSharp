@@ -2,6 +2,11 @@ const enUS = {
   // Common
   'common.no_image_to_compress': 'No images to compress',
   'common.drag_and_drop': 'Drop to compress',
+  'common.start': 'Start',
+  'common.stop': 'Stop',
+  'common.compress_completed': 'Compress Completed',
+  'common.compress_failed': 'Compress Failed',
+  'common.compress_failed_msg': 'Compress Failed, Please check the image file and try again.',
   // Nav
   'nav.home': 'Home',
   'nav.compression': 'Compression',
@@ -164,7 +169,7 @@ const enUS = {
   'tips.tinypng_api_keys_not_configured': 'TinyPNG API keys are not configured.',
   'tips.save_to_folder_not_configured': 'Image saving directory is not configured.',
   'tips.compressing': 'Success: {{fulfilled}}, Failed: {{rejected}}, Total Tasks: {{total}}',
-  'tips.compress_completed': 'Success: {{fulfilled}} Failed: {{rejected}}  Total Tasks: {{total}}',
+  'tips.compress_completed': 'Success: {{fulfilled}}  Failed: {{rejected}}  Total Tasks: {{total}}',
   'tips.saving': 'Success: {{fulfilled}}, Failed: {{rejected}}, Total Tasks: {{total}}',
   'tips.save_completed': 'Success: {{fulfilled}}, Failed: {{rejected}}, Total Tasks: {{total}}',
   'tips.settings_reset_success': 'Application configuration reset completed',

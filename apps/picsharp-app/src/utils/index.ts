@@ -83,3 +83,7 @@ export async function uint8ArrayToRGBA(
 export function correctFloat(value: number, precision = 12) {
   return parseFloat(value.toPrecision(precision));
 }
+
+export function calProgress(current: number, total: number) {
+  return correctFloat(Number((current / total).toFixed(2)) * 100);
+}
