@@ -17,10 +17,10 @@ jobs:
             config: { args: '--target aarch64-apple-darwin' }
           - platform: 'macos-latest'
             config: { args: '--target x86_64-apple-darwin' }
-          - platform: 'ubuntu-22.04'
-            config: { args: '' }
-          - platform: 'windows-latest'
-            config: { args: '' }
+          # - platform: 'ubuntu-22.04'
+          #   config: { args: '' }
+          # - platform: 'windows-latest'
+          #   config: { args: '' }
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v4
@@ -52,10 +52,10 @@ jobs:
             config: { args: '--target aarch64-apple-darwin' }
           - platform: 'macos-latest'
             config: { args: '--target x86_64-apple-darwin' }
-          - platform: 'ubuntu-22.04'
-            config: { args: '' }
-          - platform: 'windows-latest'
-            config: { args: '' }
+          # - platform: 'ubuntu-22.04'
+          #   config: { args: '' }
+          # - platform: 'windows-latest'
+          #   config: { args: '' }
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v4
@@ -113,8 +113,8 @@ jobs:
             process.exit(1);
           }
 
-          // User's original naming: picsharp-sidecar<targetTriple><ext>
-          const newName = \`picsharp-sidecar\${targetTriple}\${ext}\`;
+          // User's original naming: picsharp-sidecar-<targetTriple><ext>
+          const newName = \`picsharp-sidecar-\${targetTriple}\${ext}\`;
 
           try {
             console.log(\`Current directory: \${process.cwd()}\`);
@@ -144,10 +144,10 @@ jobs:
             config: { args: '--target aarch64-apple-darwin' }
           - platform: 'macos-latest'
             config: { args: '--target x86_64-apple-darwin' }
-          - platform: 'ubuntu-22.04'
-            config: { args: '' } # Ensuring config.args is always defined
-          - platform: 'windows-latest'
-            config: { args: '' } # Ensuring config.args is always defined
+          # - platform: 'ubuntu-22.04'
+          #   config: { args: '' } # Ensuring config.args is always defined
+          # - platform: 'windows-latest'
+          #   config: { args: '' } # Ensuring config.args is always defined
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v4
