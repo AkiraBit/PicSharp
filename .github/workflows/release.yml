@@ -8,55 +8,180 @@ on:
 # This workflow will trigger on each push to the `release` branch to create or update a GitHub release, build your app, and upload the artifacts to the release.
 
 jobs:
-  publish-tauri:
+  install-dependencies:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: 'macos-latest'
+            config: { args: '--target aarch64-apple-darwin' }
+          - platform: 'macos-latest'
+            config: { args: '--target x86_64-apple-darwin' }
+          - platform: 'ubuntu-22.04'
+            config: { args: '' }
+          - platform: 'windows-latest'
+            config: { args: '' }
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js v20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install root dependencies
+        run: npm install
+        working-directory: ./
+
+      - name: Install sidecar dependencies
+        run: npm install
+        working-directory: packages/picsharp-sidecar
+
+      - name: Install app dependencies
+        run: npm install
+        working-directory: apps/picsharp-app
+
+  build-sidecar:
+    needs: install-dependencies
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: 'macos-latest'
+            config: { args: '--target aarch64-apple-darwin' }
+          - platform: 'macos-latest'
+            config: { args: '--target x86_64-apple-darwin' }
+          - platform: 'ubuntu-22.04'
+            config: { args: '' }
+          - platform: 'windows-latest'
+            config: { args: '' }
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js v20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Build sidecar
+        run: npm run build:sea
+        working-directory: packages/picsharp-sidecar
+
+      - name: Create target directory for sidecar
+        run: mkdir -p apps/picsharp-app/src-tauri/binaries
+
+      - name: Move sidecar binary
+        shell: bash
+        run: |
+          EXT=""
+          if [[ "${{ matrix.platform }}" == "windows-latest" ]]; then
+            EXT=".exe"
+          fi
+          mv packages/picsharp-sidecar/bin/picsharp-sidecar$EXT apps/picsharp-app/src-tauri/binaries/picsharp-sidecar$EXT
+
+      - name: Rename sidecar binary
+        shell: bash
+        working-directory: apps/picsharp-app/src-tauri/binaries
+        run: |
+          cat << EOF > rename_sidecar_script.js
+          // Using require for robustness in GH actions env unless type:module is ensured
+          const { execSync } = require('child_process');
+          const fs = require('fs');
+          const path = require('path');
+
+          const ext = process.platform === 'win32' ? '.exe' : '';
+          const originalName = \`picsharp-sidecar\${ext}\`;
+          let targetTriple;
+
+          try {
+            const rustInfo = execSync('rustc -vV').toString();
+            const match = /host: (\\S+)/.exec(rustInfo);
+            if (match && match[1]) {
+              targetTriple = match[1];
+            } else {
+              console.error('Failed to determine platform target triple from rustc output:', rustInfo);
+              process.exit(1);
+            }
+          } catch (error) {
+            console.error('Failed to execute "rustc -vV":', error);
+            process.exit(1);
+          }
+
+          // User's original naming: picsharp-sidecar<targetTriple><ext>
+          const newName = \`picsharp-sidecar\${targetTriple}\${ext}\`;
+
+          try {
+            console.log(\`Current directory: \${process.cwd()}\`);
+            console.log(\`Files in directory: \${fs.readdirSync('.')}\`);
+            console.log(\`Attempting to rename \${originalName} to \${newName}\`);
+            fs.renameSync(originalName, newName);
+            console.log(\`Successfully renamed \${originalName} to \${newName}\`);
+          } catch (error) {
+            console.error(\`Failed to rename file: \${error}\`);
+            // Log more info for debugging
+            console.error(\`Original name expected: \${originalName}, New name: \${newName}\`);
+            console.error(\`Directory contents again: \${fs.readdirSync('.').join(', ')}\`);
+            process.exit(1);
+          }
+          EOF
+          node rename_sidecar_script.js
+
+  build-app:
+    needs: [build-sidecar] # Assuming get-release job exists
     permissions:
       contents: write
     strategy:
       fail-fast: false
       matrix:
         include:
-          - platform: 'macos-latest' # for Arm based macs (M1 and above).
-            args: '--target aarch64-apple-darwin'
-          - platform: 'macos-latest' # for Intel based macs.
-            args: '--target x86_64-apple-darwin'
-          - platform: 'ubuntu-22.04' # for Tauri v1 you could replace this with ubuntu-20.04.
-            args: ''
+          - platform: 'macos-latest'
+            config: { args: '--target aarch64-apple-darwin' }
+          - platform: 'macos-latest'
+            config: { args: '--target x86_64-apple-darwin' }
+          - platform: 'ubuntu-22.04'
+            config: { args: '' } # Ensuring config.args is always defined
           - platform: 'windows-latest'
-            args: ''
-
+            config: { args: '' } # Ensuring config.args is always defined
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v4
 
-      - name: setup node
+      - name: Setup Node.js v20
         uses: actions/setup-node@v4
         with:
-          node-version: lts/*
+          node-version: 20
 
-      - name: install Rust stable
+      - name: Install Rust stable
         uses: dtolnay/rust-toolchain@stable
         with:
-          # Those targets are only used on macos runners so it's in an `if` to slightly speed up windows and linux builds.
-          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+          targets: ${{ (matrix.platform == 'macos-latest' && format('{0},{1}', matrix.config.args == '--target aarch64-apple-darwin' && 'aarch64-apple-darwin' || '', matrix.config.args == '--target x86_64-apple-darwin' && 'x86_64-apple-darwin' || '')) || '' }}
 
-      - name: install dependencies (ubuntu only)
-        if: matrix.platform == 'ubuntu-22.04' # This must match the platform value defined above.
+      - name: Install dependencies (ubuntu only)
+        if: matrix.platform == 'ubuntu-22.04'
         run: |
           sudo apt-get update
           sudo apt-get install -y libwebkit2gtk-4.0-dev libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
-        # webkitgtk 4.0 is for Tauri v1 - webkitgtk 4.1 is for Tauri v2.
-        # You can remove the one that doesn't apply to your app to speed up the workflow a bit.
 
-      - name: install frontend dependencies
-        run: yarn install # change this to npm, pnpm or bun depending on which one you use.
+      - name: Install frontend dependencies for main app
+        run: yarn install # Assuming main app uses yarn as in original file, or change to npm if needed
+        working-directory: apps/readest-app # User specified projectPath
 
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          NODE_OPTIONS: '--max-old-space-size=8192'
         with:
-          tagName: app-v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version.
-          releaseName: 'App v__VERSION__'
-          releaseBody: 'See the assets to download this version and install.'
-          releaseDraft: true
-          prerelease: false
-          args: ${{ matrix.args }}
+          projectPath: apps/readest-app
+          releaseId: '1.0.0'
+          releaseBody: 'First release'
+          args: ${{ matrix.config.args || '' }}
