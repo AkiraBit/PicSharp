@@ -151,9 +151,9 @@ export default function AppLayout() {
     };
 
     let timer;
-    useAppStore.getState().initSidecar();
     if (getCurrentWebviewWindow().label === 'main') {
       handleNsInspect();
+      useAppStore.getState().initSidecar();
       timer = setInterval(() => {
         useAppStore.getState().pingSidecar();
       }, 10000);

@@ -39,6 +39,7 @@ const useAppStore = create(
             if (isProd) {
               const command = Command.sidecar('binaries/picsharp-sidecar');
               command.stdout.once('data', (data) => {
+                info(`[Start Sidecar Output]: ${data}`);
                 const response = JSON.parse(data);
                 set({
                   sidecar: {
