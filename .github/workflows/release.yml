@@ -152,6 +152,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.14.4
+
       - name: Setup Node.js v20
         uses: actions/setup-node@v4
         with:
@@ -161,6 +166,10 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ (matrix.platform == 'macos-latest' && format('{0},{1}', matrix.config.args == '--target aarch64-apple-darwin' && 'aarch64-apple-darwin' || '', matrix.config.args == '--target x86_64-apple-darwin' && 'x86_64-apple-darwin' || '')) || '' }}
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: ${{ matrix.config.os }}-${{ matrix.config.release }}-${{ matrix.config.arch }}-cargo
 
       - name: Install dependencies (ubuntu only)
         if: matrix.platform == 'ubuntu-22.04'
