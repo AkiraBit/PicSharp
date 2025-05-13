@@ -8,7 +8,134 @@ on:
 # This workflow will trigger on each push to the `release` branch to create or update a GitHub release, build your app, and upload the artifacts to the release1.
 
 jobs:
-  install-dependencies:
+  # install-dependencies:
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       include:
+  #         - platform: 'macos-latest'
+  #           config: { args: '--target aarch64-apple-darwin' }
+  # - platform: 'macos-latest'
+  #   config: { args: '--target x86_64-apple-darwin' }
+  # - platform: 'ubuntu-22.04'
+  #   config: { args: '' }
+  # - platform: 'windows-latest'
+  #   config: { args: '' }
+  # runs-on: ${{ matrix.platform }}
+  # steps:
+  #   - uses: actions/checkout@v4
+
+  #   - name: Setup Node.js v20
+  #     uses: actions/setup-node@v4
+  #     with:
+  #       node-version: 20
+
+  #   - name: Install root dependencies
+  #     run: npm install
+  #     working-directory: ./
+
+  #   - name: Install sidecar dependencies
+  #     run: npm install
+  #     working-directory: packages/picsharp-sidecar
+
+  #   - name: Install app dependencies
+  #     run: npm install
+  #     working-directory: apps/picsharp-app
+
+  # build-sidecar:
+  # needs: install-dependencies
+  # strategy:
+  #   fail-fast: false
+  #   matrix:
+  #     include:
+  #       - platform: 'macos-latest'
+  #         config: { args: '--target aarch64-apple-darwin' }
+  #       # - platform: 'macos-latest'
+  #       #   config: { args: '--target x86_64-apple-darwin' }
+  #       # - platform: 'ubuntu-22.04'
+  #       #   config: { args: '' }
+  #       # - platform: 'windows-latest'
+  #       #   config: { args: '' }
+  # runs-on: ${{ matrix.platform }}
+  # steps:
+  #   - uses: actions/checkout@v4
+
+  #   - name: Setup Node.js v20
+  #     uses: actions/setup-node@v4
+  #     with:
+  #       node-version: 20
+
+  #   - name: Install sidecar dependencies
+  #     run: npm install
+  #     working-directory: packages/picsharp-sidecar
+
+  #   - name: Build sidecar
+  #     run: npm run build:sea
+  #     working-directory: packages/picsharp-sidecar
+
+  #   - name: Create target directory for sidecar
+  #     run: mkdir -p apps/picsharp-app/src-tauri/binaries
+
+  #   - name: Move sidecar binary
+  #     shell: bash
+  #     run: |
+  #       EXT=""
+  #       if [[ "${{ matrix.platform }}" == "windows-latest" ]]; then
+  #         EXT=".exe"
+  #       fi
+  #       mv packages/picsharp-sidecar/bin/picsharp-sidecar$EXT apps/picsharp-app/src-tauri/binaries/picsharp-sidecar$EXT
+
+  #   - name: Rename sidecar binary
+  #     shell: bash
+  #     working-directory: apps/picsharp-app/src-tauri/binaries
+  #     run: |
+  #       cat << EOF > rename_sidecar_script.js
+  #       // Using require for robustness in GH actions env unless type:module is ensured
+  #       import { execSync } from 'child_process';
+  #       import fs from 'fs';
+  #       import path from 'path';
+
+  #       const ext = process.platform === 'win32' ? '.exe' : '';
+  #       const originalName = \`picsharp-sidecar\${ext}\`;
+  #       let targetTriple;
+
+  #       try {
+  #         const rustInfo = execSync('rustc -vV').toString();
+  #         const match = /host: (\\S+)/.exec(rustInfo);
+  #         if (match && match[1]) {
+  #           targetTriple = match[1];
+  #         } else {
+  #           console.error('Failed to determine platform target triple from rustc output:', rustInfo);
+  #           process.exit(1);
+  #         }
+  #       } catch (error) {
+  #         console.error('Failed to execute "rustc -vV":', error);
+  #         process.exit(1);
+  #       }
+
+  #       // User's original naming: picsharp-sidecar-<targetTriple><ext>
+  #       const newName = \`picsharp-sidecar-\${targetTriple}\${ext}\`;
+
+  #       try {
+  #         console.log(\`Current directory: \${process.cwd()}\`);
+  #         console.log(\`Files in directory: \${fs.readdirSync('.')}\`);
+  #         console.log(\`Attempting to rename \${originalName} to \${newName}\`);
+  #         fs.renameSync(originalName, newName);
+  #         console.log(\`Successfully renamed \${originalName} to \${newName}\`);
+  #       } catch (error) {
+  #         console.error(\`Failed to rename file: \${error}\`);
+  #         // Log more info for debugging
+  #         console.error(\`Original name expected: \${originalName}, New name: \${newName}\`);
+  #         console.error(\`Directory contents again: \${fs.readdirSync('.').join(', ')}\`);
+  #         process.exit(1);
+  #       }
+  #       EOF
+  #       node rename_sidecar_script.js
+
+  build-app:
+    # needs: [build-sidecar]
+    permissions:
+      contents: write
     strategy:
       fail-fast: false
       matrix:
@@ -18,52 +145,37 @@ jobs:
           # - platform: 'macos-latest'
           #   config: { args: '--target x86_64-apple-darwin' }
           # - platform: 'ubuntu-22.04'
-          #   config: { args: '' }
+          #   config: { args: '' } # Ensuring config.args is always defined
           # - platform: 'windows-latest'
-          #   config: { args: '' }
+          #   config: { args: '' } # Ensuring config.args is always defined
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v4
+
+      - name: setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.14.4
 
       - name: Setup Node.js v20
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      - name: Install root dependencies
-        run: npm install
-        working-directory: ./
-
-      - name: Install sidecar dependencies
-        run: npm install
-        working-directory: packages/picsharp-sidecar
-
-      - name: Install app dependencies
-        run: npm install
-        working-directory: apps/picsharp-app
-
-  build-sidecar:
-    needs: install-dependencies
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - platform: 'macos-latest'
-            config: { args: '--target aarch64-apple-darwin' }
-          # - platform: 'macos-latest'
-          #   config: { args: '--target x86_64-apple-darwin' }
-          # - platform: 'ubuntu-22.04'
-          #   config: { args: '' }
-          # - platform: 'windows-latest'
-          #   config: { args: '' }
-    runs-on: ${{ matrix.platform }}
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Node.js v20
-        uses: actions/setup-node@v4
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
         with:
-          node-version: 20
+          targets: ${{ (matrix.platform == 'macos-latest' && format('{0},{1}', matrix.config.args == '--target aarch64-apple-darwin' && 'aarch64-apple-darwin' || '', matrix.config.args == '--target x86_64-apple-darwin' && 'x86_64-apple-darwin' || '')) || '' }}
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: ${{ matrix.config.os }}-${{ matrix.config.release }}-${{ matrix.config.arch }}-cargo
+
+      - name: Install dependencies (ubuntu only)
+        if: matrix.platform == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.0-dev libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
 
       - name: Install sidecar dependencies
         run: npm install
@@ -131,51 +243,6 @@ jobs:
           }
           EOF
           node rename_sidecar_script.js
-
-  build-app:
-    needs: [build-sidecar] # Assuming get-release job exists
-    permissions:
-      contents: write
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - platform: 'macos-latest'
-            config: { args: '--target aarch64-apple-darwin' }
-          # - platform: 'macos-latest'
-          #   config: { args: '--target x86_64-apple-darwin' }
-          # - platform: 'ubuntu-22.04'
-          #   config: { args: '' } # Ensuring config.args is always defined
-          # - platform: 'windows-latest'
-          #   config: { args: '' } # Ensuring config.args is always defined
-    runs-on: ${{ matrix.platform }}
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9.14.4
-
-      - name: Setup Node.js v20
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Install Rust stable
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: ${{ (matrix.platform == 'macos-latest' && format('{0},{1}', matrix.config.args == '--target aarch64-apple-darwin' && 'aarch64-apple-darwin' || '', matrix.config.args == '--target x86_64-apple-darwin' && 'x86_64-apple-darwin' || '')) || '' }}
-
-      - uses: Swatinem/rust-cache@v2
-        with:
-          key: ${{ matrix.config.os }}-${{ matrix.config.release }}-${{ matrix.config.arch }}-cargo
-
-      - name: Install dependencies (ubuntu only)
-        if: matrix.platform == 'ubuntu-22.04'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.0-dev libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
 
       - name: Install frontend dependencies for main app
         run: npm install # Assuming main app uses yarn as in original file, or change to npm if needed
