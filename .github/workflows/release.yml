@@ -15,8 +15,8 @@ jobs:
         include:
           - platform: 'macos-latest'
             config: { args: '--target aarch64-apple-darwin' }
-          - platform: 'macos-latest'
-            config: { args: '--target x86_64-apple-darwin' }
+          # - platform: 'macos-latest'
+          #   config: { args: '--target x86_64-apple-darwin' }
           # - platform: 'ubuntu-22.04'
           #   config: { args: '' }
           # - platform: 'windows-latest'
@@ -50,8 +50,8 @@ jobs:
         include:
           - platform: 'macos-latest'
             config: { args: '--target aarch64-apple-darwin' }
-          - platform: 'macos-latest'
-            config: { args: '--target x86_64-apple-darwin' }
+          # - platform: 'macos-latest'
+          #   config: { args: '--target x86_64-apple-darwin' }
           # - platform: 'ubuntu-22.04'
           #   config: { args: '' }
           # - platform: 'windows-latest'
@@ -142,8 +142,8 @@ jobs:
         include:
           - platform: 'macos-latest'
             config: { args: '--target aarch64-apple-darwin' }
-          - platform: 'macos-latest'
-            config: { args: '--target x86_64-apple-darwin' }
+          # - platform: 'macos-latest'
+          #   config: { args: '--target x86_64-apple-darwin' }
           # - platform: 'ubuntu-22.04'
           #   config: { args: '' } # Ensuring config.args is always defined
           # - platform: 'windows-latest'
@@ -170,7 +170,7 @@ jobs:
 
       - name: Install frontend dependencies for main app
         run: npm install # Assuming main app uses yarn as in original file, or change to npm if needed
-        working-directory: apps/readest-app # User specified projectPath
+        working-directory: apps/picsharp-app # User specified projectPath
 
       - uses: tauri-apps/tauri-action@v0
         env:
@@ -185,7 +185,7 @@ jobs:
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
           NODE_OPTIONS: '--max-old-space-size=8192'
         with:
-          projectPath: apps/readest-app
+          projectPath: apps/picsharp-app
           releaseId: '1.0.0'
           releaseBody: 'First release'
           args: ${{ matrix.config.args || '' }}
