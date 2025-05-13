@@ -91,9 +91,9 @@ jobs:
         run: |
           cat << EOF > rename_sidecar_script.js
           // Using require for robustness in GH actions env unless type:module is ensured
-          const { execSync } = require('child_process');
-          const fs = require('fs');
-          const path = require('path');
+          import { execSync } from 'child_process';
+          import fs from 'fs';
+          import path from 'path';
 
           const ext = process.platform === 'win32' ? '.exe' : '';
           const originalName = \`picsharp-sidecar\${ext}\`;
