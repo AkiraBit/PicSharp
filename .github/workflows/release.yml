@@ -93,6 +93,22 @@ jobs:
           certificate-password: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
           certificate-id: ${{ secrets.APPLE_TEAM_ID }}
 
+      - name: Clean up macos-build.keychain
+        if: matrix.platform == 'macos-latest'
+        run: |
+          echo "🔍 Checking for existing macos-build.keychain..."
+          if security list-keychains -d user | grep -q "macos-build.keychain"; then
+            echo "✅ Removing macos-build.keychain from keychain list..."
+            security list-keychains -s $(security list-keychains -d user | grep -v "macos-build.keychain")
+          else
+            echo "❌ macos-build.keychain not found in keychain list."
+          fi
+
+          echo "🗑️ Deleting macos-build.keychain files..."
+          rm -f ~/Library/Keychains/macos-build.keychain ~/Library/Keychains/macos-build.keychain-db
+
+          echo "✅ Cleanup complete."
+
       - name: Code Signing Sidecar .dylib Binary (MacOS Only)
         if: matrix.platform == 'macos-latest'
         uses: lando/code-sign-action@v3
@@ -101,6 +117,22 @@ jobs:
           certificate-data: ${{ secrets.APPLE_CERTIFICATE }}
           certificate-password: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
           certificate-id: ${{ secrets.APPLE_TEAM_ID }}
+
+      - name: Clean up macos-build.keychain
+        if: matrix.platform == 'macos-latest'
+        run: |
+          echo "🔍 Checking for existing macos-build.keychain..."
+          if security list-keychains -d user | grep -q "macos-build.keychain"; then
+            echo "✅ Removing macos-build.keychain from keychain list..."
+            security list-keychains -s $(security list-keychains -d user | grep -v "macos-build.keychain")
+          else
+            echo "❌ macos-build.keychain not found in keychain list."
+          fi
+
+          echo "🗑️ Deleting macos-build.keychain files..."
+          rm -f ~/Library/Keychains/macos-build.keychain ~/Library/Keychains/macos-build.keychain-db
+
+          echo "✅ Cleanup complete."
 
       - name: Build sidecar
         run: npm run build:sea
