@@ -135,7 +135,12 @@ jobs:
           echo "✅ Cleanup complete."
 
       - name: Build sidecar
-        run: npm run build:sea
+        run: |
+          if [[ "${{ matrix.config.arch }}" == "aarch64-apple-darwin" ]]; then
+            npm run build-sea:macos-arm64
+          elif [[ "${{ matrix.config.arch }}" == "x86_64-apple-darwin" ]]; then
+            npm run build-sea:macos-x64
+          fi
         working-directory: packages/picsharp-sidecar
 
       - name: Move sidecar binary
@@ -146,7 +151,7 @@ jobs:
             EXT=".exe"
           fi
           mkdir -p apps/picsharp-app/src-tauri/binaries
-          mv packages/picsharp-sidecar/bin/picsharp-sidecar$EXT apps/picsharp-app/src-tauri/binaries/picsharp-sidecar-${{ matrix.config.arch }}$EXT
+          mv packages/picsharp-sidecar/bin/picsharp-sidecar-${{ matrix.config.arch }}$EXT apps/picsharp-app/src-tauri/binaries/picsharp-sidecar-${{ matrix.config.arch }}$EXT
 
       - name: Install frontend dependencies for main app
         run: npm install # Assuming main app uses yarn as in original file, or change to npm if needed
