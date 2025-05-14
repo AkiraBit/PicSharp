@@ -248,6 +248,18 @@ jobs:
         run: npm install # Assuming main app uses yarn as in original file, or change to npm if needed
         working-directory: apps/picsharp-app # User specified projectPath
 
+      - name: Console Enviroment Variables
+        run: |
+          echo "GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}"
+          echo "TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}"
+          echo "TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}"
+          echo "APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}"
+          echo "APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}"
+          echo "APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}"
+          echo "APPLE_ID: ${{ secrets.APPLE_ID }}"
+          echo "APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}"
+          echo "APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}"
+
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
