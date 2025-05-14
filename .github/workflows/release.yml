@@ -5,135 +5,8 @@ on:
     branches:
       - release
 
-# This workflow will trigger on each push to the `release` branch to create or update a GitHub release, build your app, and upload the artifacts to the release1.
-
 jobs:
-  # install-dependencies:
-  #   strategy:
-  #     fail-fast: false
-  #     matrix:
-  #       include:
-  #         - platform: 'macos-latest'
-  #           config: { args: '--target aarch64-apple-darwin' }
-  # - platform: 'macos-latest'
-  #   config: { args: '--target x86_64-apple-darwin' }
-  # - platform: 'ubuntu-22.04'
-  #   config: { args: '' }
-  # - platform: 'windows-latest'
-  #   config: { args: '' }
-  # runs-on: ${{ matrix.platform }}
-  # steps:
-  #   - uses: actions/checkout@v4
-
-  #   - name: Setup Node.js v20
-  #     uses: actions/setup-node@v4
-  #     with:
-  #       node-version: 20
-
-  #   - name: Install root dependencies
-  #     run: npm install
-  #     working-directory: ./
-
-  #   - name: Install sidecar dependencies
-  #     run: npm install
-  #     working-directory: packages/picsharp-sidecar
-
-  #   - name: Install app dependencies
-  #     run: npm install
-  #     working-directory: apps/picsharp-app
-
-  # build-sidecar:
-  # needs: install-dependencies
-  # strategy:
-  #   fail-fast: false
-  #   matrix:
-  #     include:
-  #       - platform: 'macos-latest'
-  #         config: { args: '--target aarch64-apple-darwin' }
-  #       # - platform: 'macos-latest'
-  #       #   config: { args: '--target x86_64-apple-darwin' }
-  #       # - platform: 'ubuntu-22.04'
-  #       #   config: { args: '' }
-  #       # - platform: 'windows-latest'
-  #       #   config: { args: '' }
-  # runs-on: ${{ matrix.platform }}
-  # steps:
-  #   - uses: actions/checkout@v4
-
-  #   - name: Setup Node.js v20
-  #     uses: actions/setup-node@v4
-  #     with:
-  #       node-version: 20
-
-  #   - name: Install sidecar dependencies
-  #     run: npm install
-  #     working-directory: packages/picsharp-sidecar
-
-  #   - name: Build sidecar
-  #     run: npm run build:sea
-  #     working-directory: packages/picsharp-sidecar
-
-  #   - name: Create target directory for sidecar
-  #     run: mkdir -p apps/picsharp-app/src-tauri/binaries
-
-  #   - name: Move sidecar binary
-  #     shell: bash
-  #     run: |
-  #       EXT=""
-  #       if [[ "${{ matrix.platform }}" == "windows-latest" ]]; then
-  #         EXT=".exe"
-  #       fi
-  #       mv packages/picsharp-sidecar/bin/picsharp-sidecar$EXT apps/picsharp-app/src-tauri/binaries/picsharp-sidecar$EXT
-
-  #   - name: Rename sidecar binary
-  #     shell: bash
-  #     working-directory: apps/picsharp-app/src-tauri/binaries
-  #     run: |
-  #       cat << EOF > rename_sidecar_script.js
-  #       // Using require for robustness in GH actions env unless type:module is ensured
-  #       import { execSync } from 'child_process';
-  #       import fs from 'fs';
-  #       import path from 'path';
-
-  #       const ext = process.platform === 'win32' ? '.exe' : '';
-  #       const originalName = \`picsharp-sidecar\${ext}\`;
-  #       let targetTriple;
-
-  #       try {
-  #         const rustInfo = execSync('rustc -vV').toString();
-  #         const match = /host: (\\S+)/.exec(rustInfo);
-  #         if (match && match[1]) {
-  #           targetTriple = match[1];
-  #         } else {
-  #           console.error('Failed to determine platform target triple from rustc output:', rustInfo);
-  #           process.exit(1);
-  #         }
-  #       } catch (error) {
-  #         console.error('Failed to execute "rustc -vV":', error);
-  #         process.exit(1);
-  #       }
-
-  #       // User's original naming: picsharp-sidecar-<targetTriple><ext>
-  #       const newName = \`picsharp-sidecar-\${targetTriple}\${ext}\`;
-
-  #       try {
-  #         console.log(\`Current directory: \${process.cwd()}\`);
-  #         console.log(\`Files in directory: \${fs.readdirSync('.')}\`);
-  #         console.log(\`Attempting to rename \${originalName} to \${newName}\`);
-  #         fs.renameSync(originalName, newName);
-  #         console.log(\`Successfully renamed \${originalName} to \${newName}\`);
-  #       } catch (error) {
-  #         console.error(\`Failed to rename file: \${error}\`);
-  #         // Log more info for debugging
-  #         console.error(\`Original name expected: \${originalName}, New name: \${newName}\`);
-  #         console.error(\`Directory contents again: \${fs.readdirSync('.').join(', ')}\`);
-  #         process.exit(1);
-  #       }
-  #       EOF
-  #       node rename_sidecar_script.js
-
   build-app:
-    # needs: [build-sidecar]
     permissions:
       contents: write
     strategy:
@@ -142,8 +15,8 @@ jobs:
         include:
           - platform: 'macos-latest'
             config: { args: '--target aarch64-apple-darwin' }
-          # - platform: 'macos-latest'
-          #   config: { args: '--target x86_64-apple-darwin' }
+          - platform: 'macos-latest'
+            config: { args: '--target x86_64-apple-darwin' }
           # - platform: 'ubuntu-22.04'
           #   config: { args: '' } # Ensuring config.args is always defined
           # - platform: 'windows-latest'
@@ -181,6 +54,38 @@ jobs:
 
       - name: Install sidecar dependencies
         run: npm install
+        working-directory: packages/picsharp-sidecar
+
+      - name: Code signing sidecar dependencies
+        run: |
+          if [[ "${{ matrix.platform }}" == "macos-latest" ]]; then
+            echo "macOS: Finding and signing .node files under node_modules/@img..."
+            find node_modules/@img -type f -name "*.node" -print -exec codesign --force --deep --sign "${{ secrets.APPLE_SIGNING_IDENTITY }}" --options runtime {} \;
+
+            echo "macOS: Finding and signing .dylib files under node_modules/@img..."
+            find node_modules/@img -type f -name "*.dylib" -print -exec codesign --force --deep --sign "${{ secrets.APPLE_SIGNING_IDENTITY }}" --options runtime {} \;
+
+            echo "macOS: Dynamic signing of sidecar dependencies complete."
+          # elif [[ "${{ matrix.platform }}" == "windows-latest" ]]; then
+          #   echo "Windows: Finding .node files under node_modules/@img (Apple signing not applicable)..."
+          #   find node_modules/@img -type f -name "*.node" -print
+          #   echo "Windows: Finding .dll files under node_modules/@img (Apple signing not applicable)..."
+          #   find node_modules/@img -type f -name "*.dll" -print
+          #   echo "Windows: File listing complete. No Apple signing performed."
+          # elif [[ "${{ matrix.platform }}" == *"ubuntu"* ]]; then # Covers 'ubuntu-22.04' etc.
+          #   echo "Linux: Finding .node files under node_modules/@img (Apple signing not applicable)..."
+          #   find node_modules/@img -type f -name "*.node" -print
+          #   echo "Linux: Finding .so files under node_modules/@img (Apple signing not applicable)..."
+          #   find node_modules/@img -type f -name "*.so" -print
+          #   echo "Linux: File listing complete. No Apple signing performed."
+          else
+            echo "Platform ${{ matrix.platform }}: Apple signing not applicable."
+            # echo "Platform ${{ matrix.platform }}: Apple signing not applicable. Attempting to list .node files."
+            # # For unknown platforms, try to list .node files as a best effort.
+            # # If find fails (e.g. command not found, or path missing), let the step fail to signal an issue.
+            # find node_modules/@img -type f -name "*.node" -print
+            # echo "Platform ${{ matrix.platform }}: File listing complete (if successful). No Apple signing performed."
+          fi
         working-directory: packages/picsharp-sidecar
 
       - name: Build sidecar
@@ -249,18 +154,6 @@ jobs:
       - name: Install frontend dependencies for main app
         run: npm install # Assuming main app uses yarn as in original file, or change to npm if needed
         working-directory: apps/picsharp-app # User specified projectPath
-
-      - name: Console Enviroment Variables
-        run: |
-          echo "GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}"
-          echo "TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}"
-          echo "TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}"
-          echo "APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}"
-          echo "APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}"
-          echo "APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}"
-          echo "APPLE_ID: ${{ secrets.APPLE_ID }}"
-          echo "APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}"
-          echo "APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}"
 
       - uses: tauri-apps/tauri-action@v0
         env:
