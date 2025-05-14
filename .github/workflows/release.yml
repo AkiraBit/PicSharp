@@ -65,7 +65,7 @@ jobs:
 
             if [[ -n "$node_file_path" ]]; then
               echo "Found .node file: $node_file_path"
-              echo "node_file=$node_file_path" >> $GITHUB_OUTPUT
+              echo "node_file=packages/picsharp-sidecar/$node_file_path" >> $GITHUB_OUTPUT
             else
               echo "No .node files found."
               echo "node_file=" >> $GITHUB_OUTPUT
@@ -76,7 +76,7 @@ jobs:
 
             if [[ -n "$dylib_file_path" ]]; then
               echo "Found .dylib file: $dylib_file_path"
-              echo "dylib_file=$dylib_file_path" >> $GITHUB_OUTPUT
+              echo "dylib_file=packages/picsharp-sidecar/$dylib_file_path" >> $GITHUB_OUTPUT
             else
               echo "No .dylib files found."
               echo "dylib_file=" >> $GITHUB_OUTPUT
