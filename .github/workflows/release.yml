@@ -57,6 +57,10 @@ jobs:
         working-directory: packages/picsharp-sidecar
 
       - name: Code signing sidecar dependencies
+        env:
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
         run: |
           if [[ "${{ matrix.platform }}" == "macos-latest" ]]; then
             echo "macOS: Finding and signing .node files under node_modules/@img..."
