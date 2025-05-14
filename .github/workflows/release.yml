@@ -14,9 +14,9 @@ jobs:
       matrix:
         include:
           - platform: 'macos-latest'
-            config: { args: '--target aarch64-apple-darwin' }
-          - platform: 'macos-latest'
-            config: { args: '--target x86_64-apple-darwin' }
+            config: { args: '--target aarch64-apple-darwin', arch: 'aarch64-apple-darwin' }
+          # - platform: 'macos-latest'
+          #   config: { args: '--target x86_64-apple-darwin', arch: 'x86_64-apple-darwin' }
           # - platform: 'ubuntu-22.04'
           #   config: { args: '' } # Ensuring config.args is always defined
           # - platform: 'windows-latest'
@@ -25,17 +25,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: setup pnpm
+      - name: Setup Pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 9.14.4
+          version: 9.5.0
 
-      - name: Setup Node.js v20
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      - name: Install Rust stable
+      - name: Install Rust Stable
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ (matrix.platform == 'macos-latest' && format('{0},{1}', matrix.config.args == '--target aarch64-apple-darwin' && 'aarch64-apple-darwin' || '', matrix.config.args == '--target x86_64-apple-darwin' && 'x86_64-apple-darwin' || '')) || '' }}
@@ -46,52 +46,61 @@ jobs:
         with:
           workspaces: 'apps/picsharp-app/src-tauri -> target'
 
-      - name: Install dependencies (ubuntu only)
+      - name: Install App Framework (ubuntu only)
         if: matrix.platform == 'ubuntu-22.04'
         run: |
           sudo apt-get update
           sudo apt-get install -y libwebkit2gtk-4.0-dev libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
 
-      - name: Install sidecar dependencies
+      - name: Install Sidecar Dependencies
         run: npm install
         working-directory: packages/picsharp-sidecar
 
-      - name: Code signing sidecar dependencies
-        env:
-          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
-          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+      - name: Find Signing Sidecar Binary
+        id: find-sidecar-binary
         run: |
           if [[ "${{ matrix.platform }}" == "macos-latest" ]]; then
-            echo "$APPLE_CERTIFICATE" | base64 --decode > temp-certificate.p12
-            echo "macOS: Finding and signing .node files under node_modules/@img..."
-            find node_modules/@img -type f -name "*.node" -print -exec codesign --force --deep --sign "temp-certificate.p12" --password $APPLE_CERTIFICATE_PASSWORD --options runtime {} \;
+            echo "macOS: Finding the .node file under node_modules/@img"
+            node_file_path=$(find node_modules/@img -type f -name "*.node" -print -quit 2>/dev/null || true) # -quit makes find exit after the first match. 2>/dev/null suppresses errors if no file is found. `|| true` ensures the command doesn't fail the step if no file is found.
 
-            echo "macOS: Finding and signing .dylib files under node_modules/@img..."
-            find node_modules/@img -type f -name "*.dylib" -print -exec codesign --force --deep --sign "temp-certificate.p12" --password $APPLE_CERTIFICATE_PASSWORD --options runtime {} \;
+            if [[ -n "$node_file_path" ]]; then
+              echo "Found .node file: $node_file_path"
+              echo "node_file=$node_file_path" >> $GITHUB_OUTPUT
+            else
+              echo "No .node files found."
+              echo "node_file=" >> $GITHUB_OUTPUT
+            fi
 
-            echo "macOS: Dynamic signing of sidecar dependencies complete."
-          # elif [[ "${{ matrix.platform }}" == "windows-latest" ]]; then
-          #   echo "Windows: Finding .node files under node_modules/@img (Apple signing not applicable)..."
-          #   find node_modules/@img -type f -name "*.node" -print
-          #   echo "Windows: Finding .dll files under node_modules/@img (Apple signing not applicable)..."
-          #   find node_modules/@img -type f -name "*.dll" -print
-          #   echo "Windows: File listing complete. No Apple signing performed."
-          # elif [[ "${{ matrix.platform }}" == *"ubuntu"* ]]; then # Covers 'ubuntu-22.04' etc.
-          #   echo "Linux: Finding .node files under node_modules/@img (Apple signing not applicable)..."
-          #   find node_modules/@img -type f -name "*.node" -print
-          #   echo "Linux: Finding .so files under node_modules/@img (Apple signing not applicable)..."
-          #   find node_modules/@img -type f -name "*.so" -print
-          #   echo "Linux: File listing complete. No Apple signing performed."
-          else
-            echo "Platform ${{ matrix.platform }}: Apple signing not applicable."
-            # echo "Platform ${{ matrix.platform }}: Apple signing not applicable. Attempting to list .node files."
-            # # For unknown platforms, try to list .node files as a best effort.
-            # # If find fails (e.g. command not found, or path missing), let the step fail to signal an issue.
-            # find node_modules/@img -type f -name "*.node" -print
-            # echo "Platform ${{ matrix.platform }}: File listing complete (if successful). No Apple signing performed."
+            echo "macOS: Finding the .dylib file under node_modules/@img"
+            dylib_file_path=$(find node_modules/@img -type f -name "*.dylib" -print -quit 2>/dev/null || true) # -quit makes find exit after the first match. 2>/dev/null suppresses errors if no file is found. `|| true` ensures the command doesn't fail the step if no file is found.
+
+            if [[ -n "$dylib_file_path" ]]; then
+              echo "Found .dylib file: $dylib_file_path"
+              echo "dylib_file=$dylib_file_path" >> $GITHUB_OUTPUT
+            else
+              echo "No .dylib files found."
+              echo "dylib_file=" >> $GITHUB_OUTPUT
+            fi
           fi
-          rm -f temp-certificate.p12
         working-directory: packages/picsharp-sidecar
+
+      - name: Code Signing Sidecar .node Binary (MacOS Only)
+        if: matrix.platform == 'macos-latest'
+        uses: lando/code-sign-action@v3
+        with:
+          file: ${{ steps.find-sidecar-binary.outputs.node_file }}
+          certificate-data: ${{ secrets.APPLE_CERTIFICATE }}
+          certificate-password: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          certificate-id: ${{ secrets.APPLE_TEAM_ID }}
+
+      - name: Code Signing Sidecar .dylib Binary (MacOS Only)
+        if: matrix.platform == 'macos-latest'
+        uses: lando/code-sign-action@v3
+        with:
+          file: ${{ steps.find-sidecar-binary.outputs.dylib_file }}
+          certificate-data: ${{ secrets.APPLE_CERTIFICATE }}
+          certificate-password: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          certificate-id: ${{ secrets.APPLE_TEAM_ID }}
 
       - name: Build sidecar
         run: npm run build:sea
