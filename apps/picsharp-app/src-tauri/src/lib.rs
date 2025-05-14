@@ -12,9 +12,9 @@ use tauri_plugin_fs::FsExt;
 mod command;
 mod file;
 mod file_ext;
-mod image_processor;
+// mod image_processor;
 mod inspect;
-mod tinify;
+// mod tinify;
 mod upload;
 mod window;
 
@@ -197,10 +197,10 @@ pub fn run() {
             file::ipc_count_valid_files,
             file::ipc_is_file_in_directory,
             file::ipc_copy_image,
-            tinify::ipc_tinify,
-            image_processor::compressors::ipc_compress_images,
-            image_processor::compressors::ipc_compress_single_image,
-            image_processor::compressors::ipc_is_apng,
+            // tinify::ipc_tinify,
+            // image_processor::compressors::ipc_compress_images,
+            // image_processor::compressors::ipc_compress_single_image,
+            // image_processor::compressors::ipc_is_apng,
             command::ipc_open_system_preference_notifications,
             window::ipc_spawn_window,
         ])

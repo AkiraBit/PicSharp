@@ -1,4 +1,4 @@
-// pub mod avif;
+pub mod avif;
 pub mod jpeg;
 pub mod png;
 pub mod svg;

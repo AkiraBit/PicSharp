@@ -63,11 +63,12 @@ jobs:
           APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
         run: |
           if [[ "${{ matrix.platform }}" == "macos-latest" ]]; then
+            echo "$APPLE_CERTIFICATE" | base64 --decode > temp-certificate.p12
             echo "macOS: Finding and signing .node files under node_modules/@img..."
-            find node_modules/@img -type f -name "*.node" -print -exec codesign --force --deep --sign "${{ secrets.APPLE_SIGNING_IDENTITY }}" --options runtime {} \;
+            find node_modules/@img -type f -name "*.node" -print -exec codesign --force --deep --sign "temp-certificate.p12" --options runtime {} \;
 
             echo "macOS: Finding and signing .dylib files under node_modules/@img..."
-            find node_modules/@img -type f -name "*.dylib" -print -exec codesign --force --deep --sign "${{ secrets.APPLE_SIGNING_IDENTITY }}" --options runtime {} \;
+            find node_modules/@img -type f -name "*.dylib" -print -exec codesign --force --deep --sign "temp-certificate.p12" --options runtime {} \;
 
             echo "macOS: Dynamic signing of sidecar dependencies complete."
           # elif [[ "${{ matrix.platform }}" == "windows-latest" ]]; then
