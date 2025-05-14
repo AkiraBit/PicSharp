@@ -168,8 +168,10 @@ jobs:
           targets: ${{ (matrix.platform == 'macos-latest' && format('{0},{1}', matrix.config.args == '--target aarch64-apple-darwin' && 'aarch64-apple-darwin' || '', matrix.config.args == '--target x86_64-apple-darwin' && 'x86_64-apple-darwin' || '')) || '' }}
 
       - uses: Swatinem/rust-cache@v2
+        # with:
+        #   key: ${{ matrix.config.os }}-${{ matrix.config.release }}-${{ matrix.config.arch }}-cargo
         with:
-          key: ${{ matrix.config.os }}-${{ matrix.config.release }}-${{ matrix.config.arch }}-cargo
+          workspaces: 'apps/picsharp-app/src-tauri -> target'
 
       - name: Install dependencies (ubuntu only)
         if: matrix.platform == 'ubuntu-22.04'
@@ -274,6 +276,8 @@ jobs:
           NODE_OPTIONS: '--max-old-space-size=8192'
         with:
           projectPath: apps/picsharp-app
+          tagName: app-v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version.
+          releaseName: 'App v__VERSION__'
           releaseId: '1.0.0'
           releaseBody: 'First release'
           args: ${{ matrix.config.args || '' }}
