@@ -6,6 +6,48 @@ on:
       - release
 
 jobs:
+  get-release:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    outputs:
+      release_id: ${{ steps.get-release.outputs.release_id }}
+      release_tag: ${{ steps.get-release.outputs.release_tag }}
+      release_note: ${{ steps.get-release-notes.outputs.release_note }}
+      release_version: ${{ steps.get-release-notes.outputs.release_version }}
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: setup node
+        uses: actions/setup-node@v4
+      - name: get version
+        run: echo "PACKAGE_VERSION=$(node -p "require('./apps/picsharp-app/package.json').version")" >> $GITHUB_ENV
+      - name: get release
+        id: get-release
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data } = await github.rest.repos.getLatestRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+            })
+            core.setOutput('release_id', data.id);
+            core.setOutput('release_tag', data.tag_name);
+      - name: get release notes
+        id: get-release-notes
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const version = require('./apps/picsharp-app/package.json').version;
+            const releaseNotesFileContent = fs.readFileSync('./apps/picsharp-app/release-notes.json', 'utf8');
+            const releaseNotes = JSON.parse(releaseNotesFileContent).releases[version] || {};
+            const notes = releaseNotes.notes || [];
+            const releaseNote = notes.map((note, index) => `${index + 1}. ${note}`).join(' ');
+            console.log('Formatted release note:', releaseNote);
+            core.setOutput('release_version', version);
+            core.setOutput('release_note', releaseNote);
+
   build-app:
     permissions:
       contents: write
@@ -18,9 +60,9 @@ jobs:
           - platform: 'macos-latest'
             config: { args: '--target x86_64-apple-darwin', arch: 'x86_64-apple-darwin' }
           # - platform: 'ubuntu-22.04'
-          #   config: { args: '' } # Ensuring config.args is always defined
+          #   config: { args: '--target x86_64-unknown-linux-gnu', arch: 'x86_64-unknown-linux-gnu' }
           # - platform: 'windows-latest'
-          #   config: { args: '' } # Ensuring config.args is always defined
+          #   config: { args: '--target x86_64-pc-windows-msvc', arch: 'x86_64-pc-windows-msvc' }
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v4
@@ -161,8 +203,8 @@ jobs:
           mv packages/picsharp-sidecar/bin/picsharp-sidecar-${{ matrix.config.arch }}$EXT apps/picsharp-app/src-tauri/binaries/picsharp-sidecar-${{ matrix.config.arch }}$EXT
 
       - name: Install frontend dependencies for main app
-        run: npm install # Assuming main app uses yarn as in original file, or change to npm if needed
-        working-directory: apps/picsharp-app # User specified projectPath
+        run: npm install
+        working-directory: apps/picsharp-app
 
       - uses: tauri-apps/tauri-action@v0
         env:
