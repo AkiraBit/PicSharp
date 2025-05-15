@@ -2,7 +2,13 @@
   "name": "@picsharp/picsharp-sidecar",
   "version": "1.0.0",
   "description": "PicSharp Sidecar",
-  "author": "JaylenLee",
+  "author": "AkiraBit",
+  "license": "AGPL-3.0",
+  "repository": "AkiraBit/PicSharp",
+  "homepage": "https://github.com/AkiraBit/PicSharp",
+  "bugs": {
+    "url": "https://github.com/AkiraBit/PicSharp/issues"
+  },
   "private": true,
   "scripts": {
     "dev": "tsx watch src/index.ts",
@@ -36,7 +42,6 @@
     ]
   },
   "engines": {
-    "node": ">=20",
-    "pnpm": ">=9"
+    "node": ">=20"
   }
 }

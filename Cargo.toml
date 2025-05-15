@@ -7,8 +7,8 @@ resolver = "2"
 [workspace.package]
 authors = ["JaylenLee117"]
 license = "AGPL-3.0"
-homepage = "https://github.com/JaylenLee117/PicSharp"
-repository = "https://github.com/JaylenLee117/PicSharp"
+homepage = "https://github.com/AkiraBit/PicSharp"
+repository = "https://github.com/AkiraBit/PicSharp"
 categories = []
 edition = "2021"
 rust-version = "1.82.0"

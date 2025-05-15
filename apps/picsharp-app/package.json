@@ -3,6 +3,13 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
+  "author": "AkiraBit",
+  "license": "AGPL-3.0",
+  "repository": "AkiraBit/PicSharp",
+  "homepage": "https://github.com/AkiraBit/PicSharp",
+  "bugs": {
+    "url": "https://github.com/AkiraBit/PicSharp/issues"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
@@ -83,7 +90,6 @@
     "vite": "^6.0.3"
   },
   "engines": {
-    "node": ">=20",
-    "pnpm": ">=9"
+    "node": ">=20"
   }
 }

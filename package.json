@@ -2,14 +2,14 @@
   "name": "@picsharp/monorepo",
   "private": true,
   "author": {
-    "name": "JaylenLee117",
+    "name": "AkiraBit",
     "email": "fengyvxiu@gmail.com"
   },
   "license": "AGPL-3.0",
-  "repository": "JaylenLee117/PicSharp",
-  "homepage": "https://github.com/JaylenLee117/PicSharp",
+  "repository": "AkiraBit/PicSharp",
+  "homepage": "https://github.com/AkiraBit/PicSharp",
   "bugs": {
-    "url": "https://github.com/JaylenLee117/PicSharp/issues"
+    "url": "https://github.com/AkiraBit/PicSharp/issues"
   },
   "scripts": {
     "dev:sidecar": "pnpm --filter @picsharp/picsharp-sidecar dev",
@@ -24,5 +24,9 @@
     "prettier": "^3.3.3",
     "prettier-plugin-tailwindcss": "^0.6.8",
     "typescript": "^5"
+  },
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=9"
   }
 }
