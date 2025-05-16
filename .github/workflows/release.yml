@@ -220,8 +220,8 @@ jobs:
           NODE_OPTIONS: '--max-old-space-size=8192'
         with:
           projectPath: apps/picsharp-app
-          tagName: v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version.
-          releaseName: 'PicSharp v__VERSION__'
+          tagName: v${{ needs.get-release.outputs.release_version }}
+          releaseName: 'PicSharp v${{ needs.get-release.outputs.release_version }}'
           releaseId: ${{ needs.get-release.outputs.release_id }}
           releaseBody: ${{ needs.get-release.outputs.release_note }}
           args: ${{ matrix.config.args || '' }}

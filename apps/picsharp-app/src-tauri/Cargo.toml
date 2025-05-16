@@ -1,6 +1,6 @@
 [package]
 name = "PicSharp"
-version = "1.0.0"
+version = "1.0.1"
 description = "A simple, efficient and flexible cross-platform desktop image compression application."
 authors = ["JaylenL"]
 edition = "2021"
