@@ -47,7 +47,6 @@ jobs:
             console.log('Formatted release note:', releaseNote);
             core.setOutput('release_version', version);
             core.setOutput('release_note', releaseNote);
-
   build-app:
     permissions:
       contents: write
