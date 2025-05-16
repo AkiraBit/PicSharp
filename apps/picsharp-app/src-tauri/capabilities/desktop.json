@@ -13,6 +13,7 @@
     "autostart:default",
     "cli:default",
     "core:event:default",
-    "deep-link:default"
+    "deep-link:default",
+    "updater:default"
   ]
 }

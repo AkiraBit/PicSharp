@@ -66,6 +66,7 @@ clap_derive = { version = "4" }
 nanoid = "0.4.0"
 merge = "0.2.0"
 tauri-plugin-shell = "2"
+tauri-plugin-process = "2"
 
 [build]
 rustc-wrapper = "~/.cargo/bin/sccache"
@@ -100,6 +101,7 @@ objc2 = "0.6.0"
 [target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
 tauri-plugin-autostart = "2"
 tauri-plugin-cli = "2"
+tauri-plugin-updater = "2"
 
 [[bin]]
 name = "picsharp-cli"

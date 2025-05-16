@@ -19,6 +19,7 @@ import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow';
 import { updateWatchHistory } from '@/pages/compression/watch-guide';
 import { onOpenUrl } from '@tauri-apps/plugin-deep-link';
 import { isProd } from '@/utils';
+import checkForUpdate from '@/utils/updater';
 
 // if (isProd) {
 //   window.oncontextmenu = (e) => {
@@ -152,6 +153,7 @@ export default function AppLayout() {
 
     let timer;
     if (getCurrentWebviewWindow().label === 'main') {
+      checkForUpdate();
       handleNsInspect();
       useAppStore.getState().initSidecar();
       timer = setInterval(() => {

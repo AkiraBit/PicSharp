@@ -89,7 +89,8 @@
         "mimeType": "image/*",
         "role": "Editor"
       }
-    ]
+    ],
+    createUpdaterArtifacts: true
   },
   "plugins": {
     "cli": {
@@ -106,6 +107,10 @@
       "desktop": {
         "schemes": ["picsharp"]
       }
+    },
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDU0Nzg5NjY2MDRFOTlCNjQKUldSa20ra0VacFo0VkswUU1WaE45WFFzN3YvYXFZMkQ4c0xVdHZJaVhMNFZmNHd1MHIrUjNQMHgK",
+      "endpoints": ["https://github.com/AkiraBit/PicSharp/releases/latest/download/latest.json"]
     }
   }
 }
