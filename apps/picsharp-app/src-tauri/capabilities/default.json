@@ -105,6 +105,9 @@
     "shell:allow-kill",
     "shell:allow-execute",
     "shell:allow-open",
-    "core:webview:allow-create-webview-window"
+    "core:webview:allow-create-webview-window",
+    "process:default",
+    "process:allow-exit",
+    "process:allow-restart"
   ]
 }
