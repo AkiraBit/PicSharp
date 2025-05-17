@@ -40,6 +40,7 @@ jobs:
           script: |
             const fs = require('fs');
             const version = require('./apps/picsharp-app/package.json').version;
+            console.log('Version:', version);
             const releaseNotesFileContent = fs.readFileSync('./apps/picsharp-app/release-notes.json', 'utf8');
             const releaseNotes = JSON.parse(releaseNotesFileContent).releases[version] || {};
             const notes = releaseNotes.notes || [];
@@ -220,8 +221,8 @@ jobs:
           NODE_OPTIONS: '--max-old-space-size=8192'
         with:
           projectPath: apps/picsharp-app
-          tagName: v${{ needs.get-release.outputs.release_version }}
-          releaseName: 'PicSharp v${{ needs.get-release.outputs.release_version }}'
+          tagName: v__VERSION__
+          releaseName: 'PicSharp v__VERSION__'
           releaseId: ${{ needs.get-release.outputs.release_id }}
           releaseBody: ${{ needs.get-release.outputs.release_note }}
           args: ${{ matrix.config.args || '' }}
@@ -231,6 +232,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "Uploading release notes to GitHub release"
+          echo "Release tag: ${{ needs.get-release.outputs.release_tag }}"
+          echo "Release note: ${{ needs.get-release.outputs.release_note }}"
+          echo "Release id: ${{ needs.get-release.outputs.release_id }}"
           gh release upload ${{ needs.get-release.outputs.release_tag }} apps/picsharp-app/release-notes.json --clobber
 
   update-release:
@@ -249,6 +253,9 @@ jobs:
           release_note: ${{ needs.get-release.outputs.release_note }}
         with:
           script: |
+            console.log('Release tag:', process.env.release_tag);
+            console.log('Release note:', process.env.release_note);
+            console.log('Release id:', process.env.release_id);
             const { data } = await github.rest.repos.generateReleaseNotes({
               owner: context.repo.owner,
               repo: context.repo.repo,
