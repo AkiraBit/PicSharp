@@ -84,7 +84,9 @@ const useAppStore = create(
           } catch (err) {
             const errorMessage = `[Sidecar Heartbeat Error]: ${err.message || err.toString()}`;
             console.error(errorMessage);
-            error(errorMessage);
+            if (isProd) {
+              error(errorMessage);
+            }
             get().initSidecar();
           }
         }

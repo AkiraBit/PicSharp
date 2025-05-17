@@ -3,7 +3,7 @@ import Autostart from './autostart';
 import Language from './language';
 import Notification from './notification';
 import Section from '../section';
-
+import Update from './update';
 export default function SettingsGeneral() {
   return (
     <Section>
@@ -11,6 +11,7 @@ export default function SettingsGeneral() {
         <Language />
         <Notification />
         <Autostart />
+        <Update />
       </Card>
     </Section>
   );

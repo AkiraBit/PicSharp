@@ -1,6 +1,7 @@
 {
   "language": "",
   "autostart": false,
+  "auto_check_update": true,
   "compression_mode": "local",
   "compression_type": "lossy",
   "compression_level": 4,

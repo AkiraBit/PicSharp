@@ -12,6 +12,7 @@ const enUS = {
   'nav.compression': 'Compression',
   'nav.watch': 'Watch & Auto-Compress',
   'nav.settings': 'Settings',
+  'nav.update': 'New Version PicSharp Available!',
   // Settings
   'settings.title': 'Settings',
   'settings.description': 'Manage application settings and preferences.',
@@ -34,6 +35,10 @@ const enUS = {
   'settings.general.autostart.title': 'Launch at Startup',
   'settings.general.autostart.description':
     'Automatically start the application when the system starts.',
+  // Settings.General.Update
+  'settings.general.update.title': 'Auto Check Update',
+  'settings.general.update.description':
+    'Automatically check for updates and notify you when a new version is available.',
   // Settings.Compression
   'settings.compression.title': 'Compression',
   // Settings.Compression.Concurrency
@@ -116,6 +121,13 @@ const enUS = {
   'settings.tinypng.metadata.copyright': 'Copyright',
   'settings.tinypng.metadata.creator': 'Creator',
   'settings.tinypng.metadata.location': 'Location',
+  // Settings.About
+  'settings.about.title': 'About',
+  'settings.about.description': 'About PicSharp',
+  'settings.about.version.title': 'Current Version V{{version}}',
+  'settings.about.version.description': 'PicSharp is licensed under the MIT License.',
+  'settings.about.version.check_update': 'Check Update',
+  'settings.about.version.no_update_available': 'Current is the latest version',
   //
   'page.compression.process.actions.save': 'Save',
   'page.compression.process.actions.compress': 'Compress',

@@ -1,7 +1,7 @@
 import { Outlet } from 'react-router';
 import { Separator } from '@/components/ui/separator';
 import { SidebarNav } from './sidebar-nav';
-import { Settings2, FileArchive, ListRestart, Panda } from 'lucide-react';
+import { Settings2, FileArchive, ListRestart, Panda, Info } from 'lucide-react';
 import { useI18n } from '@/i18n';
 import { Button } from '@/components/ui/button';
 import useSettingsStore from '@/store/settings';
@@ -31,6 +31,11 @@ export default function SettingsLayout() {
       title: t('settings.tinypng.title'),
       href: '/settings/tinypng',
       icon: <Panda />,
+    },
+    {
+      title: t('settings.about.title'),
+      href: '/settings/about',
+      icon: <Info />,
     },
   ];
 

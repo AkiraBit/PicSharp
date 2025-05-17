@@ -4,7 +4,8 @@
   "description": "Capability for the main window",
   "windows": [
     "main",
-    "PicSharp-*"
+    "PicSharp-*",
+    "update-detail"
   ],
   "remote": {
     "urls": ["https://*"]
@@ -103,6 +104,7 @@
     },
     "shell:allow-kill",
     "shell:allow-execute",
-    "shell:allow-open"
+    "shell:allow-open",
+    "core:webview:allow-create-webview-window"
   ]
 }

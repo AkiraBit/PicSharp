@@ -6,7 +6,9 @@
     "linux"
   ],
   "windows": [
-    "main"
+    "main",
+    "PicSharp-*",
+    "update-detail"
   ],
   "permissions": [
     "autostart:default",

@@ -12,6 +12,7 @@ export default {
   'nav.compression': '批量压缩',
   'nav.watch': '监听文件夹并自动压缩',
   'nav.settings': '设置',
+  'nav.update': '有新版本 PicSharp 可更新！',
   // Settings
   'settings.title': '设置',
   'settings.description': '管理应用设置和偏好。',
@@ -35,6 +36,9 @@ export default {
   // General.Autostart
   'settings.general.autostart.title': '开机自动启动',
   'settings.general.autostart.description': '开机后自动启动应用',
+  // Settings.General.Update
+  'settings.general.update.title': '自动检查更新',
+  'settings.general.update.description': '当有新版本可用时,自动检查更新并通知',
   // Settings.Compression
   'settings.compression.title': '压缩设置',
   // Settings.Compression.Concurrency
@@ -116,6 +120,14 @@ export default {
   'settings.tinypng.metadata.copyright': '版权',
   'settings.tinypng.metadata.creator': '创建者',
   'settings.tinypng.metadata.location': '位置',
+  // Settings.About
+  'settings.about.title': '关于',
+  'settings.about.description': '关于PicSharp',
+  // Settings.About.Version
+  'settings.about.version.title': '当前版本 V{{version}}',
+  'settings.about.version.description': 'PicSharp 是基于 MIT 许可证发布的开源软件。',
+  'settings.about.version.check_update': '检查更新',
+  'settings.about.version.no_update_available': '当前已是最新版本',
   //
   'page.compression.process.actions.save': '保存',
   'page.compression.process.actions.compress': '压缩',

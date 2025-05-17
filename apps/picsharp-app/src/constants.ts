@@ -21,6 +21,7 @@ export const VALID_IMAGE_MIME_TYPES = {
 export enum SettingsKey {
   Language = 'language',
   Autostart = 'autostart',
+  AutoCheckUpdate = 'auto_check_update',
   CompressionMode = 'compression_mode',
   CompressionType = 'compression_type',
   CompressionLevel = 'compression_level',

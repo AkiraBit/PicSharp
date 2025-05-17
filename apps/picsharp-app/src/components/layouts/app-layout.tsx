@@ -153,7 +153,9 @@ export default function AppLayout() {
 
     let timer;
     if (getCurrentWebviewWindow().label === 'main') {
-      checkForUpdate();
+      if (isProd) {
+        checkForUpdate();
+      }
       handleNsInspect();
       useAppStore.getState().initSidecar();
       timer = setInterval(() => {

@@ -9,7 +9,9 @@ import Settings from './pages/settings';
 import SettingsGeneral from './pages/settings/general';
 import SettingsCompression from './pages/settings/compression';
 import SettingsTinypng from './pages/settings/tinypng';
+import SettingsAbout from './pages/settings/about';
 import ImageCompare from './pages/image-compare';
+import Update from './pages/update';
 import { Toaster } from 'sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { useTheme } from '@/components/theme-provider';
@@ -50,8 +52,10 @@ export default function AppRoutes() {
               <Route path='general' element={<SettingsGeneral />} />
               <Route path='tinypng' element={<SettingsTinypng />} />
               <Route path='compression' element={<SettingsCompression />} />
+              <Route path='about' element={<SettingsAbout />} />
             </Route>
             <Route path='image-compare' element={<ImageCompare />} />
+            <Route path='update' element={<Update />} />
           </Route>
         </Routes>
       </BrowserRouter>

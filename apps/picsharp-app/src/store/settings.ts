@@ -18,6 +18,7 @@ interface SettingsState {
   defaultSettingsFilePath: string;
   [SettingsKey.Language]: string;
   [SettingsKey.Autostart]: boolean;
+  [SettingsKey.AutoCheckUpdate]: boolean;
   [SettingsKey.CompressionMode]: CompressionMode;
   [SettingsKey.CompressionType]: CompressionType;
   [SettingsKey.CompressionLevel]: number;
@@ -49,6 +50,7 @@ const useSettingsStore = create<SettingsState & SettingsAction>((set, get) => ({
   defaultSettingsFilePath: '',
   [SettingsKey.Language]: 'en-US',
   [SettingsKey.Autostart]: false,
+  [SettingsKey.AutoCheckUpdate]: true,
   [SettingsKey.CompressionMode]: CompressionMode.Auto,
   [SettingsKey.CompressionType]: CompressionType.Lossy,
   [SettingsKey.CompressionLevel]: 4,
