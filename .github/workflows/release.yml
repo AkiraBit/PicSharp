@@ -31,6 +31,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
             })
+            console.log('Release data:', data);
             core.setOutput('release_id', data.id);
             core.setOutput('release_tag', data.tag_name);
       - name: get release notes
@@ -232,7 +233,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "Uploading release notes to GitHub release"
-          gh release upload ${{ needs.get-release.outputs.release_version }} apps/picsharp-app/release-notes.json --clobber
+          gh release upload v${{ needs.get-release.outputs.release_version }} apps/picsharp-app/release-notes.json --clobber
 
   update-release:
     permissions:
@@ -254,7 +255,7 @@ jobs:
             const { data } = await github.rest.repos.generateReleaseNotes({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              tag_name: process.env.release_version,
+              tag_name: `v${process.env.release_version}`,
             })
             const notes = process.env.release_note.split(/(?:\d\.\s)/).filter(Boolean);
             const formattedNotes = notes.map(note => `* ${note.trim()}`).join("\n");
