@@ -5,14 +5,26 @@ import SettingItem from '../setting-item';
 import { Button } from '@/components/ui/button';
 import checkUpdate from '@/utils/updater';
 import { Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
+
 function SettingsAboutVersion() {
   const t = useI18n();
   const [isChecking, setIsChecking] = useState(false);
 
   const handleCheckUpdate = async () => {
-    setIsChecking(true);
-    await checkUpdate();
-    setIsChecking(false);
+    try {
+      setIsChecking(true);
+      const updater = await checkUpdate();
+      setIsChecking(false);
+      if (!updater) {
+        toast.success(t('settings.about.version.no_update_available'), {
+          richColors: true,
+        });
+      }
+    } catch (error) {
+      setIsChecking(false);
+      console.error(error);
+    }
   };
 
   return (

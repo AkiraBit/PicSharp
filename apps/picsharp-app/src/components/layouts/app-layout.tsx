@@ -153,7 +153,7 @@ export default function AppLayout() {
 
     let timer;
     if (getCurrentWebviewWindow().label === 'main') {
-      if (isProd) {
+      if (!isProd) {
         checkForUpdate();
       }
       handleNsInspect();

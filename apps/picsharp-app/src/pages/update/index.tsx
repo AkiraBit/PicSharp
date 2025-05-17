@@ -42,12 +42,14 @@ export default function Update() {
   const handleUpdate = async () => {
     let updater: IUpdate | null = null;
     try {
-      console.log('Start update');
       if (status !== UpdateStatus.Ready) return;
+      console.log('#1 Start update');
       setStatus(UpdateStatus.Checking);
       updater = await check();
+      console.log('#2 Checked');
       setStatus(UpdateStatus.Checked);
       if (updater) {
+        console.log('#3 Downloading');
         let downloaded = 0;
         let contentLength = 0;
         let lastLogged = 0;
@@ -68,20 +70,23 @@ export default function Update() {
               }
               break;
             case 'Finished':
-              console.log('download finished');
+              console.log('#4 Download finished');
               setProgress(100);
               break;
           }
         });
         setStatus(UpdateStatus.Finished);
+        console.log('#5 Install finished');
         await message('', {
           title: '安装完成',
           okLabel: '立即重启',
         });
         if (isProd) {
+          console.log('#6 Relaunch');
           await relaunch();
         }
       } else {
+        console.log('#4 No update available');
         setStatus(UpdateStatus.Ready);
       }
     } catch (error) {
@@ -110,13 +115,9 @@ export default function Update() {
 
         <div className='mb-3 flex flex-1 flex-col'>
           <h2 className='text-foreground mb-3 text-lg font-semibold'>更新日志：</h2>
-          <ScrollArea>
-            <ul className='text-foreground max-h-[220px] flex-grow-0 list-inside list-disc space-y-2 overflow-y-auto rounded-md p-4 py-3 dark:bg-neutral-700'>
-              {changelog.map((item, index) => (
-                <li key={index}>{item}</li>
-              ))}
-            </ul>
-          </ScrollArea>
+          <div className='text-foreground h-[220px] flex-grow-0 list-inside list-disc space-y-2 overflow-y-auto rounded-md p-4 py-3 dark:bg-neutral-700'>
+            {releaseContent}
+          </div>
         </div>
         <div className='relative w-full'>
           <div
@@ -144,10 +145,10 @@ export default function Update() {
             {(status === UpdateStatus.Checking || status === UpdateStatus.Checked) && (
               <>
                 <Loader2 className='h-4 w-4 animate-spin' />
-                正在校验
+                立即更新
               </>
             )}
-            {status === UpdateStatus.Finished && '安装完成，立即重启'}
+            {status === UpdateStatus.Finished && '安装完成，请重启应用'}
           </Button>
         </div>
       </div>

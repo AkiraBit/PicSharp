@@ -1,13 +1,7 @@
 {
   "releases": {
-    "1.0.1": {
-      "date": "2025-05-16",
-      "notes": [
-        "Fix bug"
-      ]
-    },
     "1.0.0": {
-      "date": "2025-05-16",
+      "date": "2025-05-17",
       "notes": [
         "First release"
       ]
