@@ -220,38 +220,38 @@ jobs:
           echo "Uploading release notes to GitHub release"
           gh release upload v${{ needs.get-release.outputs.release_version }} apps/picsharp-app/release-notes.json --clobber
 
-  update-release:
-    permissions:
-      contents: write
-    runs-on: ubuntu-latest
-    needs: [get-release, build-app]
+  # update-release:
+  #   permissions:
+  #     contents: write
+  #   runs-on: ubuntu-latest
+  #   needs: [get-release, build-app]
 
-    steps:
-      - name: update release
-        id: update-release
-        uses: actions/github-script@v7
-        env:
-          release_version: ${{ needs.get-release.outputs.release_version }}
-          release_note: ${{ needs.get-release.outputs.release_note }}
-        with:
-          script: |
-            try {
-              const { data } = await github.rest.repos.generateReleaseNotes({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                tag_name: `v${process.env.release_version}`,
-              })
-              const notes = process.env.release_note.split(/(?:\d\.\s)/).filter(Boolean);
-              const formattedNotes = notes.map(note => `* ${note.trim()}`).join("\n");
-              const body = `## Release Highlight\n${formattedNotes}\n\n${data.body}`;
-              github.rest.repos.updateRelease({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                release_id: data.id,
-                body: body,
-                draft: false,
-                prerelease: false
-              })
-            } catch (error) {
-              console.log([Error], error);
-            }
+  #   steps:
+  #     - name: update release
+  #       id: update-release
+  #       uses: actions/github-script@v7
+  #       env:
+  #         release_version: ${{ needs.get-release.outputs.release_version }}
+  #         release_note: ${{ needs.get-release.outputs.release_note }}
+  #       with:
+  #         script: |
+  #           try {
+  #             const { data } = await github.rest.repos.generateReleaseNotes({
+  #               owner: context.repo.owner,
+  #               repo: context.repo.repo,
+  #               tag_name: `v${process.env.release_version}`,
+  #             })
+  #             const notes = process.env.release_note.split(/(?:\d\.\s)/).filter(Boolean);
+  #             const formattedNotes = notes.map(note => `* ${note.trim()}`).join("\n");
+  #             const body = `## Release Highlight\n${formattedNotes}\n\n${data.body}`;
+  #             github.rest.repos.updateRelease({
+  #               owner: context.repo.owner,
+  #               repo: context.repo.repo,
+  #               release_id: data.id,
+  #               body: body,
+  #               draft: false,
+  #               prerelease: false
+  #             })
+  #           } catch (error) {
+  #             console.log([Error], error);
+  #           }
