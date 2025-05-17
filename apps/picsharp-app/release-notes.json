@@ -1,5 +1,11 @@
 {
   "releases": {
+    "1.0.2": {
+      "date": "2025-05-17",
+      "notes": [
+        "Update release test"
+      ]
+    },
     "1.0.1": {
       "date": "2025-05-17",
       "notes": [
