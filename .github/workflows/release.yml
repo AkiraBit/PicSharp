@@ -232,10 +232,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "Uploading release notes to GitHub release"
-          echo "Release tag: ${{ needs.get-release.outputs.release_tag }}"
-          echo "Release note: ${{ needs.get-release.outputs.release_note }}"
-          echo "Release id: ${{ needs.get-release.outputs.release_id }}"
-          gh release upload ${{ needs.get-release.outputs.release_tag }} apps/picsharp-app/release-notes.json --clobber
+          gh release upload ${{ needs.get-release.outputs.release_version }} apps/picsharp-app/release-notes.json --clobber
 
   update-release:
     permissions:
@@ -248,18 +245,16 @@ jobs:
         id: update-release
         uses: actions/github-script@v7
         env:
-          release_id: ${{ needs.get-release.outputs.release_id }}
-          release_tag: ${{ needs.get-release.outputs.release_tag }}
+          # release_id: ${{ needs.get-release.outputs.release_id }}
+          # release_tag: ${{ needs.get-release.outputs.release_tag }}
+          release_version: ${{ needs.get-release.outputs.release_version }}
           release_note: ${{ needs.get-release.outputs.release_note }}
         with:
           script: |
-            console.log('Release tag:', process.env.release_tag);
-            console.log('Release note:', process.env.release_note);
-            console.log('Release id:', process.env.release_id);
             const { data } = await github.rest.repos.generateReleaseNotes({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              tag_name: process.env.release_tag,
+              tag_name: process.env.release_version,
             })
             const notes = process.env.release_note.split(/(?:\d\.\s)/).filter(Boolean);
             const formattedNotes = notes.map(note => `* ${note.trim()}`).join("\n");
@@ -267,7 +262,7 @@ jobs:
             github.rest.repos.updateRelease({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              release_id: process.env.release_id,
+              release_id: data.id,
               body: body,
               draft: false,
               prerelease: false
