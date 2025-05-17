@@ -224,7 +224,6 @@ jobs:
           projectPath: apps/picsharp-app
           tagName: v__VERSION__
           releaseName: 'PicSharp v__VERSION__'
-          releaseId: ${{ needs.get-release.outputs.release_id }}
           releaseBody: ${{ needs.get-release.outputs.release_note }}
           args: ${{ matrix.config.args || '' }}
 
