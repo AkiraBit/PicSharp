@@ -1,4 +1,3 @@
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { useSearchParams } from 'react-router';
 import { Button } from '@/components/ui/button';
 import { check, Update as IUpdate } from '@tauri-apps/plugin-updater';
@@ -11,18 +10,7 @@ import { cn } from '@/lib/utils';
 import * as logger from '@tauri-apps/plugin-log';
 import { message } from '@tauri-apps/plugin-dialog';
 import { toast } from 'sonner';
-
-const changelog = [
-  '新增功能 A，优化用户体验。',
-  '修复 Bug B，提升应用稳定性。',
-  '改进特性 C，让操作更便捷。',
-  '安全更新 D，保障用户数据安全。',
-  '安全更新 D，保障用户数据安全。',
-  '安全更新 D，保障用户数据安全。',
-  '安全更新 D，保障用户数据安全。',
-  '安全更新 D，保障用户数据安全。',
-  '安全更新 D，保障用户数据安全。',
-];
+import { useI18n } from '@/i18n';
 
 enum UpdateStatus {
   Ready = 'ready',
@@ -38,7 +26,7 @@ export default function Update() {
   const releaseContent = query.get('releaseContent');
   const [status, setStatus] = useState<UpdateStatus>(UpdateStatus.Ready);
   const [progress, setProgress] = useState<number>(0);
-
+  const t = useI18n();
   const handleUpdate = async () => {
     let updater: IUpdate | null = null;
     try {
@@ -78,8 +66,8 @@ export default function Update() {
         setStatus(UpdateStatus.Finished);
         console.log('#5 Install finished');
         await message('', {
-          title: '安装完成',
-          okLabel: '立即重启',
+          title: t('update.message.installed'),
+          okLabel: t('update.button.restart'),
         });
         if (isProd) {
           console.log('#6 Relaunch');
@@ -92,7 +80,7 @@ export default function Update() {
     } catch (error) {
       setStatus(UpdateStatus.Ready);
       setProgress(0);
-      toast.error('更新失败，请重试', {
+      toast.error(t('update.message.failed'), {
         richColors: true,
       });
       console.error('[Update Failed]: ', error);
@@ -107,14 +95,16 @@ export default function Update() {
   return (
     <div className='bg-background flex min-h-screen flex-col items-center justify-center px-4 pb-5 pt-7'>
       <div className='flex w-full flex-1 flex-col rounded-lg bg-white p-5 shadow-xl dark:bg-neutral-800'>
-        <h1 className='text-foreground mb-3 text-center text-3xl font-bold'>发现新版本！</h1>
+        <h1 className='text-foreground mb-3 text-center text-3xl font-bold'>{t('update.title')}</h1>
 
         <div className='mb-3'>
-          <h2 className='text-foreground text-xl font-semibold'>版本号：{version}</h2>
+          <h2 className='text-foreground text-xl font-semibold'>
+            {t('update.version', { version })}
+          </h2>
         </div>
 
         <div className='mb-3 flex flex-1 flex-col'>
-          <h2 className='text-foreground mb-3 text-lg font-semibold'>更新日志：</h2>
+          <h2 className='text-foreground mb-3 text-lg font-semibold'>{t('update.changelog')}</h2>
           <div className='text-foreground h-[220px] flex-grow-0 list-inside list-disc space-y-2 overflow-y-auto rounded-md p-4 py-3 dark:bg-neutral-700'>
             {releaseContent}
           </div>
@@ -141,14 +131,14 @@ export default function Update() {
             )}
             disabled={status !== UpdateStatus.Ready}
           >
-            {status === UpdateStatus.Ready && '立即更新'}
+            {status === UpdateStatus.Ready && t('update.button.update')}
             {(status === UpdateStatus.Checking || status === UpdateStatus.Checked) && (
               <>
                 <Loader2 className='h-4 w-4 animate-spin' />
-                立即更新
+                {t('update.button.update')}
               </>
             )}
-            {status === UpdateStatus.Finished && '安装完成，请重启应用'}
+            {status === UpdateStatus.Finished && t('update.button.restart')}
           </Button>
         </div>
       </div>

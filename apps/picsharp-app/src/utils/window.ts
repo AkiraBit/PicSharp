@@ -6,7 +6,6 @@ export function calImageWindowSize(imgWidth: number, imgHeight: number): [number
   const minWidth = 400.0;
   const minHeight = 400.0;
 
-  // 计算缩放因子
   const scaleWidth = maxWidth / imgWidth;
   const scaleHeight = maxHeight / imgHeight;
   const scale = Math.min(Math.min(scaleWidth, scaleHeight), 1.0);

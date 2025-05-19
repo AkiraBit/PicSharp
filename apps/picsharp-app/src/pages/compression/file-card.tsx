@@ -45,7 +45,6 @@ function FileCard(props: FileCardProps) {
     const osPlatform = getOSPlatform();
     const fileRevealLabel =
       FILE_REVEAL_LABELS[osPlatform as FILE_REVEAL_PLATFORMS] || FILE_REVEAL_LABELS.default;
-    console.log('fileRevealLabel', fileRevealLabel);
     const compareMenuItem = await MenuItem.new({
       text: t('compression.file_action.compare_file'),
       action: async () => {

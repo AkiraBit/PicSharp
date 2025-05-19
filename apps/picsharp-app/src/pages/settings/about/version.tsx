@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import checkUpdate from '@/utils/updater';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { Trans } from 'react-i18next';
 
 function SettingsAboutVersion() {
   const t = useI18n();
@@ -23,6 +24,9 @@ function SettingsAboutVersion() {
       }
     } catch (error) {
       setIsChecking(false);
+      toast.error(t('settings.about.version.check_update_failed'), {
+        richColors: true,
+      });
       console.error(error);
     }
   };
@@ -30,7 +34,21 @@ function SettingsAboutVersion() {
   return (
     <SettingItem
       title={t('settings.about.version.title', { version: packageJson.version })}
-      description={t('settings.about.version.description')}
+      description={
+        <Trans
+          // @ts-ignore
+          i18nKey='settings.about.version.description'
+          components={{
+            license: (
+              <a
+                target='_blank'
+                href='https://github.com/AkiraBit/PicSharp?tab=AGPL-3.0-1-ov-file#readme'
+                className='text-blue-500 underline'
+              />
+            ),
+          }}
+        ></Trans>
+      }
     >
       <Button size='sm' onClick={handleCheckUpdate} disabled={isChecking}>
         {isChecking && <Loader2 className='h-4 w-4 animate-spin' />}

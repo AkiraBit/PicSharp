@@ -60,7 +60,6 @@ const useSettingsStore = create<SettingsState & SettingsAction>((set, get) => ({
   [SettingsKey.CompressionOutput]: CompressionOutputMode.Overwrite,
   [SettingsKey.CompressionOutputSaveAsFileSuffix]: '_compressed',
   [SettingsKey.CompressionOutputSaveToFolder]: '',
-
   [SettingsKey.TinypngApiKeys]: [],
   [SettingsKey.TinypngPreserveMetadata]: [
     TinypngMetadata.Copyright,

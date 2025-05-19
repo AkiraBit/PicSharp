@@ -13,6 +13,14 @@ const enUS = {
   'nav.watch': 'Watch & Auto-Compress',
   'nav.settings': 'Settings',
   'nav.update': 'New Version PicSharp Available!',
+  // Update
+  'update.title': 'Found New Version',
+  'update.version': 'Version {{version}}',
+  'update.changelog': 'Changelog',
+  'update.button.update': 'Update Now',
+  'update.message.installed': 'New Version Installed',
+  'update.message.failed': 'Update Failed, Please Try Again',
+  'update.button.restart': 'Installation Completed, Please Restart',
   // Settings
   'settings.title': 'Settings',
   'settings.description': 'Manage application settings and preferences.',
@@ -125,9 +133,16 @@ const enUS = {
   'settings.about.title': 'About',
   'settings.about.description': 'About PicSharp',
   'settings.about.version.title': 'Current Version V{{version}}',
-  'settings.about.version.description': 'PicSharp is licensed under the MIT License.',
+  // Settings.About.Version
+  'settings.about.version.description':
+    'PicSharp is licensed under the <license>AGPL-3.0</license> License.',
   'settings.about.version.check_update': 'Check Update',
   'settings.about.version.no_update_available': 'Current is the latest version',
+  'settings.about.version.check_update_failed': 'Check Update Failed, Please Try Again',
+  // Settings.About.Feedback
+  'settings.about.feedback.title': 'Feedback',
+  'settings.about.feedback.description':
+    'Optimize suggestions, Bug feedback, Feature requests, etc.',
   //
   'page.compression.process.actions.save': 'Save',
   'page.compression.process.actions.compress': 'Compress',

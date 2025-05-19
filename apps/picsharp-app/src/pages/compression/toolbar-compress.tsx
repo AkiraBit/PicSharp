@@ -206,6 +206,9 @@ function ToolbarCompress() {
         t('common.compress_failed_msg'),
       );
     } finally {
+      if (indicatorRef.current) {
+        indicatorRef.current.textContent = '0%';
+      }
       setInCompressing(false);
     }
   };

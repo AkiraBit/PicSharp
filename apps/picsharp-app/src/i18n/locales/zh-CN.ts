@@ -13,6 +13,14 @@ export default {
   'nav.watch': '监听文件夹并自动压缩',
   'nav.settings': '设置',
   'nav.update': '有新版本 PicSharp 可更新！',
+  // Update
+  'update.title': '发现新版本',
+  'update.version': '版本号 {{version}}',
+  'update.changelog': '更新日志',
+  'update.button.update': '立即更新',
+  'update.message.installed': '新版本安装完成',
+  'update.message.failed': '更新失败，请重试',
+  'update.button.restart': '安装完成，请重启应用',
   // Settings
   'settings.title': '设置',
   'settings.description': '管理应用设置和偏好。',
@@ -125,9 +133,14 @@ export default {
   'settings.about.description': '关于PicSharp',
   // Settings.About.Version
   'settings.about.version.title': '当前版本 V{{version}}',
-  'settings.about.version.description': 'PicSharp 是基于 MIT 许可证发布的开源软件。',
+  'settings.about.version.description':
+    'PicSharp 是基于 <license>AGPL-3.0</license> 许可证发布的开源软件。',
   'settings.about.version.check_update': '检查更新',
   'settings.about.version.no_update_available': '当前已是最新版本',
+  'settings.about.version.check_update_failed': '检查更新失败，请稍后再试',
+  // Settings.About.Feedback
+  'settings.about.feedback.title': '反馈',
+  'settings.about.feedback.description': '优化建议、Bug反馈、功能需求等',
   //
   'page.compression.process.actions.save': '保存',
   'page.compression.process.actions.compress': '压缩',

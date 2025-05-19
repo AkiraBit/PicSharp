@@ -8,9 +8,10 @@ import { isFunction } from 'radash';
 import { parseOpenWithFiles } from '@/utils/launch';
 import useAppStore from '@/store/app';
 import useCompressionStore from '@/store/compression';
+import useSettingsStore from '@/store/settings';
 import { isValidArray } from '@/utils';
 import { parsePaths } from '@/utils/fs';
-import { VALID_IMAGE_EXTS } from '@/constants';
+import { VALID_IMAGE_EXTS, SettingsKey } from '@/constants';
 import { useNavigate } from '@/hooks/useNavigate';
 import { confirm } from '@tauri-apps/plugin-dialog';
 import { spawnWindow } from '@/utils/window';
@@ -21,12 +22,11 @@ import { onOpenUrl } from '@tauri-apps/plugin-deep-link';
 import { isProd } from '@/utils';
 import checkForUpdate from '@/utils/updater';
 
-// if (isProd) {
-//   window.oncontextmenu = (e) => {
-//     console.log('oncontextmenu', e);
-//     e.preventDefault();
-//   };
-// }
+if (isProd) {
+  window.oncontextmenu = (e) => {
+    e.preventDefault();
+  };
+}
 
 export default function AppLayout() {
   const progressRef = useRef<PageProgressRef>(null);
@@ -153,7 +153,7 @@ export default function AppLayout() {
 
     let timer;
     if (getCurrentWebviewWindow().label === 'main') {
-      if (isProd) {
+      if (isProd && useSettingsStore.getState()?.[SettingsKey.AutoCheckUpdate]) {
         checkForUpdate();
       }
       handleNsInspect();
