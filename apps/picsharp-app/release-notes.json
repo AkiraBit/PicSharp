@@ -1,5 +1,11 @@
 {
   "releases": {
+    "1.0.3": {
+      "date": "2025-05-19",
+      "notes": [
+        "Update UI components and add feedback page"
+      ]
+    },
     "1.0.2": {
       "date": "2025-05-17",
       "notes": [
