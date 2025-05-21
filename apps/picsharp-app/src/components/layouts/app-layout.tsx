@@ -104,6 +104,7 @@ export default function AppLayout() {
         const paths = event.payload as string[];
         const hasSpawned = await spawnNewWindow('ns_compress', paths);
         if (!hasSpawned) {
+          getCurrentWebviewWindow().show();
           process('ns_compress', paths);
         }
       });
@@ -112,6 +113,7 @@ export default function AppLayout() {
         const paths = event.payload as string[];
         const hasSpawned = await spawnNewWindow('ns_watch_and_compress', paths);
         if (!hasSpawned) {
+          getCurrentWebviewWindow().show();
           process('ns_watch_and_compress', paths);
         }
       });

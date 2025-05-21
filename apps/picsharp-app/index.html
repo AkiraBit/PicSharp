@@ -6,6 +6,31 @@
   <link rel="icon" type="image/png" href="public/logo.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PicSharp</title>
+  <style>
+    html,
+    body,
+    #root{
+      height: 100%;
+      overflow: hidden;
+    }
+    html.dark {
+      background-color: rgb(25, 25, 25)!important;
+    }
+    html.light {
+      background: white!important;
+    }
+
+  </style>
+  <script>
+    const root = window.document.documentElement;
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const currentTheme = localStorage.getItem('app-theme') || 'system';
+    if(currentTheme === 'system') {
+      root.classList.add(mediaQuery.matches ? 'dark' : 'light');
+    }else{
+      root.classList.add(currentTheme);
+    }
+  </script>
 </head>
 
 <body class="font-mono">

@@ -23,7 +23,7 @@ body,
 #root{
   height: 100vh;
   overflow: hidden;
-  background: transparent;
+  /* background: transparent; */
   /* user-select: none; */
 }
 

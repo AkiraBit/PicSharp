@@ -8,7 +8,6 @@ import { Empty } from 'antd';
 import { isValidArray, preventDefault } from '@/utils';
 import { useNavigate } from '@/hooks/useNavigate';
 import { useI18n } from '@/i18n';
-import { ScrollArea } from '@/components/ui/scroll-area';
 
 function FileManager() {
   const { files } = useCompressionStore(useSelector(['files']));

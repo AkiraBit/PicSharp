@@ -14,7 +14,55 @@ A simple, efficient, and flexible cross-platform desktop image compression appli
 - **Windows:** Coming soon
 - **Linux:** Coming soon
 
-## Features
+## Key Features
+
+### Compress Localy & TinyPNG
+
+![Compress Localy & TinyPNG](./doc/Local-Compress&TinyPNG.png)
+
+### Powerful Batch Processing
+
+![Powerful Batch Processing](./doc/Powerful-Batch-Processing.png)
+
+### Watch Mode
+
+![Watch Mode](./doc/Watch-Mode.png)
+
+### Rich Configuration
+
+| **General**                | **Description**               | **Status** |
+| -------------------------- | ----------------------------- | ---------- |
+| **Internationalization**   | Partial support: zh-CN, en-US | ✅         |
+| **Dark/Light Theme**       | -                             | ✅         |
+| **System Notifications**   | -                             | ✅         |
+| **Startup on Boot**        | -                             | ✅         |
+| **Auto Check for Updates** | -                             | ✅         |
+
+---
+
+| **Compression**            | **Description**                                                                                                                                      | **Status** |
+| -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
+| **Compression Mode**       | Default use Tinypng, if Tinypng compression fails, switch to local compression for retry.                                                            | ✅         |
+| **Compression Type**       | Optional lossless compression and lossy compression are available. When the image does not support lossless compression, switch to lossy compression | ✅         |
+| **Compression Level**      | Five levels can be selected. When using lossy compression, setting a reasonable compression level can achieve the best visual effect.                | ✅         |
+| **Save Type**              | How to save compressed images after compression.                                                                                                     | ✅         |
+| **Compression Rate Limit** | When the image compression rate is below the set threshold, saving will not be performed.                                                            | ✅         |
+
+---
+
+| **TinyPNG**             | **Description**                                                                                            | **Status** |
+| ----------------------- | ---------------------------------------------------------------------------------------------------------- | ---------- |
+| **API Keys Management** | Manage multiple TinyPNG API keys and provide functions such as availability detection and usage monitoring | ✅         |
+| **Preserve Metadata**   | Select the metadata to preserve during compression.                                                        | ✅         |
+
+### Easy to use
+
+| **Feature**             | **Description**                              | **Status** |
+| ----------------------- | -------------------------------------------- | ---------- |
+| **FinderServices menu** | Use Finder Services menu to compress images. | ✅         |
+| **DeepLink**            | Use DeepLink to compress images.             | ✅         |
+
+## Summary
 
 - **Powerful Batch Processing:** Based on Rust implementation, it scans selected files or directories with high performance and low resource consumption, identifying and processing image files within them. Even 100,000+ images can be handled with ease.
 - **TinyPNG Integration:** Optional TinyPNG compression is available, with account pool management for automatic selection during task processing. Supported image formats: PNG/Animated PNG, JPEG, WebP, AVIF.
@@ -24,3 +72,16 @@ A simple, efficient, and flexible cross-platform desktop image compression appli
 - **Convenient Operations:** Drag and drop files into the application or onto the application icon for quick opening, select files or directories in Mac Finder and choose a compression method from the "Services" menu, and more.
 - **Rich Application Configuration:** Offers dark/light themes, multiple languages, system notifications, startup on boot, save methods for processed images, save locations, number of parallel tasks, and more.
 - **Open Integration:** Provides image compression invocation capabilities via DeepLink, allowing automation tools to call it and enhance your workflow.
+
+## Roadmap
+
+- [ ] Add Windows support
+- [ ] Add Linux support
+
+## Contributing
+
+If you want to help out please see [CONTRIBUTING.md](CONTRIBUTING.md) to see how to get started.
+
+## Support
+
+If you enjoy this project consider giving it a star ⭐.
