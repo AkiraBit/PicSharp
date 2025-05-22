@@ -55,8 +55,6 @@ impl Default for WindowConfig {
             minimizable: Some(true),
             #[cfg(target_os = "macos")]
             title_bar_style: Some(TitleBarStyle::Overlay),
-            #[cfg(not(target_os = "macos"))]
-            title_bar_style: None,
             center: Some(true),
         }
     }
