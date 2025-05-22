@@ -40,7 +40,7 @@ interface SettingsState {
 }
 
 interface SettingsAction {
-  init: (reset?: boolean) => Promise<void>;
+  init: (reload?: boolean) => Promise<void>;
   set: (key: SettingsKey, value: any) => Promise<void>;
   reset: () => Promise<void>;
 }
@@ -66,12 +66,12 @@ const useSettingsStore = create<SettingsState & SettingsAction>((set, get) => ({
     TinypngMetadata.Creator,
     TinypngMetadata.Location,
   ],
-  init: async (reset) => {
+  init: async (reload = false) => {
     const settingsFilePath = await join(await appDataDir(), SETTINGS_FILE_NAME);
     const defaultSettingsFilePath = await join(await appDataDir(), DEFAULT_SETTINGS_FILE_NAME);
     set({ settingsFilePath, defaultSettingsFilePath });
     const store = await load(SETTINGS_FILE_NAME);
-    if (reset) {
+    if (reload) {
       await store.reload();
     }
     const entries = await store.entries();

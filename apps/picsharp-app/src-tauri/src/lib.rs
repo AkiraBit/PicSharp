@@ -228,7 +228,7 @@ pub fn run() {
                     _ => {}
                 }
             }
-
+            #[cfg(target_os = "macos")]
             if let tauri::RunEvent::Reopen {
                 has_visible_windows,
                 ..

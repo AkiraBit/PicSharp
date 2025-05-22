@@ -25,6 +25,7 @@ export default {
   'settings.title': '设置',
   'settings.description': '管理应用设置和偏好。',
   'settings.reset_all': '重置',
+  'settings.reload': '刷新',
   'settings.reset_all_confirm': '确定重置所有应用设置？',
   // Settings.General
   'settings.general.title': '通用设置',
@@ -197,7 +198,8 @@ export default {
   'tips.compress_completed': '成功：{{fulfilled}}  失败：{{rejected}}  总任务数：{{total}}',
   'tips.saving': '正在保存... 成功：{{fulfilled}}，失败：{{rejected}}，总任务数：{{total}}',
   'tips.save_completed': '保存完成，成功：{{fulfilled}}，失败：{{rejected}}，总任务数：{{total}}',
-  'tips.settings_reset_success': '应用配置重置完成',
+  'tips.settings_reset_success': '重置完成',
+  'tips.settings_reload_success': '刷新完成',
   'tips.file_path_copied': '文件路径已复制到剪贴板',
   'tips.file_copied': '文件已复制到剪贴板',
   'tips.invalid_paths': '无效的文件路径',

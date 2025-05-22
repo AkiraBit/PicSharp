@@ -2,7 +2,9 @@ use log::info;
 use merge::Merge;
 use serde::{Deserialize, Serialize};
 use std::sync::atomic::{AtomicUsize, Ordering};
-use tauri::{AppHandle, TitleBarStyle, WebviewUrl, WebviewWindow};
+#[cfg(target_os = "macos")]
+use tauri::TitleBarStyle;
+use tauri::{AppHandle, WebviewUrl, WebviewWindow};
 
 static ID: AtomicUsize = AtomicUsize::new(0);
 
@@ -28,6 +30,7 @@ pub struct WindowConfig {
     maximizable: Option<bool>,
     #[merge(strategy = merge::option::overwrite_none)]
     minimizable: Option<bool>,
+    #[cfg(target_os = "macos")]
     #[merge(strategy = merge::option::overwrite_none)]
     title_bar_style: Option<TitleBarStyle>,
     #[merge(strategy = merge::option::overwrite_none)]
@@ -44,10 +47,16 @@ impl Default for WindowConfig {
             min_width: Some(100.0),
             min_height: Some(100.0),
             resizable: Some(true),
+            #[cfg(target_os = "macos")]
             hidden_title: Some(true),
+            #[cfg(not(target_os = "macos"))]
+            hidden_title: None,
             maximizable: Some(true),
             minimizable: Some(true),
+            #[cfg(target_os = "macos")]
             title_bar_style: Some(TitleBarStyle::Overlay),
+            #[cfg(not(target_os = "macos"))]
+            title_bar_style: None,
             center: Some(true),
         }
     }
@@ -80,9 +89,16 @@ pub fn spawn_window(
         )
         .maximizable(window_config.maximizable.unwrap_or_default())
         .minimizable(window_config.minimizable.unwrap_or_default())
-        .hidden_title(window_config.hidden_title.unwrap_or_default())
-        .resizable(window_config.resizable.unwrap_or_default())
-        .title_bar_style(window_config.title_bar_style.unwrap_or_default());
+        .resizable(window_config.resizable.unwrap_or_default());
+    #[cfg(target_os = "macos")]
+    {
+        if let Some(hidden_title) = window_config.hidden_title {
+            window = window.hidden_title(hidden_title);
+        }
+        if let Some(title_bar_style) = window_config.title_bar_style {
+            window = window.title_bar_style(title_bar_style);
+        }
+    }
     if window_config.center.unwrap_or_default() {
         window = window.center();
     }

@@ -168,9 +168,14 @@ function FileCard(props: FileCardProps) {
         />
       </div>
       <div className='p-2'>
-        <h3 className='text-foreground max-w-[100%] overflow-hidden text-ellipsis whitespace-nowrap font-medium'>
-          {file.name}
-        </h3>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <h3 className='text-foreground max-w-[100%] overflow-hidden text-ellipsis whitespace-nowrap font-medium'>
+              {file.name}
+            </h3>
+          </TooltipTrigger>
+          <TooltipContent>{file.name}</TooltipContent>
+        </Tooltip>
         <div className='flex items-center justify-between'>
           <div className='flex items-center gap-1'>
             <span

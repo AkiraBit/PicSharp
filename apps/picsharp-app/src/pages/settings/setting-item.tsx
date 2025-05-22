@@ -3,6 +3,7 @@ import { CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 
 export type SettingItemProps = PropsWithChildren<{
+  id?: string;
   className?: string;
   title: ReactNode;
   titleClassName?: string;
@@ -11,6 +12,7 @@ export type SettingItemProps = PropsWithChildren<{
 }>;
 
 function SettingItem({
+  id,
   title,
   description,
   children,
@@ -19,7 +21,10 @@ function SettingItem({
   descriptionClassName,
 }: SettingItemProps) {
   return (
-    <CardHeader className={cn('flex flex-row items-center justify-between gap-x-8', className)}>
+    <CardHeader
+      id={id}
+      className={cn('flex flex-row items-center justify-between gap-x-8', className)}
+    >
       <div className='grid gap-1'>
         <CardTitle className={cn('text-md font-medium', titleClassName)}>{title}</CardTitle>
         {description && (

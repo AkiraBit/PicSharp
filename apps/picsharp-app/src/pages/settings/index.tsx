@@ -1,7 +1,7 @@
 import { Outlet } from 'react-router';
 import { Separator } from '@/components/ui/separator';
 import { SidebarNav } from './sidebar-nav';
-import { Settings2, FileArchive, ListRestart, Panda, Info } from 'lucide-react';
+import { Settings2, FileArchive, Panda, Info, FolderSync, RefreshCw } from 'lucide-react';
 import { useI18n } from '@/i18n';
 import { Button } from '@/components/ui/button';
 import useSettingsStore from '@/store/settings';
@@ -14,7 +14,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 
 export default function SettingsLayout() {
   const t = useI18n();
-  const { reset } = useSettingsStore(useSelector(['reset']));
+  const { reset, init } = useSettingsStore(useSelector(['reset', 'init']));
 
   const sidebarNavItems = [
     {
@@ -39,6 +39,11 @@ export default function SettingsLayout() {
     },
   ];
 
+  const handleReload = async () => {
+    await init(true);
+    toast.success(t('tips.settings_reload_success'));
+  };
+
   const handleReset = () => {
     showAlertDialog({
       title: t('settings.reset_all_confirm'),
@@ -55,8 +60,12 @@ export default function SettingsLayout() {
   return (
     <div className='flex h-full flex-col pt-5'>
       <Header title={t('settings.title')} description={t('settings.description')} className='px-5'>
-        <Button variant='default' size='sm' onClick={handleReset}>
-          <ListRestart className='h-5 w-5' />
+        <Button variant='default' size='sm' onClick={handleReload}>
+          <RefreshCw className='h-5 w-5' />
+          {t('settings.reload')}
+        </Button>
+        <Button variant='secondary' size='sm' onClick={handleReset}>
+          <FolderSync className='h-5 w-5' />
           {t('settings.reset_all')}
         </Button>
       </Header>

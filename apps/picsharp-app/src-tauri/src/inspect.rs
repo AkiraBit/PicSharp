@@ -8,7 +8,7 @@ use std::{
     },
 };
 
-use tauri::{AppHandle, Emitter, Listener, Manager, TitleBarStyle, WebviewUrl, WebviewWindow};
+use tauri::{AppHandle, Emitter, Listener, Manager};
 use tauri_plugin_fs::FsExt;
 
 static ID: AtomicUsize = AtomicUsize::new(0);

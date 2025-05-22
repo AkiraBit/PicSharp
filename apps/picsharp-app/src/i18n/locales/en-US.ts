@@ -25,6 +25,7 @@ const enUS = {
   'settings.title': 'Settings',
   'settings.description': 'Manage application settings and preferences.',
   'settings.reset_all': 'Reset',
+  'settings.reload': 'Reset',
   'settings.reset_all_confirm': 'Are you sure you want to reset all application configurations?',
   // Settings.General
   'settings.general.title': 'General',
@@ -199,7 +200,8 @@ const enUS = {
   'tips.compress_completed': 'Success: {{fulfilled}}  Failed: {{rejected}}  Total Tasks: {{total}}',
   'tips.saving': 'Success: {{fulfilled}}, Failed: {{rejected}}, Total Tasks: {{total}}',
   'tips.save_completed': 'Success: {{fulfilled}}, Failed: {{rejected}}, Total Tasks: {{total}}',
-  'tips.settings_reset_success': 'Application configuration reset completed',
+  'tips.settings_reset_success': 'Reset completed',
+  'tips.settings_reload_success': 'Reload completed',
   'tips.file_path_copied': 'File path copied to clipboard',
   'tips.file_copied': 'File copied to clipboard',
   'tips.invalid_paths': 'Invalid file paths',

@@ -9,7 +9,7 @@ import { parseOpenWithFiles } from '@/utils/launch';
 import useAppStore from '@/store/app';
 import useCompressionStore from '@/store/compression';
 import useSettingsStore from '@/store/settings';
-import { isValidArray } from '@/utils';
+import { isValidArray, isProd } from '@/utils';
 import { parsePaths } from '@/utils/fs';
 import { VALID_IMAGE_EXTS, SettingsKey } from '@/constants';
 import { useNavigate } from '@/hooks/useNavigate';
@@ -19,14 +19,13 @@ import { useI18n } from '@/i18n';
 import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow';
 import { updateWatchHistory } from '@/pages/compression/watch-guide';
 import { onOpenUrl } from '@tauri-apps/plugin-deep-link';
-import { isProd } from '@/utils';
 import checkForUpdate from '@/utils/updater';
 
-if (isProd) {
-  window.oncontextmenu = (e) => {
-    e.preventDefault();
-  };
-}
+// if (isProd) {
+//   window.oncontextmenu = (e) => {
+//     e.preventDefault();
+//   };
+// }
 
 export default function AppLayout() {
   const progressRef = useRef<PageProgressRef>(null);
@@ -160,9 +159,11 @@ export default function AppLayout() {
       }
       handleNsInspect();
       useAppStore.getState().initSidecar();
-      timer = setInterval(() => {
-        useAppStore.getState().pingSidecar();
-      }, 10000);
+      if (isProd) {
+        timer = setInterval(() => {
+          useAppStore.getState().pingSidecar();
+        }, 10000);
+      }
     }
     handleOpenWithFiles();
     handleDeepLink();

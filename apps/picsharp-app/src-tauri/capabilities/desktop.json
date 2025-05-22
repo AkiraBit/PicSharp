@@ -8,7 +8,8 @@
   "windows": [
     "main",
     "PicSharp-*",
-    "update-detail"
+    "update-detail",
+    "settings"
   ],
   "permissions": [
     "autostart:default",

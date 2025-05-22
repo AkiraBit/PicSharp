@@ -1,4 +1,5 @@
 import { invoke } from '@tauri-apps/api/core';
+import { WebviewWindow, getAllWebviewWindows } from '@tauri-apps/api/webviewWindow';
 
 export function calImageWindowSize(imgWidth: number, imgHeight: number): [number, number] {
   const maxWidth = 1000.0;
@@ -37,4 +38,18 @@ export async function spawnWindow(
     launchPayload: JSON.stringify(payload),
     windowConfig,
   });
+}
+
+export async function createWebviewWindow(
+  label: string,
+  options: ConstructorParameters<typeof WebviewWindow>[1],
+) {
+  const windows = await getAllWebviewWindows();
+  const target = windows.find((w) => w.label === label);
+  if (target) {
+    target.show();
+    return target;
+  } else {
+    return new WebviewWindow(label, options);
+  }
 }

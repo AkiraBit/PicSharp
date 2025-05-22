@@ -8,7 +8,8 @@ import useCompressionStore from '@/store/compression';
 import { useCallback } from 'react';
 import { ask, message } from '@tauri-apps/plugin-dialog';
 import { isString, isObject } from 'radash';
-import { useI18n } from '@/i18n';
+import { t, useI18n } from '@/i18n';
+import { createWebviewWindow } from '@/utils/window';
 
 export const blockCompressionRoutes = [
   '/compression/classic/workspace',
@@ -33,6 +34,23 @@ export function useNavigate() {
       }
       if (isObject(url)) {
         nextUrl = url.pathname;
+      }
+
+      if (url === '/settings' && state.working) {
+        createWebviewWindow('settings', {
+          url,
+          title: t('nav.settings'),
+          width: 724,
+          height: 450,
+          center: true,
+          resizable: true,
+          titleBarStyle: 'overlay',
+          hiddenTitle: true,
+          dragDropEnabled: true,
+          minimizable: true,
+          maximizable: true,
+        });
+        return;
       }
 
       if (blockCompressionRoutes.includes(location.pathname) && state.inCompressing) {

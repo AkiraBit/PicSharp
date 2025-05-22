@@ -38,6 +38,7 @@ export default memo(function SettingsCompressionThreshold() {
 
   return (
     <SettingItem
+      id={SettingsKey.CompressionThresholdEnable}
       title={t('settings.compression.threshold.title')}
       description={t('settings.compression.threshold.description')}
     >

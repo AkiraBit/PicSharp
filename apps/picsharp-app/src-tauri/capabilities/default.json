@@ -5,7 +5,8 @@
   "windows": [
     "main",
     "PicSharp-*",
-    "update-detail"
+    "update-detail",
+    "settings"
   ],
   "remote": {
     "urls": ["https://*"]
