@@ -1,5 +1,12 @@
 {
   "releases": {
+    "1.0.4": {
+      "date": "2025-05-22",
+      "notes": [
+        "Optimize UI interaction",
+        "Fix some bugs"
+      ]
+    },
     "1.0.3": {
       "date": "2025-05-19",
       "notes": [
