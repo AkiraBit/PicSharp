@@ -43,14 +43,23 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - platform: 'macos-latest'
-            config: { args: '--target aarch64-apple-darwin', arch: 'aarch64-apple-darwin' }
-          - platform: 'macos-latest'
-            config: { args: '--target x86_64-apple-darwin', arch: 'x86_64-apple-darwin' }
+          # - platform: 'macos-latest'
+          #   config: { args: '--target aarch64-apple-darwin', arch: 'aarch64-apple-darwin' }
+          # - platform: 'macos-latest'
+          #   config: { args: '--target x86_64-apple-darwin', arch: 'x86_64-apple-darwin' }
           # - platform: 'ubuntu-22.04'
           #   config: { args: '--target x86_64-unknown-linux-gnu', arch: 'x86_64-unknown-linux-gnu' }
+          - platform: 'ubuntu-22.04-arm'
+            config:
+              { args: '--target aarch64-unknown-linux-gnu', arch: 'aarch64-unknown-linux-gnu' }
           # - platform: 'windows-latest'
           #   config: { args: '--target x86_64-pc-windows-msvc', arch: 'x86_64-pc-windows-msvc' }
+          # - platform: 'windows-latest'
+          #   config:
+          #     {
+          #       args: '--target aarch64-pc-windows-msvc --bundles nsis',
+          #       arch: 'aarch64-pc-windows-msvc',
+          #     }
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v4
@@ -68,25 +77,23 @@ jobs:
       - name: Install Rust Stable
         uses: dtolnay/rust-toolchain@stable
         with:
-          targets: ${{ (matrix.platform == 'macos-latest' && format('{0},{1}', matrix.config.args == '--target aarch64-apple-darwin' && 'aarch64-apple-darwin' || '', matrix.config.args == '--target x86_64-apple-darwin' && 'x86_64-apple-darwin' || '')) || '' }}
+          targets: ${{ matrix.config.arch }}
 
       - uses: Swatinem/rust-cache@v2
-        # with:
-        #   key: ${{ matrix.config.os }}-${{ matrix.config.release }}-${{ matrix.config.arch }}-cargo
         with:
           workspaces: 'apps/picsharp-app/src-tauri -> target'
 
       - name: Install App Framework (ubuntu only)
-        if: matrix.platform == 'ubuntu-22.04'
+        if: contains(matrix.platform, 'ubuntu')
         run: |
           sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.0-dev libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+          sudo apt-get install -y pkg-config libfontconfig-dev libgtk-3-dev libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf xdg-utils
 
       - name: Install Sidecar Dependencies
         run: |
-          if [[ "${{ matrix.config.arch }}" == "aarch64-apple-darwin" ]]; then
+          if [[ "${{ matrix.config.arch }}" == "aarch64-apple-darwin" || "${{ matrix.config.arch }}" == "aarch64-unknown-linux-gnu" ]]; then
             npm install --cpu arm64
-          elif [[ "${{ matrix.config.arch }}" == "x86_64-apple-darwin" ]]; then
+          elif [[ "${{ matrix.config.arch }}" == "x86_64-apple-darwin" || "${{ matrix.config.arch }}" == "x86_64-unknown-linux-gnu" ]]; then
             npm install --cpu x64
           else
             npm install
@@ -94,6 +101,7 @@ jobs:
         working-directory: packages/picsharp-sidecar
 
       - name: Find Signing Sidecar Binary
+        if: matrix.platform == 'macos-latest' || matrix.platform == 'windows-latest'
         id: find-sidecar-binary
         run: |
           if [[ "${{ matrix.platform }}" == "macos-latest" ]]; then
@@ -117,6 +125,28 @@ jobs:
             else
               echo "No .dylib files found."
               echo "dylib_file=" >> $GITHUB_OUTPUT
+            fi
+          elif [[ "${{ matrix.platform }}" == "windows-latest" ]]; then
+            echo "Windows: Finding the .node file under node_modules/@img"
+            node_file_path=$(find node_modules/@img -type f -name "*.node" -print -quit 2>/dev/null || true) # -quit makes find exit after the first match. 2>/dev/null suppresses errors if no file is found. `|| true` ensures the command doesn't fail the step if no file is found.
+
+            if [[ -n "$node_file_path" ]]; then
+              echo "Found .node file: $node_file_path"
+              echo "node_file=packages/picsharp-sidecar/$node_file_path" >> $GITHUB_OUTPUT
+            else
+              echo "No .node files found."
+              echo "node_file=" >> $GITHUB_OUTPUT
+            fi
+
+            echo "Windows: Finding the .dll file under node_modules/@img"
+            dll_file_path=$(find node_modules/@img -type f -name "*.dll" -print -quit 2>/dev/null || true) # -quit makes find exit after the first match. 2>/dev/null suppresses errors if no file is found. `|| true` ensures the command doesn't fail the step if no file is found.
+
+            if [[ -n "$dll_file_path" ]]; then
+              echo "Found .dll file: $dll_file_path"
+              echo "dll_file=packages/picsharp-sidecar/$dll_file_path" >> $GITHUB_OUTPUT
+            else
+              echo "No .dll files found."
+              echo "dll_file=" >> $GITHUB_OUTPUT
             fi
           fi
         working-directory: packages/picsharp-sidecar
@@ -177,18 +207,49 @@ jobs:
             npm run build-sea:macos-arm64
           elif [[ "${{ matrix.config.arch }}" == "x86_64-apple-darwin" ]]; then
             npm run build-sea:macos-x64
+          elif [[ "${{ matrix.config.arch }}" == "x86_64-pc-windows-msvc" ]]; then
+            npm run build-sea:win-x64
+          elif [[ "${{ matrix.config.arch }}" == "aarch64-pc-windows-msvc" ]]; then
+            npm run build-sea:win-arm64
+          elif [[ "${{ matrix.config.arch }}" == "x86_64-unknown-linux-gnu" ]]; then
+            npm run build-sea:linux-x64
+          elif [[ "${{ matrix.config.arch }}" == "aarch64-unknown-linux-gnu" ]]; then
+            npm run build-sea:linux-arm64
           fi
         working-directory: packages/picsharp-sidecar
 
       - name: Move sidecar binary
-        shell: bash
-        run: |
-          EXT=""
-          if [[ "${{ matrix.platform }}" == "windows-latest" ]]; then
-            EXT=".exe"
-          fi
-          mkdir -p apps/picsharp-app/src-tauri/binaries
-          mv packages/picsharp-sidecar/bin/picsharp-sidecar-${{ matrix.config.arch }}$EXT apps/picsharp-app/src-tauri/binaries/picsharp-sidecar-${{ matrix.config.arch }}$EXT
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+
+            const platform = process.env.MATRIX_PLATFORM;
+            const arch = process.env.MATRIX_CONFIG_ARCH;
+
+            core.info(`Platform: ${platform}, Architecture: ${arch}`);
+
+            let ext = platform === "windows-latest" ? ".exe" : "";
+
+            const sourceDir = 'packages/picsharp-sidecar/bin';
+            const destDir = 'apps/picsharp-app/src-tauri/binaries';
+
+            const sourceFile = path.join(sourceDir, `picsharp-sidecar-${arch}${ext}`);
+            const destFile = path.join(destDir, `picsharp-sidecar-${arch}${ext}`);
+
+            core.info(`Source file: ${sourceFile}`);
+            core.info(`Destination file: ${destFile}`);
+
+            try {
+              fs.mkdirSync(destDir, { recursive: true });
+              fs.copyFileSync(sourceFile, destFile);
+            } catch (error) {
+              core.setFailed(`Failed to move sidecar binary: ${error.message}`);
+            }
+        env:
+          MATRIX_PLATFORM: ${{ matrix.platform }}
+          MATRIX_CONFIG_ARCH: ${{ matrix.config.arch }}
 
       - name: Install frontend dependencies for main app
         run: npm install
@@ -219,39 +280,3 @@ jobs:
         run: |
           echo "Uploading release notes to GitHub release"
           gh release upload v${{ needs.get-release.outputs.release_version }} apps/picsharp-app/release-notes.json --clobber
-
-  # update-release:
-  #   permissions:
-  #     contents: write
-  #   runs-on: ubuntu-latest
-  #   needs: [get-release, build-app]
-
-  #   steps:
-  #     - name: update release
-  #       id: update-release
-  #       uses: actions/github-script@v7
-  #       env:
-  #         release_version: ${{ needs.get-release.outputs.release_version }}
-  #         release_note: ${{ needs.get-release.outputs.release_note }}
-  #       with:
-  #         script: |
-  #           try {
-  #             const { data } = await github.rest.repos.generateReleaseNotes({
-  #               owner: context.repo.owner,
-  #               repo: context.repo.repo,
-  #               tag_name: `v${process.env.release_version}`,
-  #             })
-  #             const notes = process.env.release_note.split(/(?:\d\.\s)/).filter(Boolean);
-  #             const formattedNotes = notes.map(note => `* ${note.trim()}`).join("\n");
-  #             const body = `## Release Highlight\n${formattedNotes}\n\n${data.body}`;
-  #             github.rest.repos.updateRelease({
-  #               owner: context.repo.owner,
-  #               repo: context.repo.repo,
-  #               release_id: data.id,
-  #               body: body,
-  #               draft: false,
-  #               prerelease: false
-  #             })
-  #           } catch (error) {
-  #             console.log([Error], error);
-  #           }
