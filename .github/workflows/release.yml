@@ -94,7 +94,6 @@ jobs:
         with:
           script: |
             const arch = '${{ matrix.config.arch }}';
-            const { exec } = require('@actions/exec');
 
             console.log(`[Sidecar] Detected architecture: ${arch}`);
             let npmArgs = ['install'];
@@ -223,7 +222,6 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const { exec } = require('@actions/exec');
             const arch = '${{ matrix.config.arch }}';
             const os = '${{ runner.os }}'.toLowerCase();
             let commandParts = [];
