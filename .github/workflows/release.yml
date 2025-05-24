@@ -90,18 +90,36 @@ jobs:
           sudo apt-get install -y pkg-config libfontconfig-dev libgtk-3-dev libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf xdg-utils
 
       - name: Install Sidecar Dependencies
-        run: |
-          if [[ "${{ matrix.config.arch }}" == *aarch64* ]]; then
-            npm install --cpu arm64
-          elif [[ "${{ matrix.config.arch }}" == *x86_64* ]]; then
-            npm install --cpu x64
-          else
-            npm install
-          fi
-        working-directory: packages/picsharp-sidecar
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const arch = '${{ matrix.config.arch }}';
+            const { exec } = require('@actions/exec');
+
+            console.log(`[Sidecar] Detected architecture: ${arch}`);
+            let npmArgs = ['install'];
+
+            if (arch.includes('aarch64')) {
+              npmArgs.push('--cpu', 'arm64');
+              console.log('[Sidecar] Configuring npm install for arm64 architecture.');
+            } else if (arch.includes('x86_64')) {
+              npmArgs.push('--cpu', 'x64');
+              console.log('[Sidecar] Configuring npm install for x64 architecture.');
+            } else {
+              console.log('[Sidecar] Configuring npm install for default architecture.');
+            }
+
+            console.log(`[Sidecar] Running: npm ${npmArgs.join(' ')} in packages/picsharp-sidecar`);
+            try {
+              await exec('npm', npmArgs, { cwd: 'packages/picsharp-sidecar' });
+              console.log('[Sidecar] Dependencies installed successfully.');
+            } catch (error) {
+              core.setFailed(`[Sidecar] Failed to install dependencies: ${error.message}`);
+            }
 
       - name: Find Signing Sidecar Binary
-        if: matrix.platform == 'macos-latest' || matrix.platform == 'windows-latest'
+        # if: matrix.platform == 'macos-latest' || matrix.platform == 'windows-latest'
+        if: matrix.platform == 'macos-latest'
         id: find-sidecar-binary
         run: |
           if [[ "${{ matrix.platform }}" == "macos-latest" ]]; then
@@ -202,21 +220,43 @@ jobs:
           echo "✅ Cleanup complete."
 
       - name: Build sidecar
-        run: |
-          if [[ "${{ matrix.config.arch }}" == "aarch64-apple-darwin" ]]; then
-            npm run build-sea:macos-arm64
-          elif [[ "${{ matrix.config.arch }}" == "x86_64-apple-darwin" ]]; then
-            npm run build-sea:macos-x64
-          elif [[ "${{ matrix.config.arch }}" == "x86_64-pc-windows-msvc" ]]; then
-            npm run build-sea:win-x64
-          elif [[ "${{ matrix.config.arch }}" == "aarch64-pc-windows-msvc" ]]; then
-            npm run build-sea:win-arm64
-          elif [[ "${{ matrix.config.arch }}" == "x86_64-unknown-linux-gnu" ]]; then
-            npm run build-sea:linux-x64
-          elif [[ "${{ matrix.config.arch }}" == "aarch64-unknown-linux-gnu" ]]; then
-            npm run build-sea:linux-arm64
-          fi
-        working-directory: packages/picsharp-sidecar
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { exec } = require('@actions/exec');
+            const arch = '${{ matrix.config.arch }}';
+            const os = '${{ runner.os }}'.toLowerCase();
+            let commandParts = [];
+            const sidecarDir = 'packages/picsharp-sidecar'; // Define the working directory for the sidecar
+
+            core.info(`[Sidecar Build] Detected OS: ${os}, Architecture: ${arch}`);
+
+            if (arch === 'x86_64-unknown-linux-gnu') {
+              commandParts = ['npm', 'run', 'build-sea:linux-x64'];
+            } else if (arch === 'aarch64-unknown-linux-gnu') {
+              commandParts = ['npm', 'run', 'build-sea:linux-arm64'];
+            } else if (arch === 'aarch64-apple-darwin') {
+              commandParts = ['npm', 'run', 'build-sea:macos-arm64'];
+            } else if (arch === 'x86_64-apple-darwin') {
+              commandParts = ['npm', 'run', 'build-sea:macos-x64'];
+            } else if (arch === 'x86_64-pc-windows-msvc') {
+              commandParts = ['npm', 'run', 'build-sea:win-x64'];
+            } else if (arch === 'aarch64-pc-windows-msvc') {
+              commandParts = ['npm', 'run', 'build-sea:win-arm64'];
+            }
+
+            if (commandParts.length) {
+              core.info(`[Sidecar Build] Running: ${commandParts.join(' ')} in ${sidecarDir}`);
+              try {
+                // Pass the sidecar directory directly to cwd option in exec
+                await exec(commandParts[0], commandParts.slice(1), { cwd: sidecarDir });
+                core.info('[Sidecar Build] Build successful.');
+              } catch (error) {
+                core.setFailed(`[Sidecar Build] Failed: ${error.message}`);
+              }
+            } else {
+              core.setFailed(`[Sidecar Build] Unsupported OS/architecture combination: ${os} / ${arch}`);
+            }
 
       - name: Move sidecar binary
         uses: actions/github-script@v7
