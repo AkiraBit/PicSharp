@@ -1,3 +1,4 @@
+import { platform } from '@tauri-apps/plugin-os';
 export const validTinifyExts = ['png', 'jpg', 'jpeg', 'webp'];
 
 export function isAvailableTinifyExt(ext: string) {
@@ -27,6 +28,10 @@ export function stopPropagation(event) {
 export const isDev = import.meta.env.DEV;
 
 export const isProd = import.meta.env.PROD;
+
+export const isMac = platform() === 'macos';
+export const isWindows = platform() === 'windows';
+export const isLinux = platform() === 'linux';
 
 export const getUserLocale = (lang: string): string | undefined => {
   const languages =

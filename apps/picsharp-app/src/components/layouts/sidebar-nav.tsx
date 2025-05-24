@@ -16,7 +16,7 @@ import { useTheme, Theme } from '@/components/theme-provider';
 import useAppStore from '@/store/app';
 import useSelector from '@/hooks/useSelector';
 import clsx from 'clsx';
-import { isProd, isDev } from '@/utils';
+import { isProd, isDev, isLinux } from '@/utils';
 export interface NavLink {
   title: string;
   href: string;
@@ -80,8 +80,11 @@ export default function SidebarNav() {
   return (
     <TooltipProvider delayDuration={500}>
       <div
-        className='light:border-gray-200 flex h-screen w-[67px] flex-shrink-0 flex-col justify-between border-r bg-neutral-50 pb-4 pt-12 dark:bg-neutral-800'
-        data-tauri-drag-region='true'
+        className={cn(
+          'light:border-gray-200 flex h-screen w-[67px] flex-shrink-0 flex-col justify-between border-r bg-neutral-50 pb-4 dark:bg-neutral-800',
+          !isLinux ? 'pt-12' : 'pt-4',
+        )}
+        data-tauri-drag-region={!isLinux}
       >
         <div className='flex flex-col items-center justify-center gap-2'>
           <img
