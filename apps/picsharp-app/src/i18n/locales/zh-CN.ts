@@ -142,6 +142,11 @@ export default {
   // Settings.About.Feedback
   'settings.about.feedback.title': '反馈',
   'settings.about.feedback.description': '优化建议、Bug反馈、功能需求等',
+  // Tray
+  'tray.open': '打开',
+  'tray.settings': '设置',
+  'tray.check_update': '检查更新',
+  'tray.quit': '退出',
   //
   'page.compression.process.actions.save': '保存',
   'page.compression.process.actions.compress': '压缩',
@@ -236,15 +241,4 @@ export default {
   'page.compression.watch.guide.attention': '注意事项',
   'page.compression.watch.guide.attention_description':
     '只识别新增（新建、复制、移入）的图片，对于目录中已存在的图片，不会进行压缩。如果图片被替换为目录中已存在且同名的图片，其会被认定为同一张图像，也不会进行压缩。',
-
-  // 功能特点
-  'page.compression.classic.feature.batch.title': '高效批量处理',
-  'page.compression.classic.feature.batch.description':
-    '智能算法可同时处理多个图像文件，自动优化压缩参数，高效完成批量任务。',
-  'page.compression.classic.feature.quality.title': '保持图像质量',
-  'page.compression.classic.feature.quality.description':
-    '压缩过程可智能平衡文件大小与图像质量，确保压缩后的图像仍然清晰可用。',
-  'page.compression.classic.feature.mode.title': '离线/在线压缩',
-  'page.compression.classic.feature.mode.description':
-    '离线模式确保图像完全在本地处理，有效保障数据安全与隐私；在线模式则利用Tinypng专业服务，为您提供更高压缩比和优质图像效果，满足不同场景需求。',
 };

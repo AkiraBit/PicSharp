@@ -144,6 +144,11 @@ const enUS = {
   'settings.about.feedback.title': 'Feedback',
   'settings.about.feedback.description':
     'Optimize suggestions, Bug feedback, Feature requests, etc.',
+  // Tray
+  'tray.open': 'Open',
+  'tray.settings': 'Settings',
+  'tray.check_update': 'Check Update',
+  'tray.quit': 'Quit',
   //
   'page.compression.process.actions.save': 'Save',
   'page.compression.process.actions.compress': 'Compress',
@@ -240,17 +245,6 @@ const enUS = {
   'page.compression.watch.guide.attention': 'Attention',
   'page.compression.watch.guide.attention_description':
     'Only recognize new images (new, copy, move) added to the directory, and do not compress images that already exist in the directory. If an image is replaced with an image that already exists in the directory and has the same name, it will be considered the same image and will not be compressed.',
-
-  // Features
-  'page.compression.classic.feature.batch.title': 'Efficient Batch Processing',
-  'page.compression.classic.feature.batch.description':
-    'Intelligent algorithms can process multiple image files simultaneously',
-  'page.compression.classic.feature.quality.title': 'Maintain Image Quality',
-  'page.compression.classic.feature.quality.description':
-    'The compression process intelligently balances file size and image quality, ensuring compressed images remain clear and usable.',
-  'page.compression.classic.feature.mode.title': 'Offline/Online Compression',
-  'page.compression.classic.feature.mode.description':
-    'Offline mode ensures images are processed locally, effectively protecting data security and privacy;',
 };
 
 export default enUS;
