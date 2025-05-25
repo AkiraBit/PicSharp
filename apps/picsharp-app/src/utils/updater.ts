@@ -9,7 +9,7 @@ export default async function checkForUpdate() {
   if (updater) {
     console.log(`found update ${updater.version} from ${updater.date} with notes ${updater.body}`);
     createWebviewWindow(UPDATE_WINDOW_LABEL, {
-      url: `/update?version=${updater.version}&releaseContent=${updater.body}`,
+      url: `/update?version=${updater.version}&releaseContent=${encodeURIComponent(updater.body)}`,
       title: t('nav.update'),
       width: 500,
       height: 490,

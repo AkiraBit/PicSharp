@@ -10,9 +10,9 @@ A simple, efficient, and flexible cross-platform desktop image compression appli
 
 ## Supported Platforms
 
-- **Mac:** Available
-- **Windows:** Coming soon
-- **Linux:** Coming soon
+- **Mac:** ✅ (macOS 12+)
+- **Windows:** ✅ (Windows 10+ x64)
+- **Linux:** ✅ (Ubuntu 20.04+ or other Linux distributions that support `libstdc++` 11.3+)
 
 ## Key Features
 
@@ -75,8 +75,7 @@ A simple, efficient, and flexible cross-platform desktop image compression appli
 
 ## Roadmap
 
-- [ ] Add Windows support
-- [ ] Add Linux support
+- [ ] Add Windows arm64 support
 
 ## Contributing
 
