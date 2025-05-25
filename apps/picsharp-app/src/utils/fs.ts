@@ -1,4 +1,4 @@
-import { invoke } from '@tauri-apps/api/core';
+import { convertFileSrc, invoke } from '@tauri-apps/api/core';
 import { ICompressor } from './compressor';
 import { isValidArray } from '.';
 
@@ -33,7 +33,7 @@ export async function parsePaths(paths: string[], validExts: string[]) {
     return candidates.map<FileInfo>((item) => ({
       id: item.id,
       path: item.path,
-      assetPath: item.asset_path,
+      assetPath: convertFileSrc(item.path),
       name: item.name,
       parentDir: item.base_dir,
       bytesSize: item.bytes_size,

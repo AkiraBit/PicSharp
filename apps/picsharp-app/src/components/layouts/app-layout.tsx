@@ -9,7 +9,7 @@ import { parseOpenWithFiles } from '@/utils/launch';
 import useAppStore from '@/store/app';
 import useCompressionStore from '@/store/compression';
 import useSettingsStore from '@/store/settings';
-import { isValidArray, isProd, isLinux } from '@/utils';
+import { isValidArray, isProd, isLinux, isMac } from '@/utils';
 import { parsePaths } from '@/utils/fs';
 import { VALID_IMAGE_EXTS, SettingsKey } from '@/constants';
 import { useNavigate } from '@/hooks/useNavigate';
@@ -183,7 +183,7 @@ export default function AppLayout() {
       <div className='bg-background dark:bg-background h-screen flex-1 bg-gradient-to-b from-blue-50 to-white dark:bg-none'>
         <ErrorBoundary>
           <main className='relative h-full overflow-hidden'>
-            {!isLinux && (
+            {isMac && (
               <div
                 data-tauri-drag-region='true'
                 className='draggable absolute left-0 top-0 z-50 h-6 w-full select-none'

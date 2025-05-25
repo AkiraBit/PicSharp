@@ -7,6 +7,7 @@ import { getCurrentWindow } from '@tauri-apps/api/window';
 import { isProd } from '.';
 import { createWebviewWindow } from './window';
 import checkForUpdate from './updater';
+import { message } from '@tauri-apps/plugin-dialog';
 
 declare global {
   interface Window {
@@ -15,6 +16,7 @@ declare global {
 }
 
 export async function createTrayMenu() {
+  if (getCurrentWebviewWindow().label !== 'main') return;
   const menu = await Menu.new({
     items: [
       {
@@ -49,8 +51,13 @@ export async function createTrayMenu() {
       {
         id: 'check_update',
         text: t('tray.check_update'),
-        action: () => {
-          checkForUpdate();
+        action: async () => {
+          const updater = await checkForUpdate();
+          if (!updater) {
+            message(t('settings.about.version.no_update_available'), {
+              title: t('tray.check_update'),
+            });
+          }
         },
         accelerator: 'CmdOrCtrl+U',
       },
@@ -71,9 +78,9 @@ export async function initTray() {
   if (getCurrentWebviewWindow().label !== 'main' || window.__TRAY_INSTANCE) return;
 
   const menu = await createTrayMenu();
-
+  const icon = await defaultWindowIcon();
   const options: TrayIconOptions = {
-    icon: await defaultWindowIcon(),
+    icon,
     iconAsTemplate: true,
     menu,
     menuOnLeftClick: false,
@@ -92,6 +99,6 @@ export async function initTray() {
   window.__TRAY_INSTANCE = tray;
 }
 
-if (!isProd) {
+if (isProd) {
   initTray();
 }

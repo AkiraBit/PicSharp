@@ -18,6 +18,7 @@ import { message } from '@tauri-apps/plugin-dialog';
 import { sendTextNotification } from '@/utils/notification';
 import { appCacheDir, join } from '@tauri-apps/api/path';
 import useAppStore from '@/store/app';
+import { convertFileSrc } from '@tauri-apps/api/core';
 function CompressionWatch() {
   const navigate = useNavigate();
   const queueRef = useRef<string[]>([]);
@@ -76,7 +77,7 @@ function CompressionWatch() {
               targetFile.formattedCompressedBytesSize = humanSize(targetFile.bytesSize);
               targetFile.compressRate = '0%';
             }
-            targetFile.assetPath = res.output_converted_path;
+            targetFile.assetPath = convertFileSrc(res.output_path);
             targetFile.outputPath = res.output_path;
             targetFile.originalTempPath = res.original_temp_converted_path;
           } else {

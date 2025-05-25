@@ -31,7 +31,7 @@ jobs:
             const releaseNotesFileContent = fs.readFileSync('./apps/picsharp-app/release-notes.json', 'utf8');
             const releaseNotes = JSON.parse(releaseNotesFileContent).releases[version] || {};
             const notes = releaseNotes.notes || [];
-            const releaseNote = notes.map((note, index) => `${index + 1}. ${note}`).join(' ');
+            const releaseNote = notes.map((note, index) => `${index + 1}. ${note}`).join('\n');
             console.log('Formatted release note:', releaseNote);
             core.setOutput('release_version', version);
             core.setOutput('release_note', releaseNote);
@@ -43,23 +43,23 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # - platform: 'macos-latest'
-          #   config: { args: '--target aarch64-apple-darwin', arch: 'aarch64-apple-darwin' }
-          # - platform: 'macos-latest'
-          #   config: { args: '--target x86_64-apple-darwin', arch: 'x86_64-apple-darwin' }
-          # - platform: 'ubuntu-22.04'
-          #   config: { args: '--target x86_64-unknown-linux-gnu', arch: 'x86_64-unknown-linux-gnu' }
-          # - platform: 'ubuntu-22.04-arm'
-          #   config:
-          #     { args: '--target aarch64-unknown-linux-gnu', arch: 'aarch64-unknown-linux-gnu' }
+          - platform: 'macos-latest'
+            config: { args: '--target aarch64-apple-darwin', arch: 'aarch64-apple-darwin' }
+          - platform: 'macos-latest'
+            config: { args: '--target x86_64-apple-darwin', arch: 'x86_64-apple-darwin' }
+          - platform: 'ubuntu-22.04'
+            config: { args: '--target x86_64-unknown-linux-gnu', arch: 'x86_64-unknown-linux-gnu' }
+          - platform: 'ubuntu-22.04-arm'
+            config:
+              { args: '--target aarch64-unknown-linux-gnu', arch: 'aarch64-unknown-linux-gnu' }
           - platform: 'windows-latest'
             config: { args: '--target x86_64-pc-windows-msvc', arch: 'x86_64-pc-windows-msvc' }
-          - platform: 'windows-latest'
-            config:
-              {
-                args: '--target aarch64-pc-windows-msvc --bundles nsis',
-                arch: 'aarch64-pc-windows-msvc',
-              }
+          # - platform: 'windows-latest'
+          #   config:
+          #     {
+          #       args: '--target aarch64-pc-windows-msvc --bundles nsis',
+          #       arch: 'aarch64-pc-windows-msvc',
+          #     }
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v4

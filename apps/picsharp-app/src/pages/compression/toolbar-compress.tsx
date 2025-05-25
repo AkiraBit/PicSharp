@@ -18,6 +18,7 @@ import { useNavigate } from '@/hooks/useNavigate';
 import { ICompressor } from '@/utils/compressor';
 import { appCacheDir, join } from '@tauri-apps/api/path';
 import { cn } from '@/lib/utils';
+import { convertFileSrc } from '@tauri-apps/api/core';
 
 function ToolbarCompress() {
   const { sidecar } = useAppStore();
@@ -149,7 +150,7 @@ function ToolbarCompress() {
               targetFile.formattedCompressedBytesSize = humanSize(targetFile.bytesSize);
               targetFile.compressRate = '0%';
             }
-            targetFile.assetPath = res.output_converted_path;
+            targetFile.assetPath = convertFileSrc(res.output_path);
             targetFile.outputPath = res.output_path;
             targetFile.originalTempPath = res.original_temp_converted_path;
           } else {
