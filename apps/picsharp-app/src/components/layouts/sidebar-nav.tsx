@@ -82,7 +82,7 @@ export default function SidebarNav() {
       <div
         className={cn(
           'light:border-gray-200 flex h-screen w-[67px] flex-shrink-0 flex-col justify-between border-r bg-neutral-50 pb-4 dark:bg-neutral-800',
-          isMac ? 'pt-12' : 'pt-4',
+          isMac ? 'pt-8' : 'pt-4',
         )}
         data-tauri-drag-region={isMac}
       >

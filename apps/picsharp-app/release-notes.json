@@ -1,5 +1,15 @@
 {
   "releases": {
+    "1.0.5": {
+      "date": "2025-05-25",
+      "notes": [
+        "Fix some bugs.",
+        "Add some common options to the system tray.",
+        "Optimize the relase workflow.",
+        "Add support for Windows and Linux (Ubuntu).",
+        "Optimize application interaction."
+      ]
+    },
     "1.0.4": {
       "date": "2025-05-22",
       "notes": [
