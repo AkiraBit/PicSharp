@@ -42,8 +42,8 @@ impl Default for WindowConfig {
         Self {
             label: Some(format!("PicSharp-{}", ID.fetch_add(1, Ordering::Relaxed))),
             title: Some("PicSharp".to_string()),
-            width: Some(1002.0),
-            height: Some(670.0),
+            width: Some(700.0),
+            height: Some(500.0),
             min_width: Some(100.0),
             min_height: Some(100.0),
             resizable: Some(true),
