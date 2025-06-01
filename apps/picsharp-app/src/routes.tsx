@@ -15,6 +15,7 @@ import Update from './pages/update';
 import { Toaster } from 'sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { useTheme } from '@/components/theme-provider';
+import MessageDemo from './pages/message-demo';
 
 export default function AppRoutes() {
   const { theme } = useTheme();
@@ -34,6 +35,8 @@ export default function AppRoutes() {
         <Routes>
           <Route path='/' element={<AppLayout />}>
             <Route index element={<Navigate to='/compression' />} />
+            {/* <Route index element={<Navigate to='/message-demo' />} /> */}
+            <Route path='message-demo' element={<MessageDemo />} />
             <Route path='compression' element={<Compression />}>
               <Route index element={<Navigate to='/compression/classic/guide' />} />
               <Route path='classic'>
