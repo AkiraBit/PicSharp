@@ -32,8 +32,8 @@ export default {
   'settings.general.description': '管理应用的通用设置和偏好。',
   'settings.general.theme.title': '主题',
   'settings.general.theme.description': '选择应用的主题',
-  'settings.general.theme.option.light': '亮色',
-  'settings.general.theme.option.dark': '暗色',
+  'settings.general.theme.option.light': '浅色模式',
+  'settings.general.theme.option.dark': '深色模式',
   'settings.general.theme.option.system': '跟随系统',
   // Settings.General.Language
   'settings.general.language.title': '语言',
