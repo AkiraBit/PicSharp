@@ -12,6 +12,8 @@ import {
 import { downloadDir, appDataDir, join } from '@tauri-apps/api/path';
 import { copyFile } from '@tauri-apps/plugin-fs';
 import i18next from 'i18next';
+import { withStorageDOMEvents } from './withStorageDOMEvents';
+import { createJSONStorage, persist } from 'zustand/middleware';
 
 interface SettingsState {
   settingsFilePath: string;
@@ -45,82 +47,100 @@ interface SettingsAction {
   reset: () => Promise<void>;
 }
 
-const useSettingsStore = create<SettingsState & SettingsAction>((set, get) => ({
-  settingsFilePath: '',
-  defaultSettingsFilePath: '',
-  [SettingsKey.Language]: 'en-US',
-  [SettingsKey.Autostart]: false,
-  [SettingsKey.AutoCheckUpdate]: true,
-  [SettingsKey.CompressionMode]: CompressionMode.Auto,
-  [SettingsKey.CompressionType]: CompressionType.Lossy,
-  [SettingsKey.CompressionLevel]: 4,
-  [SettingsKey.Concurrency]: 6,
-  [SettingsKey.CompressionThresholdEnable]: false,
-  [SettingsKey.CompressionThresholdValue]: 0.1,
-  [SettingsKey.CompressionOutput]: CompressionOutputMode.Overwrite,
-  [SettingsKey.CompressionOutputSaveAsFileSuffix]: '_compressed',
-  [SettingsKey.CompressionOutputSaveToFolder]: '',
-  [SettingsKey.TinypngApiKeys]: [],
-  [SettingsKey.TinypngPreserveMetadata]: [
-    TinypngMetadata.Copyright,
-    TinypngMetadata.Creator,
-    TinypngMetadata.Location,
-  ],
-  init: async (reload = false) => {
-    const settingsFilePath = await join(await appDataDir(), SETTINGS_FILE_NAME);
-    const defaultSettingsFilePath = await join(await appDataDir(), DEFAULT_SETTINGS_FILE_NAME);
-    set({ settingsFilePath, defaultSettingsFilePath });
-    const store = await load(SETTINGS_FILE_NAME);
-    if (reload) {
-      await store.reload();
-    }
-    const entries = await store.entries();
-    for (const [key, value] of entries) {
-      if (key === SettingsKey.CompressionOutputSaveToFolder) {
-        if (!value) {
-          const downloadDirPath = await downloadDir();
-          await store.set(SettingsKey.CompressionOutputSaveToFolder, downloadDirPath);
-          await store.save();
-          set({
-            [SettingsKey.CompressionOutputSaveToFolder]: downloadDirPath,
-          });
-        } else {
-          set({
-            [SettingsKey.CompressionOutputSaveToFolder]: value as string,
-          });
+type SettingsStore = SettingsState & SettingsAction;
+
+const useSettingsStore = create(
+  persist<SettingsStore>(
+    (set, get) => ({
+      settingsFilePath: '',
+      defaultSettingsFilePath: '',
+      [SettingsKey.Language]: 'en-US',
+      [SettingsKey.Autostart]: false,
+      [SettingsKey.AutoCheckUpdate]: true,
+      [SettingsKey.CompressionMode]: CompressionMode.Auto,
+      [SettingsKey.CompressionType]: CompressionType.Lossy,
+      [SettingsKey.CompressionLevel]: 4,
+      [SettingsKey.Concurrency]: 6,
+      [SettingsKey.CompressionThresholdEnable]: false,
+      [SettingsKey.CompressionThresholdValue]: 0.1,
+      [SettingsKey.CompressionOutput]: CompressionOutputMode.Overwrite,
+      [SettingsKey.CompressionOutputSaveAsFileSuffix]: '_compressed',
+      [SettingsKey.CompressionOutputSaveToFolder]: '',
+      [SettingsKey.TinypngApiKeys]: [],
+      [SettingsKey.TinypngPreserveMetadata]: [
+        TinypngMetadata.Copyright,
+        TinypngMetadata.Creator,
+        TinypngMetadata.Location,
+      ],
+      init: async (reload = false) => {
+        const settingsFilePath = await join(await appDataDir(), SETTINGS_FILE_NAME);
+        const defaultSettingsFilePath = await join(await appDataDir(), DEFAULT_SETTINGS_FILE_NAME);
+        set({ settingsFilePath, defaultSettingsFilePath });
+        const store = await load(SETTINGS_FILE_NAME);
+        if (reload) {
+          await store.reload();
         }
-      } else if (key === SettingsKey.Language) {
-        if (!value) {
-          const uaLang = window.navigator.language || 'en-US';
-          await store.set(SettingsKey.Language, uaLang);
-          await store.save();
-          set({ [SettingsKey.Language]: uaLang });
-          i18next.changeLanguage(uaLang);
-        } else {
-          set({ [SettingsKey.Language]: value as string });
-          i18next.changeLanguage(value as string);
+        const entries = await store.entries();
+        for (const [key, value] of entries) {
+          if (key === SettingsKey.CompressionOutputSaveToFolder) {
+            if (!value) {
+              const downloadDirPath = await downloadDir();
+              await store.set(SettingsKey.CompressionOutputSaveToFolder, downloadDirPath);
+              await store.save();
+              set({
+                [SettingsKey.CompressionOutputSaveToFolder]: downloadDirPath,
+              });
+            } else {
+              set({
+                [SettingsKey.CompressionOutputSaveToFolder]: value as string,
+              });
+            }
+          } else if (key === SettingsKey.Language) {
+            if (!value) {
+              const uaLang = window.navigator.language || 'en-US';
+              await store.set(SettingsKey.Language, uaLang);
+              await store.save();
+              set({ [SettingsKey.Language]: uaLang });
+              i18next.changeLanguage(uaLang);
+            } else {
+              set({ [SettingsKey.Language]: value as string });
+              i18next.changeLanguage(value as string);
+            }
+          } else {
+            set({ [key]: value });
+          }
         }
-      } else {
+      },
+
+      set: async (key, value) => {
+        const store = await load(SETTINGS_FILE_NAME, { autoSave: false });
+        await store.set(key, value);
+        await store.save();
         set({ [key]: value });
-      }
-    }
-  },
+      },
 
-  set: async (key, value) => {
-    const store = await load(SETTINGS_FILE_NAME, { autoSave: false });
-    await store.set(key, value);
-    await store.save();
-    set({ [key]: value });
-  },
+      reset: async () => {
+        await copyFile(get().defaultSettingsFilePath, get().settingsFilePath);
+        await get().init(true);
+      },
+    }),
+    {
+      version: 1,
+      name: 'store:settings',
+      storage: createJSONStorage(() => localStorage),
+      partialize: (state) => state as SettingsStore,
+    },
+  ),
+);
 
-  reset: async () => {
-    await copyFile(get().defaultSettingsFilePath, get().settingsFilePath);
-    await get().init(true);
-  },
-}));
-
-export default useSettingsStore;
+withStorageDOMEvents(useSettingsStore, (e) => {
+  if (e.newValue) {
+    useSettingsStore.getState().init(true);
+  }
+});
 
 (async function () {
   await useSettingsStore.getState().init();
 })();
+
+export default useSettingsStore;

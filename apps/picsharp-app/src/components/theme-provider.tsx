@@ -70,7 +70,7 @@ export function ThemeProvider({
     };
     window.addEventListener('storage', handleStorageChange);
     mediaQuery.addEventListener('change', handleThemeChange);
-    const currentTheme = localStorage.getItem(storageKey) as Theme;
+    const currentTheme = (localStorage.getItem(storageKey) as Theme) || defaultTheme;
     if (currentTheme === Theme.System) {
       setThemeStyle(mediaQuery.matches ? Theme.Dark : Theme.Light);
     } else {

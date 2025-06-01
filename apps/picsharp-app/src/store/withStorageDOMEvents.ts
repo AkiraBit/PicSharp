@@ -1,17 +1,18 @@
 import { Mutate, StoreApi } from 'zustand';
 type StoreWithPersist = Mutate<StoreApi<any>, [['zustand/persist', unknown]]>;
 
-export const withStorageDOMEvents = (store: StoreWithPersist) => {
-  const storageEventCallback = (e: StorageEvent) => {
-    console.log(`[Storage Event]:`, e);
-    if (e.key === store.persist.getOptions().name && e.newValue) {
-      store.persist.rehydrate();
+type StorageEventCallback = (e: StorageEvent) => void | Promise<void>;
+const map = new Map<StoreWithPersist, StorageEventCallback>();
+
+const storageEventCallback = (e: StorageEvent) => {
+  for (const [store, cb] of map.entries()) {
+    if (e.key === store.persist.getOptions().name) {
+      cb(e);
     }
-  };
+  }
+};
+window.addEventListener('storage', storageEventCallback);
 
-  window.addEventListener('storage', storageEventCallback);
-
-  return () => {
-    window.removeEventListener('storage', storageEventCallback);
-  };
+export const withStorageDOMEvents = (store: StoreWithPersist, cb: StorageEventCallback) => {
+  map.set(store, cb);
 };

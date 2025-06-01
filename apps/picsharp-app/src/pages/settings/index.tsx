@@ -59,7 +59,7 @@ export default function SettingsLayout() {
 
   return (
     <div className='flex h-full flex-col pt-5'>
-      <Header title={t('settings.title')} description={t('settings.description')} className='px-5'>
+      <Header title={t('settings.title')} className='px-5'>
         <Button variant='default' size='sm' onClick={handleReload}>
           <RefreshCw className='h-5 w-5' />
           {t('settings.reload')}

@@ -5,6 +5,8 @@ import { initReactI18next, useTranslation } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import { createTrayMenu } from '@/utils/tray';
 import type { TOptions } from 'i18next';
+import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow';
+
 declare module 'i18next' {
   interface CustomTypeOptions {
     resources: {
@@ -53,8 +55,10 @@ i18next
   });
 
 i18next.on('languageChanged', async (lng) => {
-  const menu = await createTrayMenu();
-  window.__TRAY_INSTANCE?.setMenu(menu);
+  if (getCurrentWebviewWindow().label === 'main') {
+    const menu = await createTrayMenu();
+    window.__TRAY_INSTANCE?.setMenu(menu);
+  }
 });
 
 export default i18next;

@@ -120,7 +120,7 @@ const useAppStore = create(
     }),
     {
       version: 1,
-      name: 'app-storage',
+      name: 'store:app',
       storage: createJSONStorage(() => localStorage),
       partialize: (state) =>
         ({
@@ -130,6 +130,10 @@ const useAppStore = create(
   ),
 );
 
-withStorageDOMEvents(useAppStore);
+withStorageDOMEvents(useAppStore, (e) => {
+  if (e.newValue) {
+    useAppStore.persist.rehydrate();
+  }
+});
 
 export default useAppStore;

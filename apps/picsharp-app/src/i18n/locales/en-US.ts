@@ -25,7 +25,7 @@ const enUS = {
   'settings.title': 'Settings',
   'settings.description': 'Manage application settings and preferences.',
   'settings.reset_all': 'Reset',
-  'settings.reload': 'Reset',
+  'settings.reload': 'Reload',
   'settings.reset_all_confirm': 'Are you sure you want to reset all application configurations?',
   // Settings.General
   'settings.general.title': 'General',
