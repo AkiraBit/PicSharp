@@ -63,6 +63,12 @@ export function ThemeProvider({
         setThemeStyle(Theme.Light);
       }
     }
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key === storageKey) {
+        toggleTheme(event.newValue as Theme);
+      }
+    };
+    window.addEventListener('storage', handleStorageChange);
     mediaQuery.addEventListener('change', handleThemeChange);
     const currentTheme = localStorage.getItem(storageKey) as Theme;
     if (currentTheme === Theme.System) {
@@ -72,16 +78,18 @@ export function ThemeProvider({
     }
     return () => {
       mediaQuery.removeEventListener('change', handleThemeChange);
+      window.removeEventListener('storage', handleStorageChange);
     };
   }, []);
 
-  const value = {
-    theme,
-    setTheme: toggleTheme,
-  };
-
   return (
-    <ThemeProviderContext.Provider {...props} value={value}>
+    <ThemeProviderContext.Provider
+      {...props}
+      value={{
+        theme,
+        setTheme: toggleTheme,
+      }}
+    >
       {children}
     </ThemeProviderContext.Provider>
   );

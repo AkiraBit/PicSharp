@@ -1,5 +1,16 @@
 import { platform } from '@tauri-apps/plugin-os';
-export const validTinifyExts = ['png', 'jpg', 'jpeg', 'webp'];
+export const validTinifyExts = [
+  'png',
+  'jpg',
+  'jpeg',
+  'jpeg',
+  'webp',
+  'avif',
+  'gif',
+  'svg',
+  'tiff',
+  'tif',
+];
 
 export function isAvailableTinifyExt(ext: string) {
   return validTinifyExts.includes(ext);
