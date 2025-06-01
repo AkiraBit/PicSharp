@@ -1,5 +1,12 @@
 {
   "releases": {
+    "1.1.1": {
+      "date": "2025-06-01",
+      "notes": [
+        "Fix: resolve file drag-and-drop to app icon not responding on Windows systems.",
+        "Fix: resolve resource path parsing issues on Windows systems"
+      ]
+    },
     "1.1.0": {
       "date": "2025-06-01",
       "notes": [
