@@ -116,11 +116,9 @@ app.post('/', zValidator('json', PayloadSchema), async (context) => {
     input_path,
     input_size: data.input.size,
     output_path: newOutputPath,
-    output_converted_path: convertFileSrc(newOutputPath),
     output_size: availableCompressRate ? data.output.size : data.input.size,
     compression_rate: availableCompressRate ? compressRatio : 0,
     original_temp_path: tempFilePath,
-    original_temp_converted_path: convertFileSrc(tempFilePath),
     available_compress_rate: availableCompressRate,
     debug: {
       compressedSize: data.output.size,

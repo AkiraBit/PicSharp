@@ -152,7 +152,7 @@ function ToolbarCompress() {
             }
             targetFile.assetPath = convertFileSrc(res.output_path);
             targetFile.outputPath = res.output_path;
-            targetFile.originalTempPath = res.original_temp_converted_path;
+            targetFile.originalTempPath = convertFileSrc(res.original_temp_path);
           } else {
             rejected++;
             targetFile.status = ICompressor.Status.Failed;
