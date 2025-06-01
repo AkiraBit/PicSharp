@@ -7,7 +7,7 @@ use tauri::{
     menu::{Menu, MenuItem},
     tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
 };
-use tauri::{AppHandle, Emitter, Listener, Manager};
+use tauri::{AppHandle, Emitter, Listener, Manager, Url};
 use tauri_plugin_fs::FsExt;
 mod command;
 mod file;
@@ -122,6 +122,32 @@ fn set_tray(app: &AppHandle) -> Result<(), tauri::Error> {
     Ok(())
 }
 
+#[derive(Clone, serde::Serialize)]
+#[allow(dead_code)]
+struct Payload {
+    args: Vec<String>,
+    cwd: String,
+}
+
+fn get_files_from_argv(argv: Vec<String>) -> Vec<PathBuf> {
+    let mut files = Vec::new();
+    for (_, maybe_file) in argv.iter().enumerate().skip(1) {
+        if maybe_file.starts_with("-") {
+            continue;
+        }
+        if let Ok(url) = Url::parse(maybe_file) {
+            if let Ok(path) = url.to_file_path() {
+                files.push(path);
+            } else {
+                files.push(PathBuf::from(maybe_file))
+            }
+        } else {
+            files.push(PathBuf::from(maybe_file))
+        }
+    }
+    files
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -135,6 +161,18 @@ pub fn run() {
                 window.set_focus().unwrap_or_else(|_| {
                     error!("Failed to set focus to main window");
                 });
+                let files = get_files_from_argv(args.clone());
+                if !files.is_empty() {
+                    allow_file_in_scopes(app, files.clone());
+                    app.emit(
+                        "ns_compress",
+                        files
+                            .iter()
+                            .map(|f| f.to_string_lossy().to_string())
+                            .collect::<Vec<_>>(),
+                    )
+                    .unwrap();
+                }
             }
         }))
         .plugin(tauri_plugin_process::init())
