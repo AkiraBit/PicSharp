@@ -23,7 +23,7 @@ use crate::Inspect;
 // There's no way to tell if the finder menu button was clicked on startup or later in the program's
 // lifecycle. Thus, we must have some sort of "startup duration" to know when to send the inspect to
 // the startup window or if we must create a new window.
-const STARTUP_DURATION: Duration = Duration::from_millis(500);
+const STARTUP_DURATION: Duration = Duration::from_millis(1000);
 
 #[derive(Debug)]
 pub struct StartupInspect {

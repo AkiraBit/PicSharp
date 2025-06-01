@@ -18,21 +18,26 @@ mod inspect;
 mod upload;
 mod window;
 
-fn init_settings(app: &AppHandle) {
-    let settings_path = app.path().app_data_dir().unwrap().join("settings.json");
-    if !settings_path.exists() {
-        let default_settings = app
-            .path()
-            .resolve("resources/settings.default.json", BaseDirectory::Resource)
-            .unwrap();
-        let app_default_settings_path = app
-            .path()
-            .app_data_dir()
-            .unwrap()
-            .join("settings.default.json");
-        let _ = std::fs::copy(&default_settings, settings_path);
-        let _ = std::fs::copy(&default_settings, app_default_settings_path);
+fn init_settings(app: &AppHandle) -> Result<(), Box<dyn std::error::Error>> {
+    let app_data_dir = app.path().app_data_dir()?;
+    if !app_data_dir.exists() {
+        info!("App data dir not exists, create it");
+        fs::create_dir_all(&app_data_dir)?;
     }
+    let app_settings_path = app_data_dir.join("settings.json");
+    let app_default_settings_path = app_data_dir.join("settings.default.json");
+    if !app_settings_path.exists() {
+        info!("App settings file not exists, init it from config");
+        let config_default_settings = app
+            .path()
+            .resolve("resources/settings.default.json", BaseDirectory::Resource)?;
+        let _ = std::fs::copy(&config_default_settings, &app_settings_path);
+        let _ = std::fs::copy(&config_default_settings, &app_default_settings_path);
+        info!("App settings file init done");
+    } else {
+        info!("App settings file exists, skip init");
+    }
+    Ok(())
 }
 
 fn init_temp_dir(app: &AppHandle) -> Result<PathBuf, Box<dyn std::error::Error>> {
@@ -120,6 +125,18 @@ fn set_tray(app: &AppHandle) -> Result<(), tauri::Error> {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_single_instance::init(|app, args, cwd| {
+            info!("Single instance init -> args: {:?}", args);
+            info!("Single instance init -> cwd: {:?}", cwd);
+            if let Some(window) = app.get_webview_window("main") {
+                window.show().unwrap_or_else(|_| {
+                    error!("Failed to show main window");
+                });
+                window.set_focus().unwrap_or_else(|_| {
+                    error!("Failed to set focus to main window");
+                });
+            }
+        }))
         .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_shell::init())
@@ -132,7 +149,14 @@ pub fn run() {
         .plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_clipboard_manager::init())
         .setup(|app| {
-            init_settings(&app.handle());
+            match init_settings(&app.handle()) {
+                Ok(()) => {
+                    info!("Settings initialized");
+                }
+                Err(e) => {
+                    error!("Settings init failed: {}", e);
+                }
+            }
 
             match init_temp_dir(&app.handle()) {
                 Ok(temp_dir) => {
