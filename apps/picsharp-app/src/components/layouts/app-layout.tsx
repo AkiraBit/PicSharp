@@ -147,6 +147,14 @@ export default function AppLayout() {
               default:
                 break;
             }
+          } else if (urlObj.protocol === 'file:') {
+            const files = urls.map((url) => decodeURIComponent(url.replace('file://', '')));
+            if (isValidArray(files)) {
+              const hasSpawned = await spawnNewWindow('ns_compress', files);
+              if (!hasSpawned) {
+                process('ns_compress', files);
+              }
+            }
           }
         }
       });
