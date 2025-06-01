@@ -1,5 +1,14 @@
 {
   "releases": {
+    "1.1.0": {
+      "date": "2025-06-01",
+      "notes": [
+        "Add single instance mode support and optimize first-time config initialization.",
+        "Sync theme changes across multiple windows.",
+        "Sync settings changes across multiple windows and trigger updates.",
+        "Fix some bugs."
+      ]
+    },
     "1.0.5": {
       "date": "2025-05-25",
       "notes": [
