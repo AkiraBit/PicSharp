@@ -10,6 +10,7 @@ import {
   createOutputPath,
   copyFileToTemp,
   convertFileSrc,
+  isWindows,
 } from '../../utils';
 import { SaveMode } from '../../constants';
 const app = new Hono();
@@ -69,6 +70,9 @@ app.post('/', zValidator('json', PayloadSchema), async (context) => {
   options = OptionsSchema.parse(options);
   process_options = ProcessOptionsSchema.parse(process_options);
   const originalSize = await getFileSize(input_path);
+  if (isWindows && options.save.mode === SaveMode.Overwrite) {
+    sharp.cache(false);
+  }
   const compressedImageBuffer = await sharp(input_path, {
     limitInputPixels: false,
   })

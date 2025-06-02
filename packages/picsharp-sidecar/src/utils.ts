@@ -3,6 +3,7 @@ import path from 'node:path';
 import fs from 'node:fs/promises';
 import { nanoid } from 'nanoid';
 import getPort from './get-port';
+import sharp from 'sharp';
 
 export const calCompressionRate = (originalSize: number, compressedSize: number) => {
   return Number(((originalSize - compressedSize) / originalSize).toFixed(2));
@@ -127,3 +128,7 @@ export function retryPromise<T>(
     retry();
   });
 }
+
+export const isWindows = process.platform === 'win32';
+export const isMac = process.platform === 'darwin';
+export const isLinux = process.platform === 'linux';
