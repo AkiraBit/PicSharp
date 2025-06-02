@@ -1,5 +1,12 @@
 {
   "releases": {
+    "1.1.2": {
+      "date": "2025-06-02",
+      "notes": [
+        "Optimize file list parsing logic in app launch arguments across different operating systems.",
+        "Upgrade Sharp to 0.34.2 and resolve libvips cache race condition when overwriting input files on Windows"
+      ]
+    },
     "1.1.1": {
       "date": "2025-06-01",
       "notes": [
