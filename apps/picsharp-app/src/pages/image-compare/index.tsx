@@ -2,6 +2,8 @@ import { ReactCompareSlider, ReactCompareSliderImage } from 'react-compare-slide
 import { parseOpenWithFiles } from '@/utils/launch';
 import { Badge } from '@/components/ui/badge';
 import { useI18n } from '@/i18n';
+import { isMac } from '@/utils';
+import { cn } from '@/lib/utils';
 
 const launchPayload = parseOpenWithFiles();
 export default function ImageCompare() {
@@ -12,7 +14,11 @@ export default function ImageCompare() {
 
   return (
     <div className='flex h-full w-full select-none flex-col px-2 pb-2'>
-      <div className='flex h-7 w-full items-center justify-between pl-[63px]'>
+      <div
+        className={cn('flex h-7 w-full items-center justify-between', {
+          'pl-[63px]': isMac,
+        })}
+      >
         <div className='flex w-full flex-1 flex-nowrap items-center gap-2'>
           <span className='max-w-[40vw] truncate text-ellipsis text-sm font-bold text-neutral-900 dark:text-neutral-50'>
             {file?.name}

@@ -21,21 +21,21 @@ mod window;
 fn init_settings(app: &AppHandle) -> Result<(), Box<dyn std::error::Error>> {
     let app_data_dir = app.path().app_data_dir()?;
     if !app_data_dir.exists() {
-        info!("App data dir not exists, create it");
+        info!("[Init Settings] -> App data dir not exists, create it");
         fs::create_dir_all(&app_data_dir)?;
     }
     let app_settings_path = app_data_dir.join("settings.json");
     let app_default_settings_path = app_data_dir.join("settings.default.json");
     if !app_settings_path.exists() {
-        info!("App settings file not exists, init it from config");
+        info!("[Init Settings] -> App settings file not exists, init it from config");
         let config_default_settings = app
             .path()
             .resolve("resources/settings.default.json", BaseDirectory::Resource)?;
         let _ = std::fs::copy(&config_default_settings, &app_settings_path);
         let _ = std::fs::copy(&config_default_settings, &app_default_settings_path);
-        info!("App settings file init done");
+        info!("[Init Settings] -> App settings file init done");
     } else {
-        info!("App settings file exists, skip init");
+        info!("[Init Settings] -> App settings file exists, skip init");
     }
     Ok(())
 }
@@ -56,14 +56,18 @@ fn allow_file_in_scopes(app: &AppHandle, files: Vec<PathBuf>) {
     let asset_protocol_scope = app.asset_protocol_scope();
     for file in &files {
         if let Err(e) = fs_scope.allow_file(file) {
-            eprintln!("Failed to allow file in fs_scope: {}", e);
-        } else {
-            println!("Allowed file in fs_scope: {:?}", file);
+            error!(
+                "[allow_file_in_scopes] -> Failed to allow <{}> in fs_scope: {}",
+                file.to_string_lossy(),
+                e
+            );
         }
         if let Err(e) = asset_protocol_scope.allow_file(file) {
-            eprintln!("Failed to allow file in asset_protocol_scope: {}", e);
-        } else {
-            println!("Allowed file in asset_protocol_scope: {:?}", file);
+            error!(
+                "[allow_file_in_scopes] -> Failed to allow <{}> in asset_protocol_scope: {}",
+                file.to_string_lossy(),
+                e
+            );
         }
     }
 }
@@ -78,18 +82,23 @@ fn set_window_open_with_files(app: &AppHandle, files: Vec<PathBuf>) {
         })
         .collect::<Vec<_>>()
         .join(",");
-    let window = app.get_webview_window("main").unwrap();
-    let payload = format!("{{mode: \"ns_compress\", paths: [{}]}}", files);
-    info!("[set_window_open_with_files] -> payload: {}", payload);
-    let script = format!("window.LAUNCH_PAYLOAD = {};", payload);
-    if let Err(e) = window.eval(&script) {
-        error!(
-            "[set_window_open_with_files] -> Failed to set open files variable: {}",
-            e
-        );
+    if let Some(window) = app.get_webview_window("main") {
+        let payload = format!("{{mode: \"ns_compress\", paths: [{}]}}", files);
+        info!("[set_window_open_with_files] -> payload: {}", payload);
+        let script = format!("window.LAUNCH_PAYLOAD = {};", payload);
+        if let Err(e) = window.eval(&script) {
+            error!(
+                "[set_window_open_with_files] -> Failed to set open files variable: {}",
+                e
+            );
+        }
+    } else {
+        error!("[set_window_open_with_files] -> Failed to get main window");
     }
 }
 
+#[allow(unused_variables)]
+#[allow(dead_code)]
 #[cfg(desktop)]
 fn set_tray(app: &AppHandle) -> Result<(), tauri::Error> {
     let quit_i = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?;
@@ -155,11 +164,17 @@ pub fn run() {
             info!("Single instance init -> args: {:?}", args);
             info!("Single instance init -> cwd: {:?}", cwd);
             if let Some(window) = app.get_webview_window("main") {
-                window.show().unwrap_or_else(|_| {
-                    error!("Failed to show main window");
+                window.show().unwrap_or_else(|error| {
+                    error!(
+                        "[Single Instance Init] -> Failed to show main window: {}",
+                        error
+                    );
                 });
-                window.set_focus().unwrap_or_else(|_| {
-                    error!("Failed to set focus to main window");
+                window.set_focus().unwrap_or_else(|error| {
+                    error!(
+                        "[Single Instance Init] -> Failed to set focus to main window: {}",
+                        error
+                    );
                 });
                 let files = get_files_from_argv(args.clone());
                 if !files.is_empty() {
@@ -171,7 +186,12 @@ pub fn run() {
                             .map(|f| f.to_string_lossy().to_string())
                             .collect::<Vec<_>>(),
                     )
-                    .unwrap();
+                    .unwrap_or_else(|error| {
+                        error!(
+                            "[Single Instance Emit] -> Failed to emit ns_compress event: {}",
+                            error
+                        );
+                    });
                 }
             }
         }))
@@ -189,57 +209,42 @@ pub fn run() {
         .setup(|app| {
             match init_settings(&app.handle()) {
                 Ok(()) => {
-                    info!("Settings initialized");
+                    info!("[init_settings] -> Settings initialized");
                 }
                 Err(e) => {
-                    error!("Settings init failed: {}", e);
+                    error!("[init_settings] -> Settings init failed: {}", e);
                 }
             }
 
             match init_temp_dir(&app.handle()) {
                 Ok(temp_dir) => {
-                    info!("Temp dir initialized: {:?}", temp_dir);
+                    info!("[init_temp_dir] -> Temp dir initialized: {:?}", temp_dir);
                 }
                 Err(e) => {
-                    error!("Temp dir init failed: {}", e);
+                    error!("[init_temp_dir] -> Temp dir init failed: {}", e);
                 }
             }
 
             let inspect = Inspect::new(app.handle().clone())?;
             file_ext::load(inspect);
 
-            log::info!("launch args: {:?}", std::env::args());
-            #[cfg(any(windows, target_os = "linux"))]
+            #[cfg(desktop)]
             {
-                let mut files = Vec::new();
-
-                // NOTICE: `args` may include URL protocol (`your-app-protocol://`)
-                // or arguments (`--`) if your app supports them.
-                // files may aslo be passed as `file://path/to/file`
-                for maybe_file in std::env::args().skip(1) {
-                    // skip flags like -f or --flag
-                    if maybe_file.starts_with('-') {
-                        continue;
-                    }
-
-                    // handle `file://` path urls and skip other urls
-                    if let Ok(url) = url::Url::parse(&maybe_file) {
-                        if let Ok(path) = url.to_file_path() {
-                            files.push(path);
-                        }
-                    } else {
-                        files.push(PathBuf::from(maybe_file))
-                    }
+                let files = get_files_from_argv(std::env::args().collect());
+                if !files.is_empty() {
+                    let app_handle = app.handle().clone();
+                    allow_file_in_scopes(&app_handle, files.clone());
+                    app.listen("window-ready", move |_| {
+                        info!("[Setup] -> Launching with files: {:?}", files);
+                        set_window_open_with_files(&app_handle, files.clone());
+                    });
                 }
-
-                log::info!("parse files: {:?}", files);
-                set_window_open_with_files(&app.handle(), files.clone());
             }
-
-            // let args: Vec<String> = std::env::args().collect();
-            // log::info!("Tauri launch args: {:?}", args);
-            // set_tray(&app.handle());
-            app.handle().emit("window-ready", ()).unwrap();
+            app.handle()
+                .emit("window-ready", ())
+                .unwrap_or_else(|error| {
+                    error!("[Setup] -> Failed to emit window-ready event: {}", error);
+                });
             Ok(())
         })
         .plugin(tauri_plugin_store::Builder::new().build())
@@ -269,7 +274,7 @@ pub fn run() {
             window::ipc_spawn_window,
         ])
         .build(tauri::generate_context!())
-        .expect("error while running tauri application")
+        .expect("Error while running Picsharp application")
         .run(|app, event| {
             if let tauri::RunEvent::WindowEvent {
                 label,
@@ -279,12 +284,23 @@ pub fn run() {
             {
                 match win_event {
                     tauri::WindowEvent::CloseRequested { api, .. } => {
-                        let win = app.get_webview_window(label.as_str()).unwrap();
-                        if label == "main" {
-                            win.hide().unwrap();
-                            api.prevent_close();
-                        } else {
-                            win.destroy().unwrap();
+                        if let Some(win) = app.get_webview_window(label.as_str()) {
+                            if label == "main" {
+                                win.hide().unwrap_or_else(|error| {
+                                    error!(
+                                        "[Close Requested] -> Failed to hide main window: {}",
+                                        error
+                                    );
+                                });
+                                api.prevent_close();
+                            } else {
+                                win.destroy().unwrap_or_else(|error| {
+                                    error!(
+                                        "[Close Requested] -> Failed to destroy the <{}> window",
+                                        error
+                                    );
+                                });
+                            }
                         }
                     }
                     _ => {}
@@ -297,8 +313,17 @@ pub fn run() {
             } = &event
             {
                 if !has_visible_windows {
-                    let window = app.get_webview_window("main").unwrap();
-                    window.show().unwrap();
+                    if let Some(window) = app.get_webview_window("main") {
+                        window.show().unwrap_or_else(|error| {
+                            error!("[Reopen Event] -> Failed to show main window: {}", error);
+                        });
+                        window.set_focus().unwrap_or_else(|error| {
+                            error!(
+                                "[Reopen Event] -> Failed to set focus to main window: {}",
+                                error
+                            );
+                        });
+                    }
                 }
             }
 

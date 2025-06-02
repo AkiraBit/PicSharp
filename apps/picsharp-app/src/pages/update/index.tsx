@@ -12,7 +12,7 @@ import { message } from '@tauri-apps/plugin-dialog';
 import { toast } from 'sonner';
 import { useI18n } from '@/i18n';
 import { marked } from 'marked';
-import './index.css';
+import useAppStore from '@/store/app';
 
 enum UpdateStatus {
   Ready = 'ready',
@@ -42,13 +42,10 @@ export default function Update() {
     let updater: IUpdate | null = null;
     try {
       if (status !== UpdateStatus.Ready) return;
-      console.log('#1 Start update');
       setStatus(UpdateStatus.Checking);
       updater = await check();
-      console.log('#2 Checked');
       setStatus(UpdateStatus.Checked);
       if (updater) {
-        console.log('#3 Downloading');
         let downloaded = 0;
         let contentLength = 0;
         let lastLogged = 0;
@@ -69,23 +66,24 @@ export default function Update() {
               }
               break;
             case 'Finished':
-              console.log('#4 Download finished');
               setProgress(100);
               break;
           }
         });
         setStatus(UpdateStatus.Finished);
-        console.log('#5 Install finished');
         await message('', {
           title: t('update.message.installed'),
           okLabel: t('update.button.restart'),
         });
         if (isProd) {
-          console.log('#6 Relaunch');
-          await relaunch();
+          useAppStore
+            .getState()
+            .destroySidecar()
+            .finally(() => {
+              relaunch();
+            });
         }
       } else {
-        console.log('#4 No update available');
         setStatus(UpdateStatus.Ready);
       }
     } catch (error) {
