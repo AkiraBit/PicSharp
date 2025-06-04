@@ -1,6 +1,8 @@
 import { convertFileSrc, invoke } from '@tauri-apps/api/core';
 import { ICompressor } from './compressor';
 import { isValidArray } from '.';
+import { CompressionOutputMode } from '@/constants';
+import { copyFile, exists, remove } from '@tauri-apps/plugin-fs';
 
 const mags = ' KMGTPEZY';
 export function humanSize(bytes: number, precision: number = 1) {
@@ -63,17 +65,50 @@ export async function countValidFiles(paths: string[], validExts: string[]) {
   return count;
 }
 
-/**
- * 获取文件名
- * @param path 文件路径
- * @example
- * getFilename("path/to/file.jpg") // "file"
- * @returns 文件名
- */
 export function getFilename(path: string) {
   const filename = path.split('/').pop();
   if (!filename) {
     return '';
   }
   return filename.split('.')[0];
+}
+
+export async function undoSave(file: FileInfo) {
+  if (
+    file.status === ICompressor.Status.Completed &&
+    file.outputPath &&
+    file.originalTempPath &&
+    file.saveType
+  ) {
+    const { path, outputPath, originalTempPath, saveType } = file;
+    if (!(await exists(originalTempPath))) {
+      return {
+        success: false,
+        message: 'undo.original_file_not_exists',
+      };
+    }
+    if (saveType === CompressionOutputMode.Overwrite) {
+      copyFile(originalTempPath, path);
+    } else {
+      if (!(await exists(outputPath))) {
+        return {
+          success: false,
+          message: 'undo.output_file_not_exists',
+        };
+      }
+      if (file.path === file.outputPath) {
+        copyFile(originalTempPath, path);
+      } else {
+        remove(outputPath);
+      }
+    }
+    return {
+      success: true,
+      message: 'undo.success',
+    };
+  }
+  return {
+    success: false,
+    message: 'undo.no_allow_undo',
+  };
 }

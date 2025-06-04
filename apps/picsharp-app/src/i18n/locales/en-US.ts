@@ -149,6 +149,12 @@ const enUS = {
   'tray.settings': 'Settings',
   'tray.check_update': 'Check Update',
   'tray.quit': 'Quit',
+  // Undo
+  'undo.original_file_not_exists': 'Original file not exists',
+  'undo.output_file_not_exists': 'Output file not exists',
+  'undo.success': 'Undo successful',
+  'undo.no_allow_undo': 'No allow undo',
+  'undo.undone': 'Undone',
   //
   'page.compression.process.actions.save': 'Save',
   'page.compression.process.actions.compress': 'Compress',
@@ -158,6 +164,7 @@ const enUS = {
   'compression.file_action.reveal_in_exploer': 'Show in File Explorer',
   'compression.file_action.copy_path': 'Copy File Path',
   'compression.file_action.copy_file': 'Copy File',
+  'compression.file_action.undo': 'Undo',
   'compression.file_action.delete_in_list': 'Remove from Current List',
   'compression.toolbar.info.total_files': 'Total',
   'compression.toolbar.info.files_size': 'Storage Space',

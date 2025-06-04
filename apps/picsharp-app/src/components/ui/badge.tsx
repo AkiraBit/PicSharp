@@ -31,6 +31,7 @@ const badgeVariants = cva(
           'border-red-300 !bg-red-50 !text-red-700 dark:border-red-800 dark:!bg-red-950 dark:!text-red-300',
         processing:
           'border-blue-300 !bg-blue-50 !text-blue-700 dark:border-blue-800 dark:!bg-blue-950 dark:!text-blue-300',
+        gray: 'border-gray-300 !bg-gray-50 !text-gray-700 dark:border-gray-800 dark:!bg-gray-950 dark:!text-gray-300',
         minor:
           'border-transparent bg-neutral-100 text-neutral-900 hover:bg-neutral-100/80 dark:bg-neutral-700 dark:text-neutral-200',
         mini: 'border-transparent bg-neutral-900 text-neutral-50 shadow dark:bg-neutral-50 dark:text-neutral-900 py-[1px] px-1',

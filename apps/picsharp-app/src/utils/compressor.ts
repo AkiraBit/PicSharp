@@ -31,6 +31,8 @@ export namespace ICompressor {
     Completed = 'completed',
     // 失败
     Failed = 'failed',
+    // 已撤销
+    Undone = 'undone',
   }
 
   export interface ResultItem {

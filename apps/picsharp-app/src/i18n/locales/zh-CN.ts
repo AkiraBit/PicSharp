@@ -147,6 +147,12 @@ export default {
   'tray.settings': '设置',
   'tray.check_update': '检查更新',
   'tray.quit': '退出',
+  // Undo
+  'undo.original_file_not_exists': '原始文件不存在',
+  'undo.output_file_not_exists': '输出文件不存在',
+  'undo.success': '撤销成功',
+  'undo.no_allow_undo': '不允许撤销',
+  'undo.undone': '已撤销',
   //
   'page.compression.process.actions.save': '保存',
   'page.compression.process.actions.compress': '压缩',
@@ -156,6 +162,7 @@ export default {
   'compression.file_action.reveal_in_exploer': '在文件资源管理器中显示',
   'compression.file_action.copy_path': '复制路径',
   'compression.file_action.copy_file': '复制文件',
+  'compression.file_action.undo': '撤销',
   'compression.file_action.delete_in_list': '从当前列表中删除',
   'compression.toolbar.info.total_files': '图片数',
   'compression.toolbar.info.files_size': '占用空间',

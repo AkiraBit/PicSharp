@@ -1,4 +1,6 @@
 import type { ICompressor } from '../utils/compressor';
+import type { CompressionOutputMode } from '../constants';
+
 declare global {
   interface FileInfo {
     id: string;
@@ -21,6 +23,7 @@ declare global {
     status: ICompressor.Status;
     originalTempPath: string;
     errorMessage?: string;
+    saveType?: CompressionOutputMode;
   }
 }
 

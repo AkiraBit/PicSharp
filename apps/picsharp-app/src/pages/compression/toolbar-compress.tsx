@@ -66,7 +66,8 @@ function ToolbarCompress() {
     !selectedFiles.some(
       (file) =>
         fileMap.get(file)?.status === ICompressor.Status.Pending ||
-        fileMap.get(file)?.status === ICompressor.Status.Failed,
+        fileMap.get(file)?.status === ICompressor.Status.Failed ||
+        fileMap.get(file)?.status === ICompressor.Status.Undone,
     );
 
   const handleCompress = async () => {
@@ -106,7 +107,8 @@ function ToolbarCompress() {
           if (
             file &&
             (file.status === ICompressor.Status.Pending ||
-              file.status === ICompressor.Status.Failed)
+              file.status === ICompressor.Status.Failed ||
+              file.status === ICompressor.Status.Undone)
           ) {
             file.status = ICompressor.Status.Processing;
             return file;
@@ -153,6 +155,7 @@ function ToolbarCompress() {
             targetFile.assetPath = convertFileSrc(res.output_path);
             targetFile.outputPath = res.output_path;
             targetFile.originalTempPath = convertFileSrc(res.original_temp_path);
+            targetFile.saveType = outputMode;
           } else {
             rejected++;
             targetFile.status = ICompressor.Status.Failed;

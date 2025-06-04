@@ -11,26 +11,17 @@ import { useI18n } from '@/i18n';
 import { useUpdate } from 'ahooks';
 import { exists } from '@tauri-apps/plugin-fs';
 import { Menu, MenuItem } from '@tauri-apps/api/menu';
-import { t } from '@/i18n';
 import { getOSPlatform } from '@/utils';
-import { invoke } from '@tauri-apps/api/core';
+import { convertFileSrc, invoke } from '@tauri-apps/api/core';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { RefreshCw } from 'lucide-react';
 import { calImageWindowSize, spawnWindow } from '@/utils/window';
 import { getAllWebviewWindows } from '@tauri-apps/api/webviewWindow';
 import { ICompressor } from '@/utils/compressor';
+import { undoSave } from '@/utils/fs';
 export interface FileCardProps {
   path: FileInfo['path'];
 }
-
-export const FILE_REVEAL_LABELS = {
-  macos: t('compression.file_action.reveal_in_finder'),
-  windows: t('compression.file_action.reveal_in_exploer'),
-  linux: t('compression.file_action.reveal_in_finder'),
-  default: t('compression.file_action.reveal_in_finder'),
-};
-
-export type FILE_REVEAL_PLATFORMS = keyof typeof FILE_REVEAL_LABELS;
 
 function FileCard(props: FileCardProps) {
   const { path } = props;
@@ -42,9 +33,14 @@ function FileCard(props: FileCardProps) {
 
   const fileContextMenuHandler = async (event: React.MouseEvent<HTMLDivElement>) => {
     event.preventDefault();
+    const FILE_REVEAL_LABELS = {
+      macos: t('compression.file_action.reveal_in_finder'),
+      windows: t('compression.file_action.reveal_in_exploer'),
+      linux: t('compression.file_action.reveal_in_exploer'),
+      default: t('compression.file_action.reveal_in_exploer'),
+    };
     const osPlatform = getOSPlatform();
-    const fileRevealLabel =
-      FILE_REVEAL_LABELS[osPlatform as FILE_REVEAL_PLATFORMS] || FILE_REVEAL_LABELS.default;
+    const fileRevealLabel = FILE_REVEAL_LABELS[osPlatform] || FILE_REVEAL_LABELS.default;
     const compareMenuItem = await MenuItem.new({
       text: t('compression.file_action.compare_file'),
       action: async () => {
@@ -118,6 +114,31 @@ function FileCard(props: FileCardProps) {
         toast.success(t('tips.file_copied'));
       },
     });
+    const undoMenuItem = await MenuItem.new({
+      text: t('compression.file_action.undo'),
+      action: async () => {
+        const { success, message } = await undoSave(file);
+        if (success) {
+          file.status = ICompressor.Status.Undone;
+          file.compressRate = '';
+          file.compressedBytesSize = 0;
+          file.compressedDiskSize = 0;
+          file.formattedCompressedBytesSize = '';
+          file.assetPath = convertFileSrc(file.path);
+          file.outputPath = '';
+          file.originalTempPath = '';
+          file.saveType = null;
+          update();
+          toast.success(t(message as any), {
+            richColors: true,
+          });
+        } else {
+          toast.error(t(message as any), {
+            richColors: true,
+          });
+        }
+      },
+    });
     const menu = await Menu.new();
 
     if (
@@ -127,6 +148,9 @@ function FileCard(props: FileCardProps) {
       imgRef.current
     ) {
       menu.append(compareMenuItem);
+    }
+    if (file.status === ICompressor.Status.Completed && file.outputPath && file.originalTempPath) {
+      menu.append(undoMenuItem);
     }
     menu.append(openFileMenuItem);
     menu.append(revealMenuItem);
@@ -233,6 +257,7 @@ const StatusBadge = ({ status, errorMessage }: Pick<FileInfo, 'status' | 'errorM
         </Tooltip>
       )}
       {status === ICompressor.Status.Completed && <Badge variant='success'>{t('saved')}</Badge>}
+      {status === ICompressor.Status.Undone && <Badge variant='gray'>{t('undo.undone')}</Badge>}
     </div>
   );
 };

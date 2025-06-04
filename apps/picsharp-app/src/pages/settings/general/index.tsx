@@ -10,7 +10,7 @@ export default function SettingsGeneral() {
       <Card>
         <Language />
         <Notification />
-        <Autostart />
+        {/* <Autostart /> */}
         <Update />
       </Card>
     </Section>
