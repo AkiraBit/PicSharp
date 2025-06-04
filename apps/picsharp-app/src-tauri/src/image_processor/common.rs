@@ -66,7 +66,7 @@ impl std::str::FromStr for CompressionOutputMode {
             "overwrite" => Ok(Self::Overwrite),
             "save_as_new_file" => Ok(Self::SaveAsNewFile),
             "save_to_new_folder" => Ok(Self::SaveToNewFolder),
-            _ => Ok(Self::Overwrite), // 默认使用Overwrite
+            _ => Ok(Self::Overwrite),
         }
     }
 }
@@ -113,7 +113,7 @@ impl Default for CompressionOptions {
 // 计算压缩率
 pub fn calculate_compress_rate(original_size: u64, compressed_size: u64) -> f64 {
     let rate = ((original_size as f64 - compressed_size as f64) / original_size as f64) * 100.0;
-    (rate * 100.0).round() / 100.0 // 保留两位小数
+    (rate * 100.0).round() / 100.0
 }
 
 // 获取输出路径
@@ -141,22 +141,16 @@ pub fn get_output_path(input_path: &Path, options: &CompressionOptions) -> PathB
                 }
             ))
         }
-        _ => {
-            // Overwrite 或默认
-            input_path.to_path_buf()
-        }
+        _ => input_path.to_path_buf(),
     }
 }
 
-// WebP文件格式检测相关常量
 const RIFF_HEADER: &[u8] = b"RIFF";
 const WEBP_HEADER: &[u8] = b"WEBP";
 const ANIM_CHUNK: &[u8] = b"ANIM";
 const ANMF_CHUNK: &[u8] = b"ANMF";
 
-// 检测WebP文件是否为动画
 pub fn is_webp_animation(input_path: &Path) -> Result<bool, io::Error> {
-    // 首先尝试读取文件
     let buffer = match fs::read(input_path) {
         Ok(data) => data,
         Err(e) => {

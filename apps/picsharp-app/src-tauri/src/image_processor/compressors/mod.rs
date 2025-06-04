@@ -35,7 +35,6 @@ fn compress_single_image(
     let start = Instant::now();
     let input_path_str = input_path.to_string_lossy().to_string();
 
-    // 检查文件是否存在
     if !input_path.exists() {
         return Err(CompressionError::FileNotFound(input_path_str).to_string());
     }
@@ -45,7 +44,6 @@ fn compress_single_image(
     let output_path = get_output_path(input_path, options);
     let output_path_str = output_path.to_string_lossy().to_string();
 
-    // 创建输出目录（如果不存在）
     if let Some(parent) = output_path.parent() {
         if let Err(e) = fs::create_dir_all(parent) {
             return Err(CompressionError::Io(e).to_string());
@@ -121,7 +119,6 @@ fn compress_single_image(
     }
 }
 
-/// 从存储中获取值的辅助函数
 fn get_store_value<R: Runtime, T: serde::de::DeserializeOwned>(
     store: &tauri_plugin_store::Store<R>,
     key: &str,
@@ -134,62 +131,53 @@ fn get_store_value<R: Runtime, T: serde::de::DeserializeOwned>(
     })
 }
 
-/// 从配置存储创建压缩选项
 fn create_compression_options_from_store<R: Runtime>(
     app: &AppHandle<R>,
 ) -> Result<CompressionOptions, String> {
     let store = app.store("settings.json").map_err(|e| e.to_string())?;
 
-    // 获取压缩等级
     let quality_level: u8 = get_store_value(
         &store,
         "compression_local_quality_level",
         Value::Number(serde_json::Number::from(4)),
     );
 
-    // 获取压缩模式
     let quality_mode = get_store_value::<R, QualityMode>(
         &store,
         "compression_local_quality_mode",
         Value::String("lossy".to_string()),
     );
 
-    // 获取输出模式
     let compression_tasks_output_mode: String = get_store_value(
         &store,
         "compression_tasks_output_mode",
         Value::String("overwrite".to_string()),
     );
 
-    // 获取文件后缀
     let output_mode_save_as_file_suffix: String = get_store_value(
         &store,
         "compression_tasks_output_mode_save_as_file_suffix",
         Value::String("_compressed".to_string()),
     );
 
-    // 获取输出文件夹
     let output_mode_save_to_folder: String = get_store_value(
         &store,
         "compression_tasks_output_mode_save_to_folder",
         Value::String("".to_string()),
     );
 
-    // 获取是否开启压缩率限制设置
     let save_compress_rate_limit: bool = get_store_value(
         &store,
         "compression_tasks_save_compress_rate_limit",
         Value::Bool(false),
     );
 
-    // 获取压缩率阈值
     let save_compress_rate_limit_threshold: f64 = get_store_value(
         &store,
         "compression_tasks_save_compress_rate_limit_threshold",
         Value::Number(serde_json::Number::from_f64(0.2).unwrap()),
     );
 
-    // 获取保留的元数据
     let default_metadata = Value::Array(vec![
         Value::String("copyright".to_string()),
         Value::String("creator".to_string()),
@@ -212,7 +200,6 @@ fn create_compression_options_from_store<R: Runtime>(
     })
 }
 
-/// 处理图片压缩任务
 fn process_compression_tasks<R: Runtime>(
     app: &AppHandle<R>,
     webview_window: &tauri::WebviewWindow,
@@ -253,7 +240,6 @@ fn process_compression_tasks<R: Runtime>(
                 },
             };
 
-            // 通过Tauri事件发送进度更新
             let _ = webview_window.emit("compression-progress", serde_json::json!(result));
 
             result
@@ -275,7 +261,6 @@ pub async fn ipc_is_apng(path: String) -> Result<bool, String> {
         return Err(format!("File not found: {}", path.display()));
     }
 
-    // 检查文件是否可访问
     match std::fs::metadata(&path) {
         Ok(metadata) => {
             if !metadata.is_file() {
@@ -301,18 +286,14 @@ pub async fn ipc_compress_images<R: Runtime>(
     webview_window: tauri::WebviewWindow,
     paths: Vec<String>,
 ) -> Result<(), String> {
-    // 从存储创建压缩选项
     let compression_options = create_compression_options_from_store(&app)?;
 
-    // 将路径字符串转换为PathBuf
     let paths: Vec<PathBuf> = paths.iter().map(PathBuf::from).collect();
 
-    // 使用Arc包装选项以便在多线程环境中共享
     let options_arc = Arc::new(compression_options);
 
-    // 处理压缩任务
     let results = process_compression_tasks(&app, &webview_window, paths, options_arc);
-    // 发送所有处理完成的事件
+
     webview_window
         .emit("compression-completed", serde_json::json!(results))
         .unwrap();

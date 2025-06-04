@@ -29,7 +29,6 @@ pub fn compress_webp_lossless(
     Ok(())
 }
 
-/// 自适应压缩WebP图片
 pub fn compress_webp_adaptive(
     input_path: &Path,
     output_path: &Path,
@@ -38,22 +37,17 @@ pub fn compress_webp_adaptive(
     let img =
         image::open(input_path).map_err(|e| CompressionError::ImageProcessing(e.to_string()))?;
 
-    // 分析图像特性
     let _has_transparency = has_transparency(&img);
     let is_screenshot = is_likely_screenshot(&img);
     let has_text = might_contain_text(&img);
 
-    // 选择压缩模式
     if is_screenshot || has_text {
-        // 对于截图和可能包含文本的图像，使用无损压缩
         compress_webp_lossless(input_path, output_path)
     } else {
-        // 对于照片等自然图像，使用有损压缩
         compress_webp_with_preprocessing(input_path, output_path, quality_level)
     }
 }
 
-/// 带预处理步骤的WebP压缩
 pub fn compress_webp_with_preprocessing(
     input_path: &Path,
     output_path: &Path,
@@ -63,15 +57,14 @@ pub fn compress_webp_with_preprocessing(
         image::open(input_path).map_err(|e| CompressionError::ImageProcessing(e.to_string()))?;
 
     let quality = match quality_level {
-        6 => 10, // 最低质量
+        6 => 10,
         5 => 30,
         4 => 60,
         3 => 75,
         2 => 85,
-        1 => 100, // 最高质量
-        _ => 75,  // 默认质量
+        1 => 100,
+        _ => 75,
     };
-    // 根据质量参数进行预处理
     let processed_img = preprocess_image(&img, quality);
 
     let rgba_image = processed_img.to_rgba8();
@@ -87,17 +80,13 @@ pub fn compress_webp_with_preprocessing(
     Ok(())
 }
 
-/// 多帧WebP动画的压缩
-/// 基于webp-animation库实现对WebP动画的高性能压缩
 pub fn compress_webp_animation(
     input_path: &Path,
     output_path: &Path,
     quality: u8,
 ) -> Result<(), CompressionError> {
-    // 读取输入文件
     let buffer = fs::read(input_path).map_err(|e| CompressionError::Io(e))?;
 
-    // 尝试解码WebP动画
     let decoder = match Decoder::new(&buffer) {
         Ok(decoder) => decoder,
         Err(e) => {
@@ -105,62 +94,49 @@ pub fn compress_webp_animation(
                 "输入文件不是WebP动画或解码失败: {}，尝试使用自适应WebP压缩",
                 e
             );
-            // 将quality转换为optimize_level用于自适应压缩
             let optimize_level = ((100 - quality) / 10).min(10);
             return compress_webp_adaptive(input_path, output_path, optimize_level);
         }
     };
 
-    // 收集所有帧，检查是否为动画WebP
     let frames: Vec<_> = decoder.into_iter().collect();
     if frames.len() <= 1 {
-        log::info!("WebP文件只有单帧，使用自适应WebP压缩");
-        // 将quality转换为optimize_level用于自适应压缩
         let optimize_level = ((100 - quality) / 10).min(10);
         return compress_webp_adaptive(input_path, output_path, optimize_level);
     }
 
-    log::info!("正在处理WebP动画，共有{}帧", frames.len());
-
-    // 获取WebP的基本信息（使用第一帧的尺寸）
     let dimensions = if let Some(first_frame) = frames.first() {
         first_frame.dimensions()
     } else {
-        // 将quality转换为optimize_level用于自适应压缩
         let optimize_level = ((100 - quality) / 10).min(10);
         return compress_webp_adaptive(input_path, output_path, optimize_level);
     };
 
-    log::info!("WebP动画尺寸: {}x{}", dimensions.0, dimensions.1);
-
-    // 创建编码器配置
     let encoding_config = if quality < 50 {
-        // 低质量，高压缩比
         EncodingConfig {
             quality: quality as f32,
             encoding_type: EncodingType::Lossy(LossyEncodingConfig {
-                segments: 4,          // 增加分段以提高压缩效率
-                sns_strength: 50,     // 降低空间噪声敏感度
-                filter_strength: 60,  // 增加滤波器强度
-                filter_sharpness: 0,  // 降低锐度以提高压缩率
-                filter_type: 1,       // 强滤波
-                pass: 2,              // 多次处理以提高压缩率
-                preprocessing: true,  // 启用预处理
-                partitions: 3,        // 增加分区数
-                partition_limit: 100, // 不限制分区
+                segments: 4,
+                sns_strength: 50,
+                filter_strength: 60,
+                filter_sharpness: 0,
+                filter_type: 1,
+                pass: 2,
+                preprocessing: true,
+                partitions: 3,
+                partition_limit: 100,
                 alpha_compression: true,
-                alpha_filtering: 2, // 最佳Alpha通道滤波
+                alpha_filtering: 2,
                 alpha_quality: quality as usize,
-                autofilter: true,       // 自动滤波
-                use_sharp_yuv: true,    // 使用更精确的YUV转换
-                target_size: 0,         // 不设置目标大小
-                target_psnr: 0.0,       // 不设置目标PSNR
-                show_compressed: false, // 不导出压缩后的图像
+                autofilter: true,
+                use_sharp_yuv: true,
+                target_size: 0,
+                target_psnr: 0.0,
+                show_compressed: false,
             }),
-            method: 6, // 最佳压缩方法
+            method: 6,
         }
     } else if quality < 80 {
-        // 中等质量
         EncodingConfig {
             quality: quality as f32,
             encoding_type: EncodingType::Lossy(LossyEncodingConfig {
@@ -185,9 +161,7 @@ pub fn compress_webp_animation(
             method: 5,
         }
     } else {
-        // 高质量
         if quality >= 95 {
-            // 超高质量使用无损压缩
             EncodingConfig {
                 quality: 100.0,
                 encoding_type: EncodingType::Lossless,
@@ -220,21 +194,16 @@ pub fn compress_webp_animation(
         }
     };
 
-    // 创建编码器选项，使用默认动画参数
     let encoder_options = webp_animation::EncoderOptions {
-        anim_params: webp_animation::AnimParams {
-            loop_count: 0, // 0表示无限循环
-        },
-        kmin: 3,                                 // 关键帧最小间隔
-        kmax: if quality < 50 { 10 } else { 5 }, // 关键帧最大间隔（低质量时可增大）
+        anim_params: webp_animation::AnimParams { loop_count: 0 },
+        kmin: 3,
+        kmax: if quality < 50 { 10 } else { 5 },
         ..Default::default()
     };
 
-    // 创建webp-animation编码器
     let mut encoder = webp_animation::Encoder::new_with_options(dimensions, encoder_options)
         .map_err(|e| CompressionError::ImageProcessing(e.to_string()))?;
 
-    // 设置默认编码配置，注意不需要&引用
     encoder
         .set_default_encoding_config(encoding_config.clone())
         .map_err(|e| CompressionError::ImageProcessing(e.to_string()))?;
@@ -347,7 +316,6 @@ pub fn compress_webp_animation(
         .finalize(last_frame_timestamp)
         .map_err(|e| CompressionError::ImageProcessing(e.to_string()))?;
 
-    // 写入输出文件
     std::fs::write(output_path, webp_data).map_err(|e| CompressionError::Io(e))?;
 
     log::info!("WebP动画压缩完成: {}", output_path.display());

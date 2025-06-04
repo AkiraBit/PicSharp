@@ -20,9 +20,6 @@ use std::{
 
 use crate::Inspect;
 
-// There's no way to tell if the finder menu button was clicked on startup or later in the program's
-// lifecycle. Thus, we must have some sort of "startup duration" to know when to send the inspect to
-// the startup window or if we must create a new window.
 const STARTUP_DURATION: Duration = Duration::from_millis(1000);
 
 #[derive(Debug)]
@@ -130,21 +127,16 @@ impl ContextMenu {
 
         log::info!("file_paths: {:?}", file_paths);
 
-        // 如果没有文件路径，直接返回
         if file_paths.is_empty() {
             return Ok(());
         }
 
-        // 检查是否是首次使用（startup_used为false）并且当前时间与启动时间的差值小于预设的启动持续时间
-        // 这段代码用于判断应用是否处于启动阶段，如果是首次使用且在启动时间窗口内，则执行特定的启动逻辑
         if !startup_inspect.startup_used.load(Ordering::Relaxed)
             && Instant::now().duration_since(startup_inspect.startup_time) < STARTUP_DURATION
         {
             startup_inspect.startup_used.store(true, Ordering::Relaxed);
             startup_inspect.inner.send(mode, file_paths)?;
         } else {
-            // let inspect = Inspect::new(startup_inspect.inner.app_handle())?;
-            // inspect.send(mode, file_paths)?;
             startup_inspect
                 .inner
                 .app_handle()
