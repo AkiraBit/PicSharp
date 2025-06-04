@@ -46,7 +46,7 @@ export async function createTrayMenu() {
             maximizable: true,
           });
         },
-        accelerator: 'CmdOrCtrl+S',
+        accelerator: 'CmdOrCtrl+,',
       },
       {
         id: 'check_update',

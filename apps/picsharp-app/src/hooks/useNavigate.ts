@@ -26,7 +26,8 @@ export function useNavigate() {
   const t = useI18n();
 
   return useCallback(
-    async (url: To, options?: NavigateOptions) => {
+    async (url: To, options: NavigateOptions = {}) => {
+      const { confirm = true } = options;
       const state = useCompressionStore.getState();
       let nextUrl = '';
       if (isString(url)) {
@@ -61,8 +62,11 @@ export function useNavigate() {
       }
 
       if (blockCompressionRoutes.includes(location.pathname) && state.working) {
-        if (options?.confirm) {
-          const answer = await ask(t('tips.are_you_sure_to_exit'), {
+        if (confirm) {
+          const answer = await ask('', {
+            title: t('tips.are_you_sure_to_exit'),
+            okLabel: t('confirm'),
+            cancelLabel: t('cancel'),
             kind: 'warning',
           });
           if (!answer) return;
