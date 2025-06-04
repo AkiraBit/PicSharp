@@ -21,11 +21,11 @@ import { updateWatchHistory } from '@/pages/compression/watch-guide';
 import { onOpenUrl } from '@tauri-apps/plugin-deep-link';
 import checkForUpdate from '@/utils/updater';
 
-// if (isProd) {
-//   window.oncontextmenu = (e) => {
-//     e.preventDefault();
-//   };
-// }
+if (isProd) {
+  window.oncontextmenu = (e) => {
+    e.preventDefault();
+  };
+}
 
 export default function AppLayout() {
   const progressRef = useRef<PageProgressRef>(null);
