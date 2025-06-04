@@ -263,3 +263,9 @@ pub async fn ipc_copy_image(path: String) -> Response {
         Err(e) => Response::new(format!("{{\"status\": \"error\", \"message\": \"{}\"}}", e)),
     }
 }
+
+#[tauri::command]
+pub async fn ipc_get_file_name(path: String) -> Response {
+    let file_name = get_file_name(Path::new(&path));
+    Response::new(file_name)
+}

@@ -266,6 +266,7 @@ pub fn run() {
             file::ipc_count_valid_files,
             file::ipc_is_file_in_directory,
             file::ipc_copy_image,
+            file::ipc_get_file_name,
             // tinify::ipc_tinify,
             // image_processor::compressors::ipc_compress_images,
             // image_processor::compressors::ipc_compress_single_image,

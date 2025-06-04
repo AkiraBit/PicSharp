@@ -65,12 +65,35 @@ export async function countValidFiles(paths: string[], validExts: string[]) {
   return count;
 }
 
-export function getFilename(path: string) {
-  const filename = path.split('/').pop();
-  if (!filename) {
+export function getFilename(path: string): string {
+  if (typeof path !== 'string' || !path.trim()) {
     return '';
   }
-  return filename.split('.')[0];
+
+  const cleanPath = path.trim().replace(/[/\\]+$/, '');
+
+  if (!cleanPath) {
+    return '';
+  }
+
+  const pathParts = cleanPath.split(/[/\\]+/).filter((part) => part.length > 0);
+
+  if (pathParts.length === 0) {
+    return '';
+  }
+
+  const filename = pathParts[pathParts.length - 1];
+
+  if (filename.startsWith('.') && filename.indexOf('.', 1) === -1) {
+    return filename;
+  }
+
+  const dotIndex = filename.lastIndexOf('.');
+  if (dotIndex === -1 || dotIndex === 0) {
+    return filename;
+  }
+
+  return filename;
 }
 
 export async function undoSave(file: FileInfo) {
