@@ -80,7 +80,6 @@ export async function initTray() {
   const menu = await createTrayMenu();
   const icon = await defaultWindowIcon();
   const options: TrayIconOptions = {
-    title: 'PicSharp',
     tooltip: 'PicSharp',
     icon,
     iconAsTemplate: true,
