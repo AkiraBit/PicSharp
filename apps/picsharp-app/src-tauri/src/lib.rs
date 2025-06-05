@@ -272,6 +272,8 @@ pub fn run() {
             // image_processor::compressors::ipc_compress_single_image,
             // image_processor::compressors::ipc_is_apng,
             command::ipc_open_system_preference_notifications,
+            command::ipc_kill_processes_by_name,
+            command::ipc_kill_picsharp_sidecar_processes,
             window::ipc_spawn_window,
         ])
         .build(tauri::generate_context!())

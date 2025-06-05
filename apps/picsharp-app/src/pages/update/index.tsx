@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { check, Update as IUpdate } from '@tauri-apps/plugin-updater';
 import { relaunch } from '@tauri-apps/plugin-process';
 import { useState, memo, useEffect } from 'react';
-import { isProd } from '@/utils';
+import { isProd, isWindows } from '@/utils';
 import { Progress } from '@/components/ui/progress';
 import { Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -13,6 +13,7 @@ import { toast } from 'sonner';
 import { useI18n } from '@/i18n';
 import { marked } from 'marked';
 import useAppStore from '@/store/app';
+import { invoke } from '@tauri-apps/api/core';
 
 enum UpdateStatus {
   Ready = 'ready',
@@ -79,11 +80,20 @@ export default function Update() {
           useAppStore
             .getState()
             .destroySidecar()
-            .finally(() => {
-              window.localStorage.setItem('relaunch', '1');
-              setTimeout(() => {
-                relaunch();
-              }, 1000);
+            .finally(async () => {
+              if (isWindows) {
+                invoke('ipc_kill_picsharp_sidecar_processes').finally(() => {
+                  window.localStorage.setItem('updated_relaunch', version);
+                  setTimeout(() => {
+                    relaunch();
+                  }, 1000);
+                });
+              } else {
+                window.localStorage.setItem('updated_relaunch', version);
+                setTimeout(() => {
+                  relaunch();
+                }, 1000);
+              }
             });
         }
       } else {

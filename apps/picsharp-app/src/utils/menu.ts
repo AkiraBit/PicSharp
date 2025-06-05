@@ -53,16 +53,16 @@ export async function initAppMenu() {
             });
           }
         },
-        accelerator: 'CmdOrCtrl+U',
+        // accelerator: 'CmdOrCtrl+U',
       }),
-      await MenuItem.new({
-        text: t('menu.relaunch'),
-        action: async () => {
-          await useAppStore.getState().destroySidecar();
-          relaunch();
-        },
-        accelerator: 'CmdOrCtrl+R',
-      }),
+      // await MenuItem.new({
+      //   text: t('menu.relaunch'),
+      //   action: async () => {
+      //     await useAppStore.getState().destroySidecar();
+      //     relaunch();
+      //   },
+      //   accelerator: 'CmdOrCtrl+R',
+      // }),
       await PredefinedMenuItem.new({
         item: 'Separator',
       }),
@@ -116,9 +116,50 @@ export async function initAppMenu() {
     ],
   });
 
-  const menu = await Menu.new({
-    items: [appSubmenu, helpSubmenu],
+  const editSubmenu = await Submenu.new({
+    text: t('menu.edit'),
+    items: [
+      await PredefinedMenuItem.new({
+        text: t('menu.edit.undo'),
+        item: 'Undo',
+      }),
+      await PredefinedMenuItem.new({
+        text: t('menu.edit.redo'),
+        item: 'Redo',
+      }),
+      await PredefinedMenuItem.new({
+        item: 'Separator',
+      }),
+      await PredefinedMenuItem.new({
+        text: t('menu.edit.cut'),
+        item: 'Cut',
+      }),
+      await PredefinedMenuItem.new({
+        text: t('menu.edit.copy'),
+        item: 'Copy',
+      }),
+      await PredefinedMenuItem.new({
+        text: t('menu.edit.paste'),
+        item: 'Paste',
+      }),
+      await PredefinedMenuItem.new({
+        text: t('menu.edit.select_all'),
+        item: 'SelectAll',
+      }),
+    ],
   });
+
+  const defaultMenu = await Menu.default();
+  const defaultMenuitems = await defaultMenu.items();
+  const windowSubmenu = defaultMenuitems[defaultMenuitems.length - 2];
+  await windowSubmenu.setText(t('menu.window'));
+  const viewSubmenu = defaultMenuitems[defaultMenuitems.length - 3];
+  await viewSubmenu.setText(t('menu.view'));
+
+  const menu = await Menu.new({
+    items: [appSubmenu, editSubmenu, windowSubmenu, viewSubmenu, helpSubmenu],
+  });
+
   if (platform() === 'macos') {
     await menu.setAsAppMenu();
   }

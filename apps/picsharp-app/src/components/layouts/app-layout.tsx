@@ -21,6 +21,7 @@ import { updateWatchHistory } from '@/pages/compression/watch-guide';
 import { onOpenUrl } from '@tauri-apps/plugin-deep-link';
 import checkForUpdate from '@/utils/updater';
 import { useAsyncEffect } from 'ahooks';
+import { toast } from 'sonner';
 
 if (isProd) {
   window.oncontextmenu = (e) => {
@@ -186,10 +187,14 @@ export default function AppLayout() {
   }, []);
 
   useAsyncEffect(async () => {
-    if (window.localStorage.getItem('relaunch')) {
+    const version = window.localStorage.getItem('updated_relaunch');
+    if (version) {
       await getCurrentWebviewWindow().show();
       await getCurrentWebviewWindow().setFocus();
-      window.localStorage.removeItem('relaunch');
+      window.localStorage.removeItem('updated_relaunch');
+      toast.success(t('update.successful', { version }), {
+        richColors: true,
+      });
     }
   }, []);
 
