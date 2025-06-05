@@ -13,8 +13,7 @@
   },
   "scripts": {
     "dev:sidecar": "pnpm --filter @picsharp/picsharp-sidecar dev",
-    "dev:app": "pnpm --filter @picsharp/picsharp-app tauri dev",
-    "build:sidecar": "pnpm --filter @picsharp/picsharp-sidecar build:sea"
+    "dev:app": "pnpm --filter @picsharp/picsharp-app tauri dev"
   },
   "devDependencies": {
     "@types/node": "^20.11.17",

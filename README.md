@@ -57,10 +57,10 @@ A simple, efficient, and flexible cross-platform desktop image compression appli
 
 ### Easy to use
 
-| **Feature**             | **Description**                              | **Status** |
-| ----------------------- | -------------------------------------------- | ---------- |
-| **FinderServices menu** | Use Finder Services menu to compress images. | ✅         |
-| **DeepLink**            | Use DeepLink to compress images.             | ✅         |
+| **Feature**              | **Description**                                             | **Status**                                                                               |
+| ------------------------ | ----------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| **Finder Services menu** | Use Finder Services menu to compress images **(Mac Only)**. | ![Finder Services](./doc/finder-compress.png) ![Finder Services](./doc/finder-watch.png) |
+| **DeepLink**             | Use DeepLink to compress images.                            | ✅                                                                                       |
 
 ## Summary
 
@@ -73,13 +73,101 @@ A simple, efficient, and flexible cross-platform desktop image compression appli
 - **Rich Application Configuration:** Offers dark/light themes, multiple languages, system notifications, startup on boot, save methods for processed images, save locations, number of parallel tasks, and more.
 - **Open Integration:** Provides image compression invocation capabilities via DeepLink, allowing automation tools to call it and enhance your workflow.
 
-## Roadmap
+## Troubleshooting
 
-- [ ] Add Windows arm64 support
+### 1. PicSharp Won’t Launch on Windows (Missing Edge WebView2 Runtime)
+
+**Symptom**
+
+- When you double-click picsharp.exe, nothing happens. No window appears, and Task Manager does not show the process.
+- This can affect both the standard installer and the portable version.
+
+**Cause**
+
+- Microsoft Edge WebView2 Runtime is either missing, outdated, or improperly installed on your system. PicSharp depends on WebView2 to render the interface on Windows.
+
+**How to Fix**
+
+1. Check if WebView2 is installed
+   - Open “Add or Remove Programs” (a.k.a. Apps & features) on Windows. Look for “Microsoft Edge WebView2 Runtime.”
+2. Install or Update WebView2
+   - Download the WebView2 Runtime directly from Microsoft: [link](https://developer.microsoft.com/en-us/microsoft-edge/webview2?form=MA13LH).
+   - If you prefer an offline installer, download the offline package and run it as an Administrator.
+3. Re-run PicSharp
+   - After installing/updating WebView2, launch picsharp.exe again.
+   - If you still encounter problems, reboot your PC and try again.
+
+**Additional Tips**
+
+- If reinstalling once doesn’t work, uninstall Edge WebView2 completely, then reinstall it with Administrator privileges.
+- Verify your Windows installation has the latest updates from Microsoft.
+
+### 2. How to use AppImage in a Linux distribution
+
+AppImage is a distribution format that does not rely on the system installed packages and instead bundles all dependencies and files needed by the application. For this reason, the output file is larger but easier to distribute since it is supported on many Linux distributions and can be executed without installation.
+
+**1. Download**
+
+Go to the [download page](https://github.com/AkiraBit/PicSharp/releases) to download the AppImage file corresponding to the system architecture.
+
+**2. Set Permissions**
+
+Open the directory where AppImage is located in the command line and set the running permissions for it.
+
+```bash
+chmod a+x PicSharp_x.x.x_xxx.AppImage
+```
+
+**3. Run**
+
+```bash
+./PicSharp_x.x.x_xxx.AppImage
+```
+
+## Development
+
+To get started with PicSharp, follow these steps to clone and build the project.
+
+```bash
+git clone https://github.com/AkiraBit/PicSharp.git
+cd PicSharp
+```
+
+**Requirements**
+
+- Node.js 20+
+- pnpm 9+
+- Rust and Cargo for Tauri development
+
+Refer to the [Tauri documentation](https://v2.tauri.app/start/prerequisites/) for details on setting up the development environment prerequisites on different platforms.
+
+**1. Install Dependencies**
+
+```bash
+pnpm install
+```
+
+**2. Build for Development**
+
+```bash
+# For App
+pnpm dev:app
+
+# For Sidecar
+pnpm dev:sidecar
+```
+
+**3. Build for Production**
+
+About building on different platforms can distribute product details, please refer to the [Tauri document](https://v2.tauri.app/distribute/).
 
 ## Contributing
 
 If you want to help out please see [CONTRIBUTING.md](CONTRIBUTING.md) to see how to get started.
+
+## Roadmap
+
+- [ ] Add Windows arm64 support
 
 ## Support
 
