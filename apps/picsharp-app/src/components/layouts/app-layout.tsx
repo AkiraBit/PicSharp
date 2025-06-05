@@ -20,6 +20,7 @@ import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow';
 import { updateWatchHistory } from '@/pages/compression/watch-guide';
 import { onOpenUrl } from '@tauri-apps/plugin-deep-link';
 import checkForUpdate from '@/utils/updater';
+import { useAsyncEffect } from 'ahooks';
 
 // if (isProd) {
 //   window.oncontextmenu = (e) => {
@@ -182,6 +183,14 @@ export default function AppLayout() {
       isFunction(unlistenNsWatchAndCompress) && unlistenNsWatchAndCompress();
       isFunction(unlistenDeepLink) && unlistenDeepLink();
     };
+  }, []);
+
+  useAsyncEffect(async () => {
+    if (window.localStorage.getItem('relaunch')) {
+      await getCurrentWebviewWindow().show();
+      await getCurrentWebviewWindow().setFocus();
+      window.localStorage.removeItem('relaunch');
+    }
   }, []);
 
   return (

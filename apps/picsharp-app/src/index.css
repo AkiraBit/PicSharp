@@ -161,3 +161,29 @@ body,
   background-color: hsl(var(--foreground) / 0.5);
 }
 
+.breathe-highlight {
+  animation: breathe-highlight 1.2s ease-in-out 3;
+}
+
+.dark .breathe-highlight {
+  animation: breathe-highlight-dark 1.2s ease-in-out 3;
+}
+
+@keyframes breathe-highlight {
+  0%, 100% {
+    background-color: transparent;
+  }
+  50% {
+    background-color: hsl(var(--foreground) / 0.1);
+  }
+}
+
+@keyframes breathe-highlight-dark {
+  0%, 100% {
+    background-color: transparent;
+  }
+  50% {
+    background-color: hsl(var(--foreground) / 0.1);
+  }
+}
+

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useContext } from 'react';
 import { UnlistenFn } from '@tauri-apps/api/event';
 import { isFunction } from 'radash';
-import { open, message } from '@tauri-apps/plugin-dialog';
+import { open } from '@tauri-apps/plugin-dialog';
 import { parsePaths } from '../../utils/fs';
 import { getCurrentWebview } from '@tauri-apps/api/webview';
 import { Folder, Upload } from 'lucide-react';
@@ -13,6 +13,7 @@ import { VALID_IMAGE_EXTS } from '@/constants';
 import { useI18n } from '@/i18n';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import message from '@/components/message';
 
 function ClassicCompressionGuide() {
   const { progressRef } = useContext(CompressionContext);
@@ -27,9 +28,8 @@ function ClassicCompressionGuide() {
     const files = await parsePaths(paths!, VALID_IMAGE_EXTS);
     if (!isValidArray(files)) {
       progressRef.current?.done();
-      await message('', {
+      message.info({
         title: t('common.no_image_to_compress'),
-        kind: 'error',
       });
       return;
     }

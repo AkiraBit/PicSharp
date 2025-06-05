@@ -8,7 +8,7 @@ import checkForUpdate from './updater';
 import { message } from '@tauri-apps/plugin-dialog';
 import { open } from '@tauri-apps/plugin-shell';
 
-export default async function createAppMenu() {
+export async function initAppMenu() {
   const appSubmenu = await Submenu.new({
     text: 'PicSharp',
     items: [
@@ -124,4 +124,4 @@ export default async function createAppMenu() {
   }
 }
 
-createAppMenu();
+initAppMenu();

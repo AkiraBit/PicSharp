@@ -139,8 +139,6 @@ withStorageDOMEvents(useSettingsStore, (e) => {
   }
 });
 
-(async function () {
-  await useSettingsStore.getState().init();
-})();
+useSettingsStore.getState().init();
 
 export default useSettingsStore;

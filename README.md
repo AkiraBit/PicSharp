@@ -118,11 +118,37 @@ Open the directory where AppImage is located in the command line and set the run
 chmod a+x PicSharp_x.x.x_xxx.AppImage
 ```
 
-**3. Run**
+**3. Run In Terminal**
 
 ```bash
 ./PicSharp_x.x.x_xxx.AppImage
 ```
+
+**4. Run In Desktop**
+
+The above steps have opened PicSharp and it can be used normally, but the desktop icon is missing and the terminal cannot be closed. The following steps can create the desktop icon.
+
+````bash
+```bash
+./PicSharp_x.x.x_xxx.AppImage --appimage-extract
+
+sed -i 's|Exec=.*|Exec=/opt/picsharp/PicSharp.AppImage|g' squashfs-root/usr/share/applications/Picsharp.desktop
+
+sed -i 's/^Icon=.*/Icon=PicSharp/g' squashfs-root/usr/share/applications/picsharp.desktop
+
+sudo install -Dm644 squashfs-root/usr/share/applications/picsharp.desktop /usr/share/applications/PicSharp.desktop
+
+wget "https://raw.githubusercontent.com/AkiraBit/PicSharp/main/doc/logo.png" -O PicSharp.png
+
+sudo install -Dm644 PicSharp.png /usr/share/icons/hicolor/48x48/apps/PicSharp.png
+rm -r squashfs-root PicSharp.png
+
+mkdir -p /opt/picsharp
+
+mv PicSharp_x.x.x_xxx.AppImage /opt/picsharp/PicSharp.AppImage
+````
+
+This command enables the AppImage application to be launched from the application menu in the desktop environment, just like traditionally installed software, without having to run in the terminal every time.
 
 ## Development
 

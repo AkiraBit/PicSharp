@@ -1,16 +1,20 @@
-import { PropsWithChildren } from 'react';
+import { HTMLAttributes, PropsWithChildren, forwardRef } from 'react';
 import { cn } from '@/lib/utils';
 
-export type SettingsSectionProps = PropsWithChildren<{
-  className?: string;
-}>;
+export type SettingsSectionProps = PropsWithChildren<HTMLAttributes<HTMLDivElement>>;
 
-function SettingsSection({ children, className }: SettingsSectionProps) {
-  return (
-    <section className={cn('h-full space-y-6 overflow-auto px-5 pb-5', className)}>
-      {children}
-    </section>
-  );
-}
+const SettingsSection = forwardRef<HTMLDivElement, SettingsSectionProps>(
+  ({ children, className, ...props }, ref) => {
+    return (
+      <section
+        className={cn('h-full space-y-6 overflow-auto px-5 pb-5', className)}
+        ref={ref}
+        {...props}
+      >
+        {children}
+      </section>
+    );
+  },
+);
 
 export default SettingsSection;

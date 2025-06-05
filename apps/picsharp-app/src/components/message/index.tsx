@@ -6,28 +6,24 @@ import { buttonVariants } from '@/components/ui/button';
 import { useState } from 'react';
 import { Loader2, Info, CheckCircle, XCircle, AlertTriangle, HelpCircle } from 'lucide-react';
 
-// 对话框类型定义
 export type MessageType = 'info' | 'success' | 'error' | 'warning' | 'confirm';
 
-// 对话框配置接口
 export interface MessageConfig {
   type: MessageType;
-  title: string;
+  title: string | React.ReactNode;
   description?: string | React.ReactNode;
-  confirmText?: string;
-  cancelText?: string;
+  confirmText?: string | React.ReactNode;
+  cancelText?: string | React.ReactNode;
   onConfirm?: () => void | Promise<void>;
   onCancel?: () => void | Promise<void>;
   showCancel?: boolean;
 }
 
-// 基础对话框组件接口
 export interface MessageDialogProps extends MessageConfig {
   open: boolean;
   onOpenChange?: (open: boolean) => void;
 }
 
-// 图标映射
 const iconMap = {
   info: Info,
   success: CheckCircle,
@@ -36,7 +32,6 @@ const iconMap = {
   confirm: HelpCircle,
 } as const;
 
-// 图标颜色映射
 const iconColorMap = {
   info: 'text-blue-500',
   success: 'text-green-500',
@@ -45,7 +40,6 @@ const iconColorMap = {
   confirm: 'text-gray-500',
 } as const;
 
-// 确认按钮样式映射
 const confirmButtonVariantMap = {
   info: 'default',
   success: 'default',
@@ -54,7 +48,6 @@ const confirmButtonVariantMap = {
   confirm: 'default',
 } as const;
 
-// Mac OS 风格的对话框内容组件
 const MessageDialogContent = React.forwardRef<
   React.ElementRef<typeof AlertDialogPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof AlertDialogPrimitive.Content>
@@ -73,7 +66,6 @@ const MessageDialogContent = React.forwardRef<
 ));
 MessageDialogContent.displayName = 'MessageDialogContent';
 
-// JSX 组件形式的对话框
 export function MessageDialog({
   type,
   title,
@@ -121,26 +113,21 @@ export function MessageDialog({
     <AlertDialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
       <MessageDialogContent>
         <div className='flex items-start gap-4 p-6'>
-          {/* 图标 */}
           <div className='flex-shrink-0'>
             <IconComponent className={cn('h-6 w-6', iconColor)} />
           </div>
 
-          {/* 内容 */}
           <div className='flex-1 space-y-3'>
-            {/* 标题 */}
             <AlertDialogPrimitive.Title className='text-lg font-semibold text-neutral-900 dark:text-neutral-100'>
               {title}
             </AlertDialogPrimitive.Title>
 
-            {/* 描述 */}
             {description && (
               <AlertDialogPrimitive.Description className='text-sm leading-relaxed text-neutral-600 dark:text-neutral-400'>
                 {description}
               </AlertDialogPrimitive.Description>
             )}
 
-            {/* 按钮 */}
             <div className='flex flex-col-reverse gap-2 pt-2 sm:flex-row sm:justify-end'>
               {showCancel && (
                 <AlertDialogPrimitive.Cancel asChild>
@@ -172,8 +159,6 @@ export function MessageDialog({
     </AlertDialogPrimitive.Root>
   );
 }
-
-// 全局状态管理
 interface DialogInstance {
   id: string;
   root: ReactDOM.Root;
@@ -183,7 +168,6 @@ interface DialogInstance {
 
 const dialogInstances = new Map<string, DialogInstance>();
 
-// 清理对话框实例
 function cleanupDialog(id: string) {
   const instance = dialogInstances.get(id);
   if (instance) {
@@ -193,7 +177,6 @@ function cleanupDialog(id: string) {
   }
 }
 
-// 创建对话框实例
 function createDialog(config: MessageConfig): Promise<boolean> {
   return new Promise<boolean>((resolve) => {
     const id = Math.random().toString(36).substring(7);
@@ -201,7 +184,6 @@ function createDialog(config: MessageConfig): Promise<boolean> {
     document.body.appendChild(container);
     const root = ReactDOM.createRoot(container);
 
-    // 存储实例信息
     dialogInstances.set(id, {
       id,
       root,
@@ -259,26 +241,21 @@ function createDialog(config: MessageConfig): Promise<boolean> {
         <AlertDialogPrimitive.Root open={open} onOpenChange={handleOpenChange}>
           <MessageDialogContent>
             <div className='flex items-start gap-4 p-6'>
-              {/* 图标 */}
               <div className='flex-shrink-0'>
                 <IconComponent className={cn('h-6 w-6', iconColor)} />
               </div>
 
-              {/* 内容 */}
               <div className='flex-1 space-y-3'>
-                {/* 标题 */}
                 <AlertDialogPrimitive.Title className='text-lg font-semibold text-neutral-900 dark:text-neutral-100'>
                   {config.title}
                 </AlertDialogPrimitive.Title>
 
-                {/* 描述 */}
                 {config.description && (
                   <AlertDialogPrimitive.Description className='text-sm leading-relaxed text-neutral-600 dark:text-neutral-400'>
                     {config.description}
                   </AlertDialogPrimitive.Description>
                 )}
 
-                {/* 按钮 */}
                 <div className='flex flex-col-reverse gap-2 pt-2 sm:flex-row sm:justify-end'>
                   {showCancel && (
                     <AlertDialogPrimitive.Cancel asChild>
@@ -318,7 +295,6 @@ function createDialog(config: MessageConfig): Promise<boolean> {
   });
 }
 
-// API 方法
 export const message = {
   info: (config: Omit<MessageConfig, 'type'>): Promise<boolean> => {
     return createDialog({ ...config, type: 'info' });
@@ -347,5 +323,4 @@ export const message = {
   },
 };
 
-// 默认导出
 export default message;

@@ -14,11 +14,12 @@ import { toast } from 'sonner';
 import { useI18n } from '@/i18n';
 import useSettingsStore from '@/store/settings';
 import { useNavigate } from '../../hooks/useNavigate';
-import { message } from '@tauri-apps/plugin-dialog';
 import { sendTextNotification } from '@/utils/notification';
 import { appCacheDir, join } from '@tauri-apps/api/path';
 import useAppStore from '@/store/app';
 import { convertFileSrc } from '@tauri-apps/api/core';
+import message from '@/components/message';
+
 function CompressionWatch() {
   const navigate = useNavigate();
   const queueRef = useRef<string[]>([]);
@@ -190,9 +191,8 @@ function CompressionWatch() {
         },
         onRemove: async (type, paths) => {
           if (type === 'folder' && paths.includes(watchingFolder)) {
-            await message(t('tips.watch_folder_deleted'), {
-              title: t('tips.warning'),
-              kind: 'warning',
+            await message.warning({
+              title: t('tips.watch_folder_deleted'),
             });
             reset();
             navigate('/compression/watch/guide');
@@ -200,9 +200,8 @@ function CompressionWatch() {
         },
         onRename: async (from, to) => {
           if (from === watchingFolder) {
-            await message(t('tips.watch_folder_moved_or_renamed'), {
-              title: t('tips.warning'),
-              kind: 'warning',
+            await message.warning({
+              title: t('tips.watch_folder_moved_or_renamed'),
             });
             reset();
             navigate('/compression/watch/guide');
@@ -210,9 +209,8 @@ function CompressionWatch() {
         },
         onMove: async (to) => {
           if (to === watchingFolder) {
-            await message(t('tips.watch_folder_moved_or_renamed'), {
-              title: t('tips.warning'),
-              kind: 'warning',
+            await message.warning({
+              title: t('tips.watch_folder_moved_or_renamed'),
             });
             reset();
             navigate('/compression/watch/guide');

@@ -18,9 +18,9 @@ import { exists } from '@tauri-apps/plugin-fs';
 import { basename } from '@tauri-apps/api/path';
 import { Button } from '@/components/ui/button';
 import useSettingsStore from '@/store/settings';
-import { message } from '@tauri-apps/plugin-dialog';
 import { CompressionOutputMode } from '@/constants';
 import { Badge } from '@/components/ui/badge';
+import message from '@/components/message';
 const WATCH_HISTORY_KEY = 'compression_watch_history';
 
 export const updateWatchHistory = async (path: string) => {
@@ -51,9 +51,8 @@ function WatchCompressionGuide() {
     });
     if (path) {
       if (!(await exists(path))) {
-        message('', {
+        message.warning({
           title: t('tips.path_not_exists'),
-          kind: 'error',
         });
         return;
       }
@@ -62,9 +61,8 @@ function WatchCompressionGuide() {
         state.compression_output === CompressionOutputMode.SaveToNewFolder &&
         state.compression_output_save_to_folder === path
       ) {
-        message('', {
+        message.warning({
           title: t('tips.watch_and_save_same_folder'),
-          kind: 'warning',
         });
         return;
       }
@@ -85,9 +83,8 @@ function WatchCompressionGuide() {
         state.compression_output === CompressionOutputMode.SaveToNewFolder &&
         state.compression_output_save_to_folder === path
       ) {
-        message('', {
+        message.warning({
           title: t('tips.watch_and_save_same_folder'),
-          kind: 'warning',
         });
         return;
       }
@@ -105,9 +102,8 @@ function WatchCompressionGuide() {
       history.splice(targetIndex, 1);
       localStorage.setItem(WATCH_HISTORY_KEY, JSON.stringify(history));
       setHistory([...history]);
-      message('', {
+      message.warning({
         title: t('tips.file_not_exists'),
-        kind: 'error',
       });
     }
   };

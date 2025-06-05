@@ -18,9 +18,9 @@ import { Badge } from '@/components/ui/badge';
 import { openPath } from '@tauri-apps/plugin-opener';
 import { useAsyncEffect } from 'ahooks';
 import { exists } from '@tauri-apps/plugin-fs';
-import { message } from '@tauri-apps/plugin-dialog';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import SettingItem from '../setting-item';
+import message from '@/components/message';
 
 function SettingsCompressionOutput() {
   const t = useI18n();
@@ -127,9 +127,8 @@ function SettingsCompressionOutput() {
                   <p
                     onClick={() => {
                       if (!isSaveToFolderExists) {
-                        message(t('tips.path_not_exists'), {
-                          title: t('tips.error'),
-                          kind: 'error',
+                        message.warning({
+                          title: t('tips.path_not_exists'),
                         });
                         return;
                       }

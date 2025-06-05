@@ -6,10 +6,10 @@ import {
 } from 'react-router';
 import useCompressionStore from '@/store/compression';
 import { useCallback } from 'react';
-import { ask, message } from '@tauri-apps/plugin-dialog';
 import { isString, isObject } from 'radash';
-import { t, useI18n } from '@/i18n';
+import { useI18n } from '@/i18n';
 import { createWebviewWindow } from '@/utils/window';
+import message from '@/components/message';
 
 export const blockCompressionRoutes = [
   '/compression/classic/workspace',
@@ -55,19 +55,16 @@ export function useNavigate() {
       }
 
       if (blockCompressionRoutes.includes(location.pathname) && state.inCompressing) {
-        message(t('tips.please_wait_for_compression_to_finish'), {
-          kind: 'warning',
+        message.warning({
+          title: t('tips.please_wait_for_compression_to_finish'),
         });
         return;
       }
 
       if (blockCompressionRoutes.includes(location.pathname) && state.working) {
         if (confirm) {
-          const answer = await ask('', {
+          const answer = await message.confirm({
             title: t('tips.are_you_sure_to_exit'),
-            okLabel: t('confirm'),
-            cancelLabel: t('cancel'),
-            kind: 'warning',
           });
           if (!answer) return;
         }

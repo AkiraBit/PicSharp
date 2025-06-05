@@ -5,7 +5,21 @@ import Output from './output';
 import Threshold from './threshold';
 import Type from './type';
 import Level from './level';
+import { useEffect, useRef } from 'react';
+
 export default function SettingsCompression() {
+  const outputElRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (outputElRef.current && hash === '#output') {
+      setTimeout(() => {
+        outputElRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        outputElRef.current.classList.add('breathe-highlight');
+      }, 300);
+    }
+  }, []);
+
   return (
     <Section>
       <Card>
@@ -13,7 +27,7 @@ export default function SettingsCompression() {
         <Type />
         <Level />
       </Card>
-      <Card>
+      <Card ref={outputElRef}>
         <Output />
         <Threshold />
       </Card>

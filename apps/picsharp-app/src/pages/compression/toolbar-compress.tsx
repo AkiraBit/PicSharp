@@ -19,6 +19,8 @@ import { ICompressor } from '@/utils/compressor';
 import { appCacheDir, join } from '@tauri-apps/api/path';
 import { cn } from '@/lib/utils';
 import { convertFileSrc } from '@tauri-apps/api/core';
+import message from '@/components/message';
+import { createWebviewWindow } from '@/utils/window';
 
 function ToolbarCompress() {
   const { sidecar } = useAppStore();
@@ -73,28 +75,48 @@ function ToolbarCompress() {
   const handleCompress = async () => {
     try {
       if (compressionMode !== CompressionMode.Local && !isValidArray(tinypngApiKeys)) {
-        const result = await ask('', {
+        const result = await message.confirm({
           title: t('tips.tinypng_api_keys_not_configured'),
-          okLabel: t('goToSettings'),
-          cancelLabel: t('cancel'),
+          confirmText: t('goToSettings'),
+          cancelText: t('cancel'),
         });
         if (result) {
-          navigate('/settings/tinypng', {
-            confirm: false,
+          createWebviewWindow('settings', {
+            url: '/settings/tinypng#tinypng-api-keys',
+            title: t('nav.settings'),
+            width: 724,
+            height: 450,
+            center: true,
+            resizable: true,
+            titleBarStyle: 'overlay',
+            hiddenTitle: true,
+            dragDropEnabled: true,
+            minimizable: true,
+            maximizable: true,
           });
         }
         return;
       }
 
-      if (outputMode === CompressionOutputMode.SaveToNewFolder && !saveToFolder) {
-        const result = await ask('', {
+      if (outputMode !== CompressionOutputMode.SaveToNewFolder && saveToFolder) {
+        const result = await message.confirm({
           title: t('tips.save_to_folder_not_configured'),
-          okLabel: t('goToSettings'),
-          cancelLabel: t('cancel'),
+          confirmText: t('goToSettings'),
+          cancelText: t('cancel'),
         });
         if (result) {
-          navigate('/settings/compression', {
-            confirm: false,
+          createWebviewWindow('settings', {
+            url: '/settings/compression#output',
+            title: t('nav.settings'),
+            width: 724,
+            height: 450,
+            center: true,
+            resizable: true,
+            titleBarStyle: 'overlay',
+            hiddenTitle: true,
+            dragDropEnabled: true,
+            minimizable: true,
+            maximizable: true,
           });
         }
         return;

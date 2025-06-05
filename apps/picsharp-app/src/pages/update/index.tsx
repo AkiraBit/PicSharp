@@ -80,7 +80,10 @@ export default function Update() {
             .getState()
             .destroySidecar()
             .finally(() => {
-              relaunch();
+              window.localStorage.setItem('relaunch', '1');
+              setTimeout(() => {
+                relaunch();
+              }, 1000);
             });
         }
       } else {
