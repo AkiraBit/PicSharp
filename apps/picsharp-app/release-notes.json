@@ -1,5 +1,12 @@
 {
   "releases": {
+    "1.1.5": {
+      "date": "2025-06-05",
+      "notes": [
+        "Fix the known problems.",
+        "Optimize the automatic update process of applications under the Windows system."
+      ]
+    },
     "1.1.4": {
       "date": "2025-06-05",
       "notes": [
