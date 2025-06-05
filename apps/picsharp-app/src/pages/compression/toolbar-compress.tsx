@@ -98,7 +98,7 @@ function ToolbarCompress() {
         return;
       }
 
-      if (outputMode !== CompressionOutputMode.SaveToNewFolder && saveToFolder) {
+      if (outputMode === CompressionOutputMode.SaveToNewFolder && !saveToFolder) {
         const result = await message.confirm({
           title: t('tips.save_to_folder_not_configured'),
           confirmText: t('goToSettings'),
