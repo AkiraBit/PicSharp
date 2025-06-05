@@ -1,5 +1,11 @@
 {
   "releases": {
+    "1.1.6": {
+      "date": "2025-06-05",
+      "notes": [
+        "Fix the known problems."
+      ]
+    },
     "1.1.5": {
       "date": "2025-06-05",
       "notes": [
