@@ -119,7 +119,9 @@ export default async function createAppMenu() {
   const menu = await Menu.new({
     items: [appSubmenu, helpSubmenu],
   });
-  await (platform() === 'macos' ? menu.setAsAppMenu() : menu.setAsWindowMenu());
+  if (platform() === 'macos') {
+    await menu.setAsAppMenu();
+  }
 }
 
 createAppMenu();
