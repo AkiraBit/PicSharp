@@ -15,5 +15,7 @@
     "copyright",
     "creator",
     "location"
-  ]
+  ],
+  "compression_convert": [],
+  "compression_convert_alpha": "#FFFFFF"
 }

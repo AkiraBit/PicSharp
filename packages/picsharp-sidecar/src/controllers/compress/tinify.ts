@@ -8,11 +8,12 @@ import {
   checkFile,
   createOutputPath,
   copyFileToTemp,
-  convertFileSrc,
+  isValidArray,
 } from '../../utils';
 import { SaveMode } from '../../constants';
 import { request } from 'undici';
 import { pipeline } from 'node:stream/promises';
+import { bulkConvert, ConvertFormat } from '../../services/convert';
 const app = new Hono();
 
 const OptionsSchema = z
@@ -27,6 +28,8 @@ const OptionsSchema = z
       .optional()
       .default({}),
     temp_dir: z.string().optional(),
+    convert_types: z.array(z.nativeEnum(ConvertFormat)).optional().default([]),
+    convert_alpha: z.string().optional().default('#FFFFFF'),
   })
   .optional()
   .default({});
@@ -95,15 +98,17 @@ app.post('/', zValidator('json', PayloadSchema), async (context) => {
 
   const tempFilePath = options.temp_dir ? await copyFileToTemp(input_path, options.temp_dir) : '';
   if (availableCompressRate) {
+    const body: Record<string, any> = {};
+    if (isValidArray(process_options.preserveMetadata)) {
+      body.preserve = process_options.preserveMetadata;
+    }
     const response = await request(data.output.url, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Basic ${btoa(`api:${process_options.api_key}`)}`,
       },
-      body: JSON.stringify({
-        preserve: process_options.preserveMetadata,
-      }),
+      body: JSON.stringify(body),
     });
     await pipeline(response.body, createWriteStream(newOutputPath));
   } else {
@@ -112,7 +117,7 @@ app.post('/', zValidator('json', PayloadSchema), async (context) => {
     }
   }
 
-  return context.json({
+  const result: Record<string, any> = {
     input_path,
     input_size: data.input.size,
     output_path: newOutputPath,
@@ -126,7 +131,14 @@ app.post('/', zValidator('json', PayloadSchema), async (context) => {
       options,
       process_options,
     },
-  });
+  };
+
+  if (isValidArray(options.convert_types)) {
+    const results = await bulkConvert(newOutputPath, options.convert_types, options.convert_alpha);
+    result.convert_results = results;
+  }
+
+  return context.json(result);
 });
 
 export default app;

@@ -25,6 +25,7 @@
     "@hono/zod-validator": "^0.4.3",
     "fs-extra": "^11.3.0",
     "hono": "^4.7.7",
+    "mime": "^4.0.7",
     "nanoid": "^3.3.11",
     "sharp": "0.34.2",
     "svgo": "^3.3.2",

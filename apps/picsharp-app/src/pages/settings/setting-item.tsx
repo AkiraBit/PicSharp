@@ -33,7 +33,9 @@ function SettingItem({
           </CardDescription>
         )}
       </div>
-      <div className='flex min-w-[160px] items-center justify-end'>{children}</div>
+      <div className='flex items-center justify-end'>
+        <div className='flex min-w-[160px] justify-end'>{children}</div>
+      </div>
     </CardHeader>
   );
 }

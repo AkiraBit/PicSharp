@@ -13,6 +13,10 @@ export const isFile = async (path: string) => {
   return (await fs.stat(path)).isFile();
 };
 
+export function isValidArray(arr: unknown) {
+  return Array.isArray(arr) && arr.length > 0;
+}
+
 export const isDirectory = async (path: string) => {
   return (await fs.stat(path)).isDirectory();
 };
@@ -132,3 +136,12 @@ export function retryPromise<T>(
 export const isWindows = process.platform === 'win32';
 export const isMac = process.platform === 'darwin';
 export const isLinux = process.platform === 'linux';
+
+export const getFileExtWithoutDot = (inputPath: string) => path.extname(inputPath).slice(1);
+
+export function createExtOutputPath(inputPath: string, ext: string) {
+  return path.join(
+    path.dirname(inputPath),
+    `${path.basename(inputPath, path.extname(inputPath))}.${ext}`,
+  );
+}

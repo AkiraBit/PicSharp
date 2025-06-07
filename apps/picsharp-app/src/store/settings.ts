@@ -8,6 +8,7 @@ import {
   TinypngMetadata,
   CompressionMode,
   CompressionType,
+  ConvertFormat,
 } from '@/constants';
 import { downloadDir, appDataDir, join } from '@tauri-apps/api/path';
 import { copyFile } from '@tauri-apps/plugin-fs';
@@ -30,7 +31,8 @@ interface SettingsState {
   [SettingsKey.CompressionOutput]: CompressionOutputMode;
   [SettingsKey.CompressionOutputSaveAsFileSuffix]: string;
   [SettingsKey.CompressionOutputSaveToFolder]: string;
-
+  [SettingsKey.CompressionConvert]: ConvertFormat[];
+  [SettingsKey.CompressionConvertAlpha]: string;
   [SettingsKey.TinypngApiKeys]: Array<{
     api_key: string;
     name: string;
@@ -66,6 +68,8 @@ const useSettingsStore = create(
       [SettingsKey.CompressionOutput]: CompressionOutputMode.Overwrite,
       [SettingsKey.CompressionOutputSaveAsFileSuffix]: '_compressed',
       [SettingsKey.CompressionOutputSaveToFolder]: '',
+      [SettingsKey.CompressionConvert]: [],
+      [SettingsKey.CompressionConvertAlpha]: '#FFFFFF',
       [SettingsKey.TinypngApiKeys]: [],
       [SettingsKey.TinypngPreserveMetadata]: [
         TinypngMetadata.Copyright,

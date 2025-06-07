@@ -31,6 +31,8 @@ export enum SettingsKey {
   CompressionOutput = 'compression_output',
   CompressionOutputSaveAsFileSuffix = 'compression_output_save_as_file_suffix',
   CompressionOutputSaveToFolder = 'compression_output_save_to_folder',
+  CompressionConvert = 'compression_convert',
+  CompressionConvertAlpha = 'compression_convert_alpha',
   TinypngApiKeys = 'tinypng_api_keys',
   TinypngPreserveMetadata = 'tinypng_preserve_metadata',
 }
@@ -56,4 +58,11 @@ export enum TinypngMetadata {
   Copyright = 'copyright',
   Creator = 'creator',
   Location = 'location',
+}
+
+export enum ConvertFormat {
+  Avif = 'avif',
+  Webp = 'webp',
+  Jpg = 'jpg',
+  Png = 'png',
 }

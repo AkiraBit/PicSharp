@@ -1,5 +1,5 @@
 import Scheduler from './scheduler';
-import { CompressionMode, VALID_TINYPNG_IMAGE_EXTS } from '../constants';
+import { CompressionMode, ConvertFormat, VALID_TINYPNG_IMAGE_EXTS } from '../constants';
 import { CompressionOutputMode, CompressionType } from '../constants';
 import { error } from '@tauri-apps/plugin-log';
 import { draw, isFunction } from 'radash';
@@ -20,6 +20,8 @@ export namespace ICompressor {
     }>;
     tempDir: string;
     sidecarDomain?: string;
+    convertTypes?: ConvertFormat[];
+    convertAlpha?: string;
   };
 
   export enum Status {
@@ -60,6 +62,8 @@ export namespace ICompressor {
       new_folder_path: string;
     };
     temp_dir?: string;
+    convert_types?: ConvertFormat[];
+    convert_alpha?: string;
   }
 
   export interface JpegCompressPayload {
@@ -559,6 +563,8 @@ export default class Compressor {
                 new_folder_path: this.options.save.newFolderPath,
               },
               temp_dir: this.options.tempDir,
+              convert_types: this.options.convertTypes,
+              convert_alpha: this.options.convertAlpha,
             },
             payload.options,
           ),

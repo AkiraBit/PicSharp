@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
+import { ConfigProvider, theme as antdTheme } from 'antd';
 
 export enum Theme {
   Dark = 'dark',
@@ -35,6 +36,12 @@ export function ThemeProvider({
     () => (localStorage.getItem(storageKey) as Theme) || defaultTheme,
   );
   const themeRef = useRef<Theme>(theme);
+
+  const algorithm = {
+    [Theme.Dark]: antdTheme.darkAlgorithm,
+    [Theme.Light]: antdTheme.defaultAlgorithm,
+    [Theme.System]: mediaQuery.matches ? antdTheme.darkAlgorithm : antdTheme.defaultAlgorithm,
+  };
 
   function setThemeStyle(newTheme: Theme.Dark | Theme.Light) {
     const root = window.document.documentElement;
@@ -90,7 +97,13 @@ export function ThemeProvider({
         setTheme: toggleTheme,
       }}
     >
-      {children}
+      <ConfigProvider
+        theme={{
+          algorithm: algorithm[theme],
+        }}
+      >
+        {children}
+      </ConfigProvider>
     </ThemeProviderContext.Provider>
   );
 }

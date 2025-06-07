@@ -97,6 +97,16 @@ const enUS = {
   'settings.compression.threshold.title': 'Compression Rate Limit',
   'settings.compression.threshold.description':
     'When the image compression rate is below the set threshold, saving will not be performed.',
+  // Settings.Compression.Convert
+  'settings.compression.convert.title': 'Format Conversion',
+  'settings.compression.convert.description':
+    'TinyPNG currently supports converting between AVIF, WebP, JPEG, and PNG. When you provide more than one image type in your request, the smallest version will be returned to you.',
+  'settings.compression.convert.description.alert':
+    'Image converting will count as one additional compression.',
+  // Settings.Compression.ConvertAlpha
+  'settings.compression.convert_alpha.title': 'Alpha Channel',
+  'settings.compression.convert_alpha.description':
+    'When a format with a transparent channel is converted to a format that does not support transparent channels (such as PNG to JPG), the specified color will be used for filling.',
   // Settings.Tinypng
   'settings.tinypng.title': 'TinyPNG',
   // Settings.Tinypng.ApiKeys

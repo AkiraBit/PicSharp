@@ -6,6 +6,7 @@ import Threshold from './threshold';
 import Type from './type';
 import Level from './level';
 import { useEffect, useRef } from 'react';
+import Convert from './convert';
 
 export default function SettingsCompression() {
   const outputElRef = useRef<HTMLDivElement>(null);
@@ -30,6 +31,9 @@ export default function SettingsCompression() {
       <Card ref={outputElRef}>
         <Output />
         <Threshold />
+      </Card>
+      <Card>
+        <Convert />
       </Card>
     </Section>
   );

@@ -9,10 +9,11 @@ import {
   getFileSize,
   createOutputPath,
   copyFileToTemp,
-  convertFileSrc,
   isWindows,
+  isValidArray,
 } from '../../utils';
 import { SaveMode } from '../../constants';
+import { bulkConvert, ConvertFormat } from '../../services/convert';
 const app = new Hono();
 
 const OptionsSchema = z
@@ -27,6 +28,8 @@ const OptionsSchema = z
       .optional()
       .default({}),
     temp_dir: z.string().optional(),
+    convert_types: z.array(z.nativeEnum(ConvertFormat)).optional().default([]),
+    convert_alpha: z.string().optional().default('#FFFFFF'),
   })
   .optional()
   .default({});
@@ -98,7 +101,7 @@ app.post('/', zValidator('json', PayloadSchema), async (context) => {
     }
   }
 
-  return context.json({
+  const result: Record<string, any> = {
     input_path,
     input_size: originalSize,
     output_path: newOutputPath,
@@ -112,7 +115,14 @@ app.post('/', zValidator('json', PayloadSchema), async (context) => {
       options,
       process_options,
     },
-  });
+  };
+
+  if (isValidArray(options.convert_types)) {
+    const results = await bulkConvert(newOutputPath, options.convert_types, options.convert_alpha);
+    result.convert_results = results;
+  }
+
+  return context.json(result);
 });
 
 export default app;
