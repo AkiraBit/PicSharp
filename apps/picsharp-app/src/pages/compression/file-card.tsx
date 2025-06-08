@@ -4,10 +4,9 @@ import { openPath, revealItemInDir } from '@tauri-apps/plugin-opener';
 import useCompressionStore from '@/store/compression';
 import useSelector from '@/hooks/useSelector';
 import { writeText } from '@tauri-apps/plugin-clipboard-manager';
-import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
-import { useI18n } from '@/i18n';
+import { useI18n, t } from '@/i18n';
 import { useUpdate } from 'ahooks';
 import { exists } from '@tauri-apps/plugin-fs';
 import { Menu, MenuItem } from '@tauri-apps/api/menu';
@@ -18,15 +17,18 @@ import { calImageWindowSize, spawnWindow } from '@/utils/window';
 import { getAllWebviewWindows } from '@tauri-apps/api/webviewWindow';
 import { ICompressor } from '@/utils/compressor';
 import { undoSave } from '@/utils/fs';
-import { Divider, Tooltip } from 'antd';
+import { Divider, message, Tooltip } from 'antd';
+
 export interface FileCardProps {
   path: FileInfo['path'];
 }
 
-const handleOpenConvertFile = (event: React.MouseEvent<HTMLDivElement>) => {
+const handleRevealFile = async (event: React.MouseEvent<HTMLDivElement>) => {
   const src = event.currentTarget.dataset.src;
-  if (src) {
+  if (src && (await exists(src))) {
     revealItemInDir(src);
+  } else {
+    message.error(t('tips.file_not_exists'));
   }
 };
 
@@ -90,7 +92,7 @@ function FileCard(props: FileCardProps) {
         if (await exists(path)) {
           openPath(path);
         } else {
-          toast.error(t('tips.file_not_exists'));
+          message.error(t('tips.file_not_exists'));
         }
       },
     });
@@ -101,7 +103,7 @@ function FileCard(props: FileCardProps) {
         if (await exists(path)) {
           revealItemInDir(path);
         } else {
-          toast.error(t('tips.file_not_exists'));
+          message.error(t('tips.file_not_exists'));
         }
       },
     });
@@ -110,7 +112,7 @@ function FileCard(props: FileCardProps) {
       action: async () => {
         let path = file.status === ICompressor.Status.Completed ? file.outputPath : file.path;
         await writeText(path);
-        toast.success(t('tips.file_path_copied'));
+        message.success(t('tips.file_path_copied'));
       },
     });
     const copyFileMenuItem = await MenuItem.new({
@@ -118,13 +120,13 @@ function FileCard(props: FileCardProps) {
       action: async () => {
         let path = file.status === ICompressor.Status.Completed ? file.outputPath : file.path;
         await invoke('ipc_copy_image', { path });
-        toast.success(t('tips.file_copied'));
+        message.success(t('tips.file_copied'));
       },
     });
     const undoMenuItem = await MenuItem.new({
       text: t('compression.file_action.undo'),
       action: async () => {
-        const { success, message } = await undoSave(file);
+        const { success, message: undoMessage } = await undoSave(file);
         if (success) {
           file.status = ICompressor.Status.Undone;
           file.compressRate = '';
@@ -136,13 +138,9 @@ function FileCard(props: FileCardProps) {
           file.originalTempPath = '';
           file.saveType = null;
           update();
-          toast.success(t(message as any), {
-            richColors: true,
-          });
+          message.success(t(undoMessage as any));
         } else {
-          toast.error(t(message as any), {
-            richColors: true,
-          });
+          message.error(t(undoMessage as any));
         }
       },
     });
@@ -235,7 +233,7 @@ function FileCard(props: FileCardProps) {
             </div>
           )}
         </div>
-        {isValidArray(file.convertResults) && (
+        {isValidArray(file.convertResults) && file.status === ICompressor.Status.Completed && (
           <>
             <Divider className='!my-0' plain>
               <span className='text-xs text-neutral-500'>
@@ -253,7 +251,7 @@ function FileCard(props: FileCardProps) {
                     variant={item.success ? 'third' : 'destructive'}
                     className='cursor-pointer'
                     data-src={item.output_path}
-                    onClick={handleOpenConvertFile}
+                    onClick={handleRevealFile}
                   >
                     <span className='uppercase'>{item.format}</span>
                   </Badge>

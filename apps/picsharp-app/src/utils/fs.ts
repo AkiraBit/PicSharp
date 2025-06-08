@@ -125,6 +125,16 @@ export async function undoSave(file: FileInfo) {
         remove(outputPath);
       }
     }
+    if (isValidArray(file.convertResults)) {
+      await Promise.all(
+        file.convertResults.map(async (item) => {
+          if (item.success && (await exists(item.output_path))) {
+            return remove(item.output_path);
+          }
+          return Promise.resolve();
+        }),
+      );
+    }
     return {
       success: true,
       message: 'undo.success',
