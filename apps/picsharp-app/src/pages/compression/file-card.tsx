@@ -18,7 +18,7 @@ import { calImageWindowSize, spawnWindow } from '@/utils/window';
 import { getAllWebviewWindows } from '@tauri-apps/api/webviewWindow';
 import { ICompressor } from '@/utils/compressor';
 import { undoSave } from '@/utils/fs';
-import { Divider, Tooltip as AntdTooltip } from 'antd';
+import { Divider, Tooltip } from 'antd';
 export interface FileCardProps {
   path: FileInfo['path'];
 }
@@ -199,11 +199,11 @@ function FileCard(props: FileCardProps) {
         />
       </div>
       <div className='p-2'>
-        <AntdTooltip title={file.path} arrow={false}>
+        <Tooltip title={file.path} arrow={false}>
           <h3 className='text-foreground max-w-[100%] overflow-hidden text-ellipsis whitespace-nowrap font-medium'>
             {file.name}
           </h3>
-        </AntdTooltip>
+        </Tooltip>
         <div className='flex items-center justify-between'>
           <div className='flex items-center gap-1'>
             <span
@@ -244,7 +244,7 @@ function FileCard(props: FileCardProps) {
             </Divider>
             <div className='mt-1 flex items-center justify-center gap-1'>
               {file.convertResults.map((item) => (
-                <AntdTooltip
+                <Tooltip
                   title={item.success ? item.output_path : item.error_msg}
                   key={item.format}
                   arrow={false}
@@ -257,7 +257,7 @@ function FileCard(props: FileCardProps) {
                   >
                     <span className='uppercase'>{item.format}</span>
                   </Badge>
-                </AntdTooltip>
+                </Tooltip>
               ))}
             </div>
           </>
@@ -280,9 +280,9 @@ const StatusBadge = ({ status, errorMessage }: Pick<FileInfo, 'status' | 'errorM
         </Badge>
       )}
       {status === ICompressor.Status.Failed && (
-        <AntdTooltip title={errorMessage} arrow={false}>
+        <Tooltip title={errorMessage} arrow={false}>
           <Badge variant='error'>{t('failed')}</Badge>
-        </AntdTooltip>
+        </Tooltip>
       )}
       {status === ICompressor.Status.Completed && <Badge variant='success'>{t('saved')}</Badge>}
       {status === ICompressor.Status.Undone && <Badge variant='gray'>{t('undo.undone')}</Badge>}
