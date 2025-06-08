@@ -35,8 +35,8 @@ export async function createTrayMenu() {
           createWebviewWindow('settings', {
             url: '/settings',
             title: t('nav.settings'),
-            width: 724,
-            height: 450,
+            width: 796,
+            height: 528,
             center: true,
             resizable: true,
             titleBarStyle: 'overlay',

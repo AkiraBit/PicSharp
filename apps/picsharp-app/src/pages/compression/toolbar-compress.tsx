@@ -88,8 +88,8 @@ function ToolbarCompress() {
           createWebviewWindow('settings', {
             url: '/settings/tinypng#tinypng-api-keys',
             title: t('nav.settings'),
-            width: 724,
-            height: 450,
+            width: 796,
+            height: 528,
             center: true,
             resizable: true,
             titleBarStyle: 'overlay',
@@ -112,8 +112,8 @@ function ToolbarCompress() {
           createWebviewWindow('settings', {
             url: '/settings/compression#output',
             title: t('nav.settings'),
-            width: 724,
-            height: 450,
+            width: 796,
+            height: 528,
             center: true,
             resizable: true,
             titleBarStyle: 'overlay',

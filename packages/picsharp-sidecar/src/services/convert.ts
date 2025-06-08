@@ -4,7 +4,6 @@ import { getFileExtWithoutDot, createExtOutputPath } from '../utils';
 export enum ConvertFormat {
   PNG = 'png',
   JPG = 'jpg',
-  JPEG = 'jpeg',
   WEBP = 'webp',
   AVIF = 'avif',
 }
@@ -21,12 +20,6 @@ export async function convert(inputPath: string, type: ConvertFormat, alpha: str
         result = await sharp(inputPath)
           .flatten({ background: alpha })
           .toFormat('jpg')
-          .toFile(outputPath);
-        break;
-      case ConvertFormat.JPEG:
-        result = await sharp(inputPath)
-          .flatten({ background: alpha })
-          .toFormat('jpeg')
           .toFile(outputPath);
         break;
       case ConvertFormat.WEBP:
@@ -57,7 +50,9 @@ export async function bulkConvert(inputPath: string, types: ConvertFormat[], alp
   const tasks = [];
   const ext = getFileExtWithoutDot(inputPath);
   for (const type of types) {
-    if (ext !== type) {
+    if (ext === 'jpeg' && type === ConvertFormat.JPG) {
+      continue;
+    } else if (ext !== type) {
       tasks.push(convert(inputPath, type, alpha));
     }
   }

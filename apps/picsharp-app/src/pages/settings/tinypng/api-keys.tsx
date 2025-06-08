@@ -70,7 +70,7 @@ export default memo(function SettingsCompressionTinyPngApiKeys() {
       cell: ({ row }) => (
         <Tooltip>
           <TooltipTrigger asChild>
-            <div className='min-w-[10%] max-w-[60%] truncate'>{row.original.name}</div>
+            <div className='min-w-[10%] max-w-[80%] truncate'>{row.original.name}</div>
           </TooltipTrigger>
           <TooltipContent>{row.original.name}</TooltipContent>
         </Tooltip>
@@ -83,7 +83,7 @@ export default memo(function SettingsCompressionTinyPngApiKeys() {
       cell: ({ row }) => (
         <Tooltip>
           <TooltipTrigger asChild>
-            <div className='min-w-[10%] max-w-[60%] cursor-pointer truncate'>
+            <div className='min-w-[10%] max-w-[80%] cursor-pointer truncate'>
               {row.original.api_key}
             </div>
           </TooltipTrigger>
