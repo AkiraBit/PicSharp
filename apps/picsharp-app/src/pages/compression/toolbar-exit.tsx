@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useContext } from 'react';
 import { Button } from '@/components/ui/button';
 import { LogOut } from 'lucide-react';
 import useCompressionStore from '@/store/compression';
@@ -7,11 +7,13 @@ import { useNavigate } from '@/hooks/useNavigate';
 import { toast } from 'sonner';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useI18n } from '@/i18n';
+import { AppContext } from '@/routes';
 
 function ToolbarExit(props: { mode: 'classic' | 'watch' }) {
   const navigate = useNavigate();
   const { inCompressing } = useCompressionStore(useSelector(['inCompressing']));
   const t = useI18n();
+  const { messageApi, notificationApi } = useContext(AppContext);
   const handleExit = () => {
     if (props.mode === 'classic') {
       navigate('/compression/classic/guide');
@@ -19,6 +21,8 @@ function ToolbarExit(props: { mode: 'classic' | 'watch' }) {
       navigate('/compression/watch/guide');
     }
     toast.dismiss();
+    messageApi?.destroy();
+    notificationApi?.destroy();
   };
 
   return (

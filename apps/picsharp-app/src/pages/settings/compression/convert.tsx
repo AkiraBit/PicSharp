@@ -77,6 +77,7 @@ function SettingsCompressionConvert() {
           disabledAlpha
           arrow={false}
           onChange={handleColorChange}
+          className='w-[max-content]'
         />
       </SettingItem>
     </>

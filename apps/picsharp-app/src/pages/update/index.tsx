@@ -2,18 +2,18 @@ import { useSearchParams } from 'react-router';
 import { Button } from '@/components/ui/button';
 import { check, Update as IUpdate } from '@tauri-apps/plugin-updater';
 import { relaunch } from '@tauri-apps/plugin-process';
-import { useState, memo, useEffect } from 'react';
+import { useState, memo, useEffect, useContext } from 'react';
 import { isProd, isWindows } from '@/utils';
 import { Progress } from '@/components/ui/progress';
 import { Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import * as logger from '@tauri-apps/plugin-log';
 import { message } from '@tauri-apps/plugin-dialog';
-import { toast } from 'sonner';
 import { useI18n } from '@/i18n';
 import { marked } from 'marked';
 import useAppStore from '@/store/app';
 import { invoke } from '@tauri-apps/api/core';
+import { AppContext } from '@/routes';
 
 enum UpdateStatus {
   Ready = 'ready',
@@ -39,6 +39,7 @@ export default function Update() {
   const [status, setStatus] = useState<UpdateStatus>(UpdateStatus.Ready);
   const [progress, setProgress] = useState<number>(0);
   const t = useI18n();
+  const { messageApi } = useContext(AppContext);
   const handleUpdate = async () => {
     let updater: IUpdate | null = null;
     try {
@@ -102,9 +103,7 @@ export default function Update() {
     } catch (error) {
       setStatus(UpdateStatus.Ready);
       setProgress(0);
-      toast.error(t('update.message.failed'), {
-        richColors: true,
-      });
+      messageApi?.error(t('update.message.failed'));
       console.error('[Update Failed]: ', error);
       if (isProd) {
         logger.error(`[Update Failed]: ${error}`);

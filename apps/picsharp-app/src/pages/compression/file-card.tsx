@@ -1,4 +1,4 @@
-import { memo, useEffect, useRef } from 'react';
+import { memo, useEffect, useRef, useContext } from 'react';
 import ImgTag from '@/components/img-tag';
 import { openPath, revealItemInDir } from '@tauri-apps/plugin-opener';
 import useCompressionStore from '@/store/compression';
@@ -17,20 +17,12 @@ import { calImageWindowSize, spawnWindow } from '@/utils/window';
 import { getAllWebviewWindows } from '@tauri-apps/api/webviewWindow';
 import { ICompressor } from '@/utils/compressor';
 import { undoSave } from '@/utils/fs';
-import { Divider, message, Tooltip } from 'antd';
+import { Divider, Tooltip } from 'antd';
+import { AppContext } from '@/routes';
 
 export interface FileCardProps {
   path: FileInfo['path'];
 }
-
-const handleRevealFile = async (event: React.MouseEvent<HTMLDivElement>) => {
-  const src = event.currentTarget.dataset.src;
-  if (src && (await exists(src))) {
-    revealItemInDir(src);
-  } else {
-    message.error(t('tips.file_not_exists'));
-  }
-};
 
 function FileCard(props: FileCardProps) {
   const { path } = props;
@@ -39,6 +31,16 @@ function FileCard(props: FileCardProps) {
   const { eventEmitter, fileMap } = useCompressionStore(useSelector(['eventEmitter', 'fileMap']));
   const file = fileMap.get(path);
   const imgRef = useRef<HTMLImageElement>(null);
+  const { messageApi } = useContext(AppContext);
+
+  const handleRevealFile = async (event: React.MouseEvent<HTMLDivElement>) => {
+    const src = event.currentTarget.dataset.src;
+    if (src && (await exists(src))) {
+      revealItemInDir(src);
+    } else {
+      messageApi?.error(t('tips.file_not_exists'));
+    }
+  };
 
   const fileContextMenuHandler = async (event: React.MouseEvent<HTMLDivElement>) => {
     event.preventDefault();
@@ -92,7 +94,7 @@ function FileCard(props: FileCardProps) {
         if (await exists(path)) {
           openPath(path);
         } else {
-          message.error(t('tips.file_not_exists'));
+          messageApi?.error(t('tips.file_not_exists'));
         }
       },
     });
@@ -103,7 +105,7 @@ function FileCard(props: FileCardProps) {
         if (await exists(path)) {
           revealItemInDir(path);
         } else {
-          message.error(t('tips.file_not_exists'));
+          messageApi?.error(t('tips.file_not_exists'));
         }
       },
     });
@@ -112,7 +114,7 @@ function FileCard(props: FileCardProps) {
       action: async () => {
         let path = file.status === ICompressor.Status.Completed ? file.outputPath : file.path;
         await writeText(path);
-        message.success(t('tips.file_path_copied'));
+        messageApi?.success(t('tips.file_path_copied'));
       },
     });
     const copyFileMenuItem = await MenuItem.new({
@@ -120,7 +122,7 @@ function FileCard(props: FileCardProps) {
       action: async () => {
         let path = file.status === ICompressor.Status.Completed ? file.outputPath : file.path;
         await invoke('ipc_copy_image', { path });
-        message.success(t('tips.file_copied'));
+        messageApi?.success(t('tips.file_copied'));
       },
     });
     const undoMenuItem = await MenuItem.new({
@@ -138,9 +140,9 @@ function FileCard(props: FileCardProps) {
           file.originalTempPath = '';
           file.saveType = null;
           update();
-          message.success(t(undoMessage as any));
+          messageApi?.success(t(undoMessage as any));
         } else {
-          message.error(t(undoMessage as any));
+          messageApi?.error(t(undoMessage as any));
         }
       },
     });
@@ -243,12 +245,16 @@ function FileCard(props: FileCardProps) {
             <div className='mt-1 flex items-center justify-center gap-1'>
               {file.convertResults.map((item) => (
                 <Tooltip
-                  title={item.success ? item.output_path : item.error_msg}
+                  title={
+                    <span className='break-all'>
+                      {item.success ? item.output_path : item.error_msg}
+                    </span>
+                  }
                   key={item.format}
                   arrow={false}
                 >
                   <Badge
-                    variant={item.success ? 'third' : 'destructive'}
+                    variant={item.success ? 'third-mini' : 'destructive'}
                     className='cursor-pointer'
                     data-src={item.output_path}
                     onClick={handleRevealFile}

@@ -1,32 +1,28 @@
 import packageJson from '@/../package.json';
-import { memo, useState } from 'react';
+import { memo, useState, useContext } from 'react';
 import { useI18n } from '@/i18n';
 import SettingItem from '../setting-item';
 import { Button } from '@/components/ui/button';
 import checkUpdate from '@/utils/updater';
 import { Loader2 } from 'lucide-react';
-import { toast } from 'sonner';
 import { Trans } from 'react-i18next';
+import { AppContext } from '@/routes';
 
 function SettingsAboutVersion() {
   const t = useI18n();
   const [isChecking, setIsChecking] = useState(false);
-
+  const { messageApi } = useContext(AppContext);
   const handleCheckUpdate = async () => {
     try {
       setIsChecking(true);
       const updater = await checkUpdate();
       setIsChecking(false);
       if (!updater) {
-        toast.success(t('settings.about.version.no_update_available'), {
-          richColors: true,
-        });
+        messageApi?.success(t('settings.about.version.no_update_available'));
       }
     } catch (error) {
       setIsChecking(false);
-      toast.error(t('settings.about.version.check_update_failed'), {
-        richColors: true,
-      });
+      messageApi?.error(t('settings.about.version.check_update_failed'));
       console.error(error);
     }
   };

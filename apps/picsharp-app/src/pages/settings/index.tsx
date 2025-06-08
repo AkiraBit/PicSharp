@@ -7,15 +7,16 @@ import { Button } from '@/components/ui/button';
 import useSettingsStore from '@/store/settings';
 import useSelector from '@/hooks/useSelector';
 import { sleep } from '@/utils';
-import { toast } from 'sonner';
 import { showAlertDialog } from '@/components/ui/alert-dialog';
 import Header from './header';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { AppContext } from '@/routes';
+import { useContext } from 'react';
 
 export default function SettingsLayout() {
   const t = useI18n();
   const { reset, init } = useSettingsStore(useSelector(['reset', 'init']));
-
+  const { messageApi } = useContext(AppContext);
   const sidebarNavItems = [
     {
       title: t('settings.general.title'),
@@ -41,7 +42,7 @@ export default function SettingsLayout() {
 
   const handleReload = async () => {
     await init(true);
-    toast.success(t('tips.settings_reload_success'));
+    messageApi?.success(t('tips.settings_reload_success'));
   };
 
   const handleReset = () => {
@@ -52,7 +53,7 @@ export default function SettingsLayout() {
       onConfirm: async () => {
         await sleep(1000);
         await reset();
-        toast.success(t('tips.settings_reset_success'));
+        messageApi?.success(t('tips.settings_reset_success'));
       },
     });
   };

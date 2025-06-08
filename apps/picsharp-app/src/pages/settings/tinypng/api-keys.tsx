@@ -11,7 +11,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { DataTable } from '@/components/data-table';
-import { memo, useState, useMemo, useLayoutEffect } from 'react';
+import { memo, useState, useMemo, useLayoutEffect, useContext } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { Trash, KeyRound, Loader2 } from 'lucide-react';
 import useSettingsStore from '@/store/settings';
@@ -34,18 +34,19 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import dayjs from 'dayjs';
-import { toast } from 'sonner';
+// import { toast } from 'sonner';
 import { showAlertDialog } from '@/components/ui/alert-dialog';
 import { DropdownButton } from '@/components/dropdown-button';
 import { open } from '@tauri-apps/plugin-dialog';
 import { writeTextFile, readTextFile } from '@tauri-apps/plugin-fs';
-import { openPath } from '@tauri-apps/plugin-opener';
+import { openPath, revealItemInDir } from '@tauri-apps/plugin-opener';
 import { isValidArray } from '@/utils';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 import SettingItem from '../setting-item';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { AppContext } from '@/routes';
 
 export default memo(function SettingsCompressionTinyPngApiKeys() {
   const t = useI18n();
@@ -53,11 +54,12 @@ export default memo(function SettingsCompressionTinyPngApiKeys() {
     useSelector([SettingsKey.TinypngApiKeys, 'set']),
   );
   const [loading, setLoading] = useState(false);
+  const { messageApi } = useContext(AppContext);
 
   const handleDelete = async (apiKey: string) => {
     const newApiKeys = tinypngApiKeys.filter((item) => item.api_key !== apiKey);
     await set(SettingsKey.TinypngApiKeys, newApiKeys);
-    toast.success(t('delete_success'));
+    messageApi?.success(t('delete_success'));
   };
 
   const columns: ColumnDef<any>[] = [
@@ -325,7 +327,7 @@ function AddApiKeyDialog() {
   const { tinypng_api_keys: tinypngApiKeys, set } = useSettingsStore(
     useSelector([SettingsKey.TinypngApiKeys, 'set']),
   );
-
+  const { messageApi } = useContext(AppContext);
   const form = useForm<TinypngApiKeyFormData>({
     resolver: zodResolver(tinypngApiKeySchema),
     defaultValues: {
@@ -359,7 +361,7 @@ function AddApiKeyDialog() {
     setIsSubmiting(false);
     setIsAddDialogOpen(false);
     form.reset();
-    toast.success(t('add_success'));
+    messageApi?.success(t('add_success'));
   };
 
   const ErrorTableColumns: ColumnDef<any>[] = [
@@ -433,13 +435,13 @@ function AddApiKeyDialog() {
                   created_at: Date.now(),
                 })),
               );
-              toast.success(t('import_success'));
+              messageApi?.success(t('import_success'));
             } else {
-              toast.error(`${t('import_failed')}: ${data.error.toString()}`);
+              messageApi?.error(`${t('import_failed')}: ${data.error.toString()}`);
             }
           }
         } catch (error) {
-          toast.error(`${t('import_failed')}: ${error.toString()}`);
+          messageApi?.error(`${t('import_failed')}: ${error.toString()}`);
         } finally {
           setIsLoading(false);
         }
@@ -466,17 +468,19 @@ function AddApiKeyDialog() {
             );
             const path = `${file}/PicSharp_tinypng_api_keys_${Date.now()}.json`;
             await writeTextFile(path, content);
-            toast.success(t('export_success'), {
-              action: {
-                label: t('click_to_view'),
-                onClick: () => {
-                  openPath(path);
-                },
-              },
-            });
+            // toast?.success(t('export_success'), {
+            //   action: {
+            //     label: t('click_to_view'),
+            //     onClick: () => {
+            //       openPath(path);
+            //     },
+            //   },
+            // });
+            messageApi?.success(t('export_success'));
+            revealItemInDir(path);
           }
         } catch (err) {
-          toast.error(`${t('export_failed')}: ${err.toString()}`);
+          messageApi?.error(`${t('export_failed')}: ${err.toString()}`);
         } finally {
           setIsLoading(false);
         }

@@ -1,20 +1,20 @@
 import { useI18n } from '@/i18n';
-import { memo } from 'react';
+import { memo, useContext } from 'react';
 import useSettingsStore from '@/store/settings';
 import useSelector from '@/hooks/useSelector';
 import { SettingsKey } from '@/constants';
 import { Switch } from '@/components/ui/switch';
 import { enable, isEnabled, disable } from '@tauri-apps/plugin-autostart';
-import { toast } from 'sonner';
 import { useAsyncEffect } from 'ahooks';
 import SettingItem from '../setting-item';
+import { AppContext } from '@/routes';
 
 export default memo(function SettingsGeneralUpdate() {
   const t = useI18n();
   const { auto_check_update: autoCheckUpdate, set } = useSettingsStore(
     useSelector([SettingsKey.AutoCheckUpdate, 'set']),
   );
-
+  const { messageApi } = useContext(AppContext);
   const handleChangeAutoCheckUpdate = async (value: boolean) => {
     try {
       if (value) {
@@ -24,7 +24,7 @@ export default memo(function SettingsGeneralUpdate() {
       }
       set(SettingsKey.Autostart, value);
     } catch (error) {
-      toast.error(t('tips.autostart.error'));
+      messageApi?.error(t('tips.autostart.error'));
     }
   };
 

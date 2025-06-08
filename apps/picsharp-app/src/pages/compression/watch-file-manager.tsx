@@ -32,12 +32,12 @@ function WatchFileManager(props: WatchFileManagerProps) {
         variant='secondary'
         className='absolute left-[50%] top-2 -translate-x-1/2 text-nowrap bg-neutral-200/80'
       >
-        {`Watching ${watchingFolder}`}
+        {watchingFolder}
       </Badge>
       {isValidArray(dataList) ? (
-        <div className='w-full flex-1 px-4 pb-4 pt-9'>
+        <div className='w-full flex-1 px-3 pb-4 pt-9'>
           <div
-            className='grid grid-cols-1 gap-4 contain-layout sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8'
+            className='grid grid-cols-1 gap-3 contain-layout sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8'
             style={{
               contentVisibility: 'auto',
             }}
@@ -49,7 +49,7 @@ function WatchFileManager(props: WatchFileManagerProps) {
         </div>
       ) : (
         <div className='text-muted-foreground flex flex-1 items-center justify-center'>
-          <Disc3 className='h-16 w-16 text-foreground dark:text-neutral-400' />
+          <Disc3 className='text-foreground h-16 w-16 dark:text-neutral-400' />
         </div>
       )}
       <div className='sticky bottom-2 flex flex-col gap-1'>

@@ -16,52 +16,71 @@ import { Toaster } from 'sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { useTheme } from '@/components/theme-provider';
 import MessageDemo from './pages/message-demo';
+import { ThemeProvider } from './components/theme-provider';
+import { message, notification } from 'antd';
+import { createContext } from 'react';
+
+export const AppContext = createContext<{
+  messageApi: ReturnType<typeof message.useMessage>[0];
+  notificationApi: ReturnType<typeof notification.useNotification>[0];
+}>({
+  messageApi: null,
+  notificationApi: null,
+});
 
 export default function AppRoutes() {
   const { theme } = useTheme();
+  const [messageApi, messageContextHolder] = message.useMessage();
+  const [notificationApi, notificationContextHolder] = notification.useNotification();
   return (
-    <TooltipProvider delayDuration={100}>
-      <Toaster
-        position='top-center'
-        theme={theme}
-        offset={{
-          top: '24px',
-          right: '16px',
-          bottom: '24px',
-          left: '16px',
-        }}
-      />
-      <BrowserRouter>
-        <Routes>
-          <Route path='/' element={<AppLayout />}>
-            <Route index element={<Navigate to='/compression' />} />
-            {/* <Route index element={<Navigate to='/message-demo' />} /> */}
-            <Route path='message-demo' element={<MessageDemo />} />
-            <Route path='compression' element={<Compression />}>
-              <Route index element={<Navigate to='/compression/classic/guide' />} />
-              <Route path='classic'>
-                <Route index element={<Navigate to='/compression/classic/guide' />} />
-                <Route path='guide' element={<ClassicCompressionGuide />} />
-                <Route path='workspace' element={<CompressionClassic />} />
+    <ThemeProvider>
+      <AppContext.Provider value={{ messageApi, notificationApi }}>
+        {messageContextHolder}
+        {notificationContextHolder}
+        <TooltipProvider delayDuration={100}>
+          <Toaster
+            position='top-center'
+            theme={theme}
+            offset={{
+              top: '24px',
+              right: '16px',
+              bottom: '24px',
+              left: '16px',
+            }}
+          />
+          <BrowserRouter>
+            <Routes>
+              <Route path='/' element={<AppLayout />}>
+                <Route index element={<Navigate to='/compression' />} />
+                {/* <Route index element={<Navigate to='/message-demo' />} /> */}
+                <Route path='message-demo' element={<MessageDemo />} />
+                <Route path='compression' element={<Compression />}>
+                  <Route index element={<Navigate to='/compression/classic/guide' />} />
+                  <Route path='classic'>
+                    <Route index element={<Navigate to='/compression/classic/guide' />} />
+                    <Route path='guide' element={<ClassicCompressionGuide />} />
+                    <Route path='workspace' element={<CompressionClassic />} />
+                  </Route>
+                  <Route path='watch'>
+                    <Route index element={<Navigate to='/compression/watch/guide' />} />
+                    <Route path='guide' element={<WatchCompressionGuide />} />
+                    <Route path='workspace' element={<CompressionWatch />} />
+                  </Route>
+                </Route>
+                <Route path='settings' element={<Settings />}>
+                  <Route index element={<Navigate to='/settings/general' />} />
+                  <Route path='general' element={<SettingsGeneral />} />
+                  <Route path='tinypng' element={<SettingsTinypng />} />
+                  <Route path='compression' element={<SettingsCompression />} />
+                  <Route path='about' element={<SettingsAbout />} />
+                </Route>
+                <Route path='image-compare' element={<ImageCompare />} />
+                <Route path='update' element={<Update />} />
               </Route>
-              <Route path='watch'>
-                <Route index element={<Navigate to='/compression/watch/guide' />} />
-                <Route path='guide' element={<WatchCompressionGuide />} />
-                <Route path='workspace' element={<CompressionWatch />} />
-              </Route>
-            </Route>
-            <Route path='settings' element={<Settings />}>
-              <Route index element={<Navigate to='/settings/general' />} />
-              <Route path='general' element={<SettingsGeneral />} />
-              <Route path='tinypng' element={<SettingsTinypng />} />
-              <Route path='compression' element={<SettingsCompression />} />
-              <Route path='about' element={<SettingsAbout />} />
-            </Route>
-            <Route path='image-compare' element={<ImageCompare />} />
-            <Route path='update' element={<Update />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
+            </Routes>
+          </BrowserRouter>
+        </TooltipProvider>
+      </AppContext.Provider>
+    </ThemeProvider>
   );
 }

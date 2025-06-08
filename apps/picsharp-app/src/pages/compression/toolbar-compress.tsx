@@ -1,4 +1,4 @@
-import { memo, useRef } from 'react';
+import { memo, useRef, useContext } from 'react';
 import { Button } from '@/components/ui/button';
 import { Sparkles, LoaderPinwheel } from 'lucide-react';
 import useAppStore from '@/store/app';
@@ -7,7 +7,6 @@ import useSelector from '@/hooks/useSelector';
 import { SettingsKey, CompressionMode, CompressionOutputMode } from '@/constants';
 import { isValidArray, correctFloat, calProgress } from '@/utils';
 import Compressor from '@/utils/compressor';
-import { toast } from 'sonner';
 import { humanSize } from '@/utils/fs';
 import { isString } from 'radash';
 import { useI18n } from '@/i18n';
@@ -21,6 +20,7 @@ import { cn } from '@/lib/utils';
 import { convertFileSrc } from '@tauri-apps/api/core';
 import message from '@/components/message';
 import { createWebviewWindow } from '@/utils/window';
+import { AppContext } from '@/routes';
 
 function ToolbarCompress() {
   const { sidecar } = useAppStore();
@@ -65,7 +65,7 @@ function ToolbarCompress() {
   const navigate = useNavigate();
   const t = useI18n();
   const indicatorRef = useRef<HTMLSpanElement>(null);
-
+  const { messageApi } = useContext(AppContext);
   const disabledCompress =
     !files.length ||
     inCompressing ||
@@ -214,15 +214,12 @@ function ToolbarCompress() {
           }
         },
       );
-      toast.info(
+      messageApi?.success(
         t('tips.compress_completed', {
           fulfilled,
           rejected,
           total: files.length,
         }),
-        {
-          richColors: true,
-        },
       );
       sendTextNotification(
         `PicSharp - ${t('common.compress_completed')}`,
@@ -233,9 +230,7 @@ function ToolbarCompress() {
         }),
       );
     } catch (_) {
-      toast.error(t('common.compress_failed_msg'), {
-        richColors: true,
-      });
+      messageApi?.error(t('common.compress_failed_msg'));
       sendTextNotification(
         `PicSharp - ${t('common.compress_failed')}`,
         t('common.compress_failed_msg'),

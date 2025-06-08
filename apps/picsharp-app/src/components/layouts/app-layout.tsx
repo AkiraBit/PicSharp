@@ -1,7 +1,7 @@
 import SidebarNav from './sidebar-nav';
 import ErrorBoundary from '../error-boundary';
 import { Outlet } from 'react-router';
-import { useEffect, useRef, useLayoutEffect } from 'react';
+import { useEffect, useRef, useLayoutEffect, useContext } from 'react';
 import { emit, listen, UnlistenFn } from '@tauri-apps/api/event';
 import { PageProgress, PageProgressRef } from '../fullscreen-progress';
 import { isFunction } from 'radash';
@@ -21,7 +21,7 @@ import { updateWatchHistory } from '@/pages/compression/watch-guide';
 import { onOpenUrl } from '@tauri-apps/plugin-deep-link';
 import checkForUpdate from '@/utils/updater';
 import { useAsyncEffect } from 'ahooks';
-import { toast } from 'sonner';
+import { AppContext } from '@/routes';
 
 if (isProd) {
   window.oncontextmenu = (e) => {
@@ -33,7 +33,7 @@ export default function AppLayout() {
   const progressRef = useRef<PageProgressRef>(null);
   const navigate = useNavigate();
   const t = useI18n();
-
+  const { messageApi } = useContext(AppContext);
   useEffect(() => {
     let unlistenNsCompress: UnlistenFn | null = null;
     let unlistenNsWatchAndCompress: UnlistenFn | null = null;
@@ -192,9 +192,7 @@ export default function AppLayout() {
       await getCurrentWebviewWindow().show();
       await getCurrentWebviewWindow().setFocus();
       window.localStorage.removeItem('updated_relaunch');
-      toast.success(t('update.successful', { version }), {
-        richColors: true,
-      });
+      messageApi?.success(t('update.successful', { version }));
     }
   }, []);
 

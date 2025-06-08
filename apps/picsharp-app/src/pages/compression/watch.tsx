@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useContext } from 'react';
 import { UnwatchFn } from '@tauri-apps/plugin-fs';
 import { isFunction, debounce } from 'radash';
 import useCompressionStore from '@/store/compression';
@@ -10,7 +10,6 @@ import { isValidArray, correctFloat } from '@/utils';
 import Compressor, { ICompressor } from '@/utils/compressor';
 import { SettingsKey } from '@/constants';
 import { isString } from 'radash';
-import { toast } from 'sonner';
 import { useI18n } from '@/i18n';
 import useSettingsStore from '@/store/settings';
 import { useNavigate } from '../../hooks/useNavigate';
@@ -19,12 +18,13 @@ import { appCacheDir, join } from '@tauri-apps/api/path';
 import useAppStore from '@/store/app';
 import { convertFileSrc } from '@tauri-apps/api/core';
 import message from '@/components/message';
+import { AppContext } from '@/routes';
 
 function CompressionWatch() {
   const navigate = useNavigate();
   const queueRef = useRef<string[]>([]);
   const t = useI18n();
-
+  const { messageApi } = useContext(AppContext);
   const handleCompress = async (files: FileInfo[]) => {
     try {
       const { sidecar } = useAppStore.getState();
@@ -110,15 +110,12 @@ function CompressionWatch() {
           }
         },
       );
-      toast.info(
+      messageApi?.success(
         t('tips.compress_completed', {
           fulfilled,
           rejected,
           total: files.length,
         }),
-        {
-          richColors: true,
-        },
       );
       sendTextNotification(
         `PicSharp - ${t('common.compress_completed')}`,
@@ -129,9 +126,7 @@ function CompressionWatch() {
         }),
       );
     } catch (_) {
-      toast.error(t('common.compress_failed_msg'), {
-        richColors: true,
-      });
+      messageApi?.error(t('common.compress_failed_msg'));
       sendTextNotification(
         `PicSharp - ${t('common.compress_failed')}`,
         t('common.compress_failed_msg'),
