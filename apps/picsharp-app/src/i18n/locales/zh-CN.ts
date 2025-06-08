@@ -98,13 +98,11 @@ export default {
   'settings.compression.threshold.description': '当图片压缩率低于设置阈值时，不进行保存',
   // Settings.Compression.Convert
   'settings.compression.convert.title': '格式转换',
-  'settings.compression.convert.description':
-    'TinyPNG 目前支持将图片转换为 AVIF、WebP、JPEG 和 PNG 格式。当您在请求中提供多种图片类型时，将返回最小的版本。',
-  'settings.compression.convert.description.alert': '图片转换将计为一次额外的压缩。',
+  'settings.compression.convert.description': '在压缩完成后，额外将图片转换为指定格式',
   // Settings.Compression.ConvertAlpha
-  'settings.compression.convert_alpha.title': '透明度转换',
+  'settings.compression.convert_alpha.title': '透明背景填充',
   'settings.compression.convert_alpha.description':
-    '当具有透明通道的格式转换为不支持透明通道的格式（如PNG转换为JPG）时，将使用指定的颜色进行填充。',
+    '当具有透明背景的图像转换为不支持透明通道的图像格式（如WEBP、AVIF、PNG转为JPG）时，指定使用哪种颜色进行填充',
   // Settings.Tinypng
   'settings.tinypng.title': 'TinyPNG',
   // Settings.Tinypng.ApiKeys

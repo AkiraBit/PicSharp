@@ -11,17 +11,24 @@ import { useI18n } from '@/i18n';
 import { useUpdate } from 'ahooks';
 import { exists } from '@tauri-apps/plugin-fs';
 import { Menu, MenuItem } from '@tauri-apps/api/menu';
-import { getOSPlatform } from '@/utils';
+import { getOSPlatform, isValidArray } from '@/utils';
 import { convertFileSrc, invoke } from '@tauri-apps/api/core';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { RefreshCw } from 'lucide-react';
 import { calImageWindowSize, spawnWindow } from '@/utils/window';
 import { getAllWebviewWindows } from '@tauri-apps/api/webviewWindow';
 import { ICompressor } from '@/utils/compressor';
 import { undoSave } from '@/utils/fs';
+import { Divider, Tooltip as AntdTooltip } from 'antd';
 export interface FileCardProps {
   path: FileInfo['path'];
 }
+
+const handleOpenConvertFile = (event: React.MouseEvent<HTMLDivElement>) => {
+  const src = event.currentTarget.dataset.src;
+  if (src) {
+    revealItemInDir(src);
+  }
+};
 
 function FileCard(props: FileCardProps) {
   const { path } = props;
@@ -192,14 +199,11 @@ function FileCard(props: FileCardProps) {
         />
       </div>
       <div className='p-2'>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <h3 className='text-foreground max-w-[100%] overflow-hidden text-ellipsis whitespace-nowrap font-medium'>
-              {file.name}
-            </h3>
-          </TooltipTrigger>
-          <TooltipContent>{file.name}</TooltipContent>
-        </Tooltip>
+        <AntdTooltip title={file.path} arrow={false}>
+          <h3 className='text-foreground max-w-[100%] overflow-hidden text-ellipsis whitespace-nowrap font-medium'>
+            {file.name}
+          </h3>
+        </AntdTooltip>
         <div className='flex items-center justify-between'>
           <div className='flex items-center gap-1'>
             <span
@@ -231,6 +235,33 @@ function FileCard(props: FileCardProps) {
             </div>
           )}
         </div>
+        {isValidArray(file.convertResults) && (
+          <>
+            <Divider className='!my-0' plain>
+              <span className='text-xs text-neutral-500'>
+                {t('settings.compression.convert.title')}
+              </span>
+            </Divider>
+            <div className='mt-1 flex items-center justify-center gap-1'>
+              {file.convertResults.map((item) => (
+                <AntdTooltip
+                  title={item.success ? item.output_path : item.error_msg}
+                  key={item.format}
+                  arrow={false}
+                >
+                  <Badge
+                    variant={item.success ? 'third' : 'destructive'}
+                    className='cursor-pointer'
+                    data-src={item.output_path}
+                    onClick={handleOpenConvertFile}
+                  >
+                    <span className='uppercase'>{item.format}</span>
+                  </Badge>
+                </AntdTooltip>
+              ))}
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
@@ -249,12 +280,9 @@ const StatusBadge = ({ status, errorMessage }: Pick<FileInfo, 'status' | 'errorM
         </Badge>
       )}
       {status === ICompressor.Status.Failed && (
-        <Tooltip>
-          <TooltipTrigger>
-            <Badge variant='error'>{t('failed')}</Badge>
-          </TooltipTrigger>
-          <TooltipContent>{errorMessage}</TooltipContent>
-        </Tooltip>
+        <AntdTooltip title={errorMessage} arrow={false}>
+          <Badge variant='error'>{t('failed')}</Badge>
+        </AntdTooltip>
       )}
       {status === ICompressor.Status.Completed && <Badge variant='success'>{t('saved')}</Badge>}
       {status === ICompressor.Status.Undone && <Badge variant='gray'>{t('undo.undone')}</Badge>}

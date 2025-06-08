@@ -2,6 +2,21 @@ import type { ICompressor } from '../utils/compressor';
 import type { CompressionOutputMode } from '../constants';
 
 declare global {
+  interface ConvertResult {
+    success: boolean;
+    output_path: string;
+    format: string;
+    error_msg?: string;
+    info: {
+      format: string;
+      width: number;
+      height: number;
+      channels: number;
+      premultiplied: boolean;
+      size: number;
+    };
+  }
+
   interface FileInfo {
     id: string;
     name: string;
@@ -24,6 +39,7 @@ declare global {
     originalTempPath: string;
     errorMessage?: string;
     saveType?: CompressionOutputMode;
+    convertResults?: ConvertResult[];
   }
 }
 

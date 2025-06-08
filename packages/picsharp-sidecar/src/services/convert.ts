@@ -13,7 +13,6 @@ export enum ConvertFormat {
 export async function convert(inputPath: string, type: ConvertFormat, alpha: string) {
   try {
     const outputPath = createExtOutputPath(inputPath, type);
-    console.log('outputPath', outputPath);
     let result = null;
     switch (type) {
       case ConvertFormat.PNG:
@@ -43,11 +42,13 @@ export async function convert(inputPath: string, type: ConvertFormat, alpha: str
     return {
       success: true,
       output_path: outputPath,
+      format: type,
       info: result,
     };
   } catch (error: any) {
     return {
       success: false,
+      format: type,
       error_msg: error instanceof Error ? error.message : error.toString(),
     };
   }

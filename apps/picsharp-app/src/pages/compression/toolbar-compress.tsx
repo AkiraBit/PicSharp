@@ -184,6 +184,9 @@ function ToolbarCompress() {
             targetFile.outputPath = res.output_path;
             targetFile.originalTempPath = convertFileSrc(res.original_temp_path);
             targetFile.saveType = outputMode;
+            if (isValidArray(res.convert_results)) {
+              targetFile.convertResults = res.convert_results;
+            }
           } else {
             rejected++;
             targetFile.status = ICompressor.Status.Failed;

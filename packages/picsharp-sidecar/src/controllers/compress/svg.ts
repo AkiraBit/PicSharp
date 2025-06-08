@@ -4,13 +4,7 @@ import type { Config } from 'svgo';
 import { readFile, writeFile, copyFile } from 'node:fs/promises';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
-import {
-  calCompressionRate,
-  checkFile,
-  createOutputPath,
-  copyFileToTemp,
-  convertFileSrc,
-} from '../../utils';
+import { calCompressionRate, checkFile, createOutputPath, copyFileToTemp } from '../../utils';
 import { SaveMode } from '../../constants';
 const app = new Hono();
 

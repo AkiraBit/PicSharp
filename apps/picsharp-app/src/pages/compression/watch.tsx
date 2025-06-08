@@ -40,6 +40,8 @@ function CompressionWatch() {
         [SettingsKey.CompressionThresholdValue]: thresholdValue,
         [SettingsKey.CompressionLevel]: compressionLevel,
         [SettingsKey.CompressionType]: compressionType,
+        [SettingsKey.CompressionConvert]: convertTypes,
+        [SettingsKey.CompressionConvertAlpha]: convertAlpha,
       } = useSettingsStore.getState();
 
       eventEmitter.emit('update_file_item', 'all');
@@ -60,6 +62,8 @@ function CompressionWatch() {
         },
         tempDir,
         sidecarDomain: sidecar?.origin,
+        convertTypes,
+        convertAlpha,
       }).compress(
         files,
         (res) => {
@@ -82,6 +86,9 @@ function CompressionWatch() {
             targetFile.outputPath = res.output_path;
             targetFile.originalTempPath = convertFileSrc(res.original_temp_path);
             targetFile.saveType = outputMode;
+            if (isValidArray(res.convert_results)) {
+              targetFile.convertResults = res.convert_results;
+            }
           } else {
             rejected++;
             targetFile.status = ICompressor.Status.Failed;

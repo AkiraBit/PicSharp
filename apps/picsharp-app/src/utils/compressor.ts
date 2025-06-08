@@ -47,6 +47,7 @@ export namespace ICompressor {
     original_temp_path: string;
     original_temp_converted_path: string;
     available_compress_rate: boolean;
+    convert_results?: ConvertResult[];
   }
 
   export interface FailedItem {

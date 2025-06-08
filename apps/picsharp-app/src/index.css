@@ -24,7 +24,7 @@ body,
   height: 100vh;
   overflow: hidden;
   background: transparent;
-  /* user-select: none; */
+  /* user-select:text; */
 }
 
 :focus {
