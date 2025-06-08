@@ -1,5 +1,13 @@
 {
   "releases": {
+    "1.2.0": {
+      "date": "2025-06-08",
+      "notes": [
+        "🆕 Supports converting images to specified formats when compressing.",
+        "🚀 Optimize interactive experience.",
+        "🐛 Fix some bugs."
+      ]
+    },
     "1.1.6": {
       "date": "2025-06-05",
       "notes": [
