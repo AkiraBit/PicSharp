@@ -1,5 +1,11 @@
 {
   "releases": {
+    "1.2.1": {
+      "date": "2025-06-09",
+      "notes": [
+        "🐛 Fixed the problem that some color blocks in compressed images may deviate from their original colors due to unreasonable control of the color quantization degree of the PNG encoder"
+      ]
+    },
     "1.2.0": {
       "date": "2025-06-08",
       "notes": [
