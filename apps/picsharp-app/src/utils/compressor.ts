@@ -329,29 +329,39 @@ const PNG_COMPRESSION_LEVEL_PRESET: Record<
   Partial<ICompressor.PngCompressPayload['process_options']>
 > = {
   1: {
+    quality: 100,
+    palette: true,
+    adaptiveFiltering: true,
+    effort: 1,
+    compressionLevel: 3,
+  },
+  2: {
     quality: 95,
     palette: true,
     adaptiveFiltering: true,
+    effort: 3,
+    compressionLevel: 5,
   },
-  2: {
+  3: {
+    quality: 90,
+    palette: true,
+    adaptiveFiltering: true,
+    effort: 5,
+    compressionLevel: 6,
+  },
+  4: {
     quality: 85,
     palette: true,
     adaptiveFiltering: true,
+    effort: 7,
+    compressionLevel: 7,
   },
-  3: {
+  5: {
     quality: 70,
     palette: true,
     adaptiveFiltering: true,
-  },
-  4: {
-    quality: 30,
-    palette: true,
-    adaptiveFiltering: true,
-  },
-  5: {
-    quality: 10,
-    palette: true,
-    adaptiveFiltering: true,
+    effort: 9,
+    compressionLevel: 9,
   },
 };
 
