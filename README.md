@@ -108,6 +108,7 @@ A feature-rich, efficient and flexible cross-platform desktop image compression 
 | ---------------------------------------- | ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
 | **Finder Services menu**                 | Use Finder Services menu to compress images **(Mac Only)**. | ![Finder Services](./doc/finder-compress.png) ![Finder Services](./doc/finder-watch.png)                                        |
 | **Right-click menu for image operation** | Operate on the image before and after compression.          | ![uncompressed-context-menu](./doc/uncompressed-context-menu.png) ![conpressed-context-menu](./doc/conpressed-context-menu.png) |
+| **Image Comparison**                     | Compare the original and compressed images.                 | ![image-comparison](./doc/image-compare.png)                                                                                    |
 | **DeepLink**                             | Use DeepLink to compress images.                            | ✅                                                                                                                              |
 
 ## Summary
