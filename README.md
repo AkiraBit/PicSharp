@@ -6,13 +6,58 @@
   <br>
 </div>
 
-A simple, efficient, and flexible cross-platform desktop image compression application.
+<div align="center">
+  <div>
+    <a href="https://github.com/AkiraBit/PicSharp/releases">
+      <img
+        alt="MacOS"
+        src="https://img.shields.io/badge/-MacOS-black?style=flat-square&logo=apple&logoColor=white"
+      />
+    </a>
+    <a href="https://github.com/AkiraBit/PicSharp/releases">
+      <img
+        alt="Windows"
+        src="https://img.shields.io/badge/-Windows-blue?style=flat-square&logo=data:image/svg+xml;base64,PHN2ZyB0PSIxNzI2MzA1OTcxMDA2IiBjbGFzcz0iaWNvbiIgdmlld0JveD0iMCAwIDEwMjQgMTAyNCIgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHAtaWQ9IjE1NDgiIHdpZHRoPSIxMjgiIGhlaWdodD0iMTI4Ij48cGF0aCBkPSJNNTI3LjI3NTU1MTYxIDk2Ljk3MTAzMDEzdjM3My45OTIxMDY2N2g0OTQuNTEzNjE5NzVWMTUuMDI2NzU3NTN6TTUyNy4yNzU1NTE2MSA5MjguMzIzNTA4MTVsNDk0LjUxMzYxOTc1IDgwLjUyMDI4MDQ5di00NTUuNjc3NDcxNjFoLTQ5NC41MTM2MTk3NXpNNC42NzA0NTEzNiA0NzAuODMzNjgyOTdINDIyLjY3Njg1OTI1VjExMC41NjM2ODE5N2wtNDE4LjAwNjQwNzg5IDY5LjI1Nzc5NzUzek00LjY3MDQ1MTM2IDg0Ni43Njc1OTcwM0w0MjIuNjc2ODU5MjUgOTE0Ljg2MDMxMDEzVjU1My4xNjYzMTcwM0g0LjY3MDQ1MTM2eiIgcC1pZD0iMTU0OSIgZmlsbD0iI2ZmZmZmZiI+PC9wYXRoPjwvc3ZnPg=="
+      />
+    </a>
+    <a href="https://github.com/AkiraBit/PicSharp/releases">
+      <img
+        alt="Linux"
+        src="https://img.shields.io/badge/-Linux-yellow?style=flat-square&logo=linux&logoColor=white"
+      />
+    </a>
+  </div>
+
+  <p>
+    <a href="./LICENSE">
+      <img
+        src="https://img.shields.io/github/license/AkiraBit/PicSharp?style=flat-square"
+      />
+    </a>
+    <a href="https://github.com/AkiraBit/PicSharp/releases/latest">
+      <img
+        src="https://img.shields.io/github/package-json/v/AkiraBit/PicSharp?style=flat-square"
+      />
+    </a>
+    <a href="https://github.com/AkiraBit/PicSharp/releases">
+      <img
+        src="https://img.shields.io/github/downloads/AkiraBit/PicSharp/total?style=flat-square"
+      />
+    </a>
+  </p>
+</div>
+
+A feature-rich, efficient and flexible cross-platform desktop image compression application.
 
 ## Supported Platforms
 
 - **Mac:** ✅ (macOS 12+)
 - **Windows:** ✅ (Windows 10+ x64)
 - **Linux:** ✅ (Ubuntu 20.04+ or other Linux distributions that support `libstdc++` 11.3+)
+
+| MacOS                           | Windows       | Linux(Ubuntu)                      |
+| ------------------------------- | ------------- | ---------------------------------- |
+| ![macOS](./doc/mac_preview.png) | [Placeholder] | ![Linux](./doc/ubuntu_preview.png) |
 
 ## Key Features
 
@@ -40,13 +85,15 @@ A simple, efficient, and flexible cross-platform desktop image compression appli
 
 ---
 
-| **Compression**            | **Description**                                                                                                                                      | **Status** |
-| -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
-| **Compression Mode**       | Default use Tinypng, if Tinypng compression fails, switch to local compression for retry.                                                            | ✅         |
-| **Compression Type**       | Optional lossless compression and lossy compression are available. When the image does not support lossless compression, switch to lossy compression | ✅         |
-| **Compression Level**      | Five levels can be selected. When using lossy compression, setting a reasonable compression level can achieve the best visual effect.                | ✅         |
-| **Save Type**              | How to save compressed images after compression.                                                                                                     | ✅         |
-| **Compression Rate Limit** | When the image compression rate is below the set threshold, saving will not be performed.                                                            | ✅         |
+| **Compression**            | **Description**                                                                                                                                                                     | **Status** |
+| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
+| **Compression Mode**       | Default use Tinypng, if Tinypng compression fails, switch to local compression for retry.                                                                                           | ✅         |
+| **Compression Type**       | Optional lossless compression and lossy compression are available. When the image does not support lossless compression, switch to lossy compression                                | ✅         |
+| **Compression Level**      | Five levels can be selected. When using lossy compression, setting a reasonable compression level can achieve the best visual effect.                                               | ✅         |
+| **Save Type**              | How to save compressed images after compression.                                                                                                                                    | ✅         |
+| **Compression Rate Limit** | When the image compression rate is below the set threshold, saving will not be performed.                                                                                           | ✅         |
+| **Format Conversion**      | After compression is completed, additionally convert the image to the specified format, such as PNG, JPG, WebP, AVIF.                                                               | ✅         |
+| **Alpha Background Fill**  | Specifies which color to use for fill when an image with a transparent background is converted to an image format that does not support transparency (e.g. WEBP, AVIF, PNG to JPG). | ✅         |
 
 ---
 
@@ -57,10 +104,11 @@ A simple, efficient, and flexible cross-platform desktop image compression appli
 
 ### Easy to use
 
-| **Feature**              | **Description**                                             | **Status**                                                                               |
-| ------------------------ | ----------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| **Finder Services menu** | Use Finder Services menu to compress images **(Mac Only)**. | ![Finder Services](./doc/finder-compress.png) ![Finder Services](./doc/finder-watch.png) |
-| **DeepLink**             | Use DeepLink to compress images.                            | ✅                                                                                       |
+| **Feature**                              | **Description**                                             | **Status**                                                                                                                      |
+| ---------------------------------------- | ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| **Finder Services menu**                 | Use Finder Services menu to compress images **(Mac Only)**. | ![Finder Services](./doc/finder-compress.png) ![Finder Services](./doc/finder-watch.png)                                        |
+| **Right-click menu for image operation** | Operate on the image before and after compression.          | ![uncompressed-context-menu](./doc/uncompressed-context-menu.png) ![conpressed-context-menu](./doc/conpressed-context-menu.png) |
+| **DeepLink**                             | Use DeepLink to compress images.                            | ✅                                                                                                                              |
 
 ## Summary
 
@@ -198,3 +246,13 @@ If you want to help out please see [CONTRIBUTING.md](CONTRIBUTING.md) to see how
 ## Support
 
 If you enjoy this project consider giving it a star ⭐.
+
+## Star History
+
+<a href="https://www.star-history.com/#AkiraBit/PicSharp&Date">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=AkiraBit/PicSharp&type=Date&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=AkiraBit/PicSharp&type=Date" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=AkiraBit/PicSharp&type=Date" />
+ </picture>
+</a>
