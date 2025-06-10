@@ -80,6 +80,9 @@ export default {
   'settings.compression.level.option.3': '均衡',
   'settings.compression.level.option.4': '高',
   'settings.compression.level.option.5': '极高',
+  // Settings.Compression.Metadata
+  'settings.compression.metadata.title': '保留元数据',
+  'settings.compression.metadata.description': '保留原图的所有元数据（EXIF、ICC、XMP、IPTC）',
   //Settings.Compression.Output
   'settings.compression.output.title': '保存方式',
   'settings.compression.output.description': '图片压缩完成后的保存方式',

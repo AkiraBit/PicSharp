@@ -42,6 +42,7 @@ function CompressionWatch() {
         [SettingsKey.CompressionType]: compressionType,
         [SettingsKey.CompressionConvert]: convertTypes,
         [SettingsKey.CompressionConvertAlpha]: convertAlpha,
+        [SettingsKey.CompressionKeepMetadata]: keepMetadata,
       } = useSettingsStore.getState();
 
       eventEmitter.emit('update_file_item', 'all');
@@ -64,6 +65,7 @@ function CompressionWatch() {
         sidecarDomain: sidecar?.origin,
         convertTypes,
         convertAlpha,
+        keepMetadata,
       }).compress(
         files,
         (res) => {

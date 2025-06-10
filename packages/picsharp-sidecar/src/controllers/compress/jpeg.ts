@@ -30,6 +30,7 @@ const OptionsSchema = z
     temp_dir: z.string().optional(),
     convert_types: z.array(z.nativeEnum(ConvertFormat)).optional().default([]),
     convert_alpha: z.string().optional().default('#FFFFFF'),
+    keep_metadata: z.boolean().optional().default(false),
   })
   .optional()
   .default({});
@@ -82,11 +83,13 @@ app.post('/', zValidator('json', PayloadSchema), async (context) => {
   if (isWindows && options.save.mode === SaveMode.Overwrite) {
     sharp.cache(false);
   }
-  const compressedImageBuffer = await sharp(input_path, {
+  const instance = sharp(input_path, {
     limitInputPixels: false,
-  })
-    .jpeg(process_options)
-    .toBuffer();
+  });
+  if (options.keep_metadata) {
+    instance.keepMetadata();
+  }
+  const compressedImageBuffer = await instance.jpeg(process_options).toBuffer();
   const compressedSize = compressedImageBuffer.byteLength;
   const compressionRate = calCompressionRate(originalSize, compressedSize);
   const availableCompressRate = compressionRate >= (options.limit_compress_rate || 0);

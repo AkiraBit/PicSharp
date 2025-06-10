@@ -5,6 +5,7 @@
   "compression_mode": "local",
   "compression_type": "lossy",
   "compression_level": 4,
+  "compression_keep_metadata": false,
   "compression_output": "overwrite",
   "compression_output_save_as_file_suffix": "_compressed",
   "compression_output_save_to_folder": "",

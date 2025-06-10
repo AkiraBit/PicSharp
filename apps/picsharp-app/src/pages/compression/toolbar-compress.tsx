@@ -47,6 +47,7 @@ function ToolbarCompress() {
     [SettingsKey.CompressionLevel]: compressionLevel,
     [SettingsKey.CompressionConvert]: convertTypes,
     [SettingsKey.CompressionConvertAlpha]: convertAlpha,
+    [SettingsKey.CompressionKeepMetadata]: keepMetadata,
   } = useSettingsStore(
     useSelector([
       SettingsKey.TinypngApiKeys,
@@ -60,6 +61,7 @@ function ToolbarCompress() {
       SettingsKey.CompressionLevel,
       SettingsKey.CompressionConvert,
       SettingsKey.CompressionConvertAlpha,
+      SettingsKey.CompressionKeepMetadata,
     ]),
   );
   const navigate = useNavigate();
@@ -162,6 +164,7 @@ function ToolbarCompress() {
         sidecarDomain: sidecar?.origin,
         convertTypes,
         convertAlpha,
+        keepMetadata: keepMetadata,
       }).compress(
         files,
         (res) => {

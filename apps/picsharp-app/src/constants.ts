@@ -25,6 +25,7 @@ export enum SettingsKey {
   CompressionMode = 'compression_mode',
   CompressionType = 'compression_type',
   CompressionLevel = 'compression_level',
+  CompressionKeepMetadata = 'compression_keep_metadata',
   Concurrency = 'concurrency',
   CompressionThresholdEnable = 'compression_threshold_enable',
   CompressionThresholdValue = 'compression_threshold_value',

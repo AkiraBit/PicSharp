@@ -22,6 +22,7 @@ export namespace ICompressor {
     sidecarDomain?: string;
     convertTypes?: ConvertFormat[];
     convertAlpha?: string;
+    keepMetadata?: boolean;
   };
 
   export enum Status {
@@ -65,6 +66,7 @@ export namespace ICompressor {
     temp_dir?: string;
     convert_types?: ConvertFormat[];
     convert_alpha?: string;
+    keep_metadata?: boolean;
   }
 
   export interface JpegCompressPayload {
@@ -576,6 +578,7 @@ export default class Compressor {
               temp_dir: this.options.tempDir,
               convert_types: this.options.convertTypes,
               convert_alpha: this.options.convertAlpha,
+              keep_metadata: this.options.keepMetadata,
             },
             payload.options,
           ),

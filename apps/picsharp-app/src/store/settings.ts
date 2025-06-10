@@ -25,6 +25,7 @@ interface SettingsState {
   [SettingsKey.CompressionMode]: CompressionMode;
   [SettingsKey.CompressionType]: CompressionType;
   [SettingsKey.CompressionLevel]: number;
+  [SettingsKey.CompressionKeepMetadata]: boolean;
   [SettingsKey.Concurrency]: number;
   [SettingsKey.CompressionThresholdEnable]: boolean;
   [SettingsKey.CompressionThresholdValue]: number;
@@ -62,6 +63,7 @@ const useSettingsStore = create(
       [SettingsKey.CompressionMode]: CompressionMode.Auto,
       [SettingsKey.CompressionType]: CompressionType.Lossy,
       [SettingsKey.CompressionLevel]: 4,
+      [SettingsKey.CompressionKeepMetadata]: false,
       [SettingsKey.Concurrency]: 6,
       [SettingsKey.CompressionThresholdEnable]: false,
       [SettingsKey.CompressionThresholdValue]: 0.1,

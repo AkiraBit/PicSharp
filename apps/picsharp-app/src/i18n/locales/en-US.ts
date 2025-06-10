@@ -80,6 +80,10 @@ const enUS = {
   'settings.compression.level.option.3': 'Medium',
   'settings.compression.level.option.4': 'High',
   'settings.compression.level.option.5': 'Excellent',
+  // Settings.Compression.Metadata
+  'settings.compression.metadata.title': 'Keep Metadata',
+  'settings.compression.metadata.description':
+    'Keep all metadata (EXIF, ICC, XMP, IPTC) of the original image.',
   //Settings.Compression.Output
   'settings.compression.output.title': 'Save Type',
   'settings.compression.output.description': 'How to save compressed images after compression.',

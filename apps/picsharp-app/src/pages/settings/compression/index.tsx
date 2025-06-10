@@ -7,6 +7,7 @@ import Type from './type';
 import Level from './level';
 import { useEffect, useRef } from 'react';
 import Convert from './convert';
+import Metadata from './metadata';
 
 export default function SettingsCompression() {
   const outputElRef = useRef<HTMLDivElement>(null);
@@ -27,6 +28,7 @@ export default function SettingsCompression() {
         <Mode />
         <Type />
         <Level />
+        <Metadata />
       </Card>
       <Card ref={outputElRef}>
         <Output />
