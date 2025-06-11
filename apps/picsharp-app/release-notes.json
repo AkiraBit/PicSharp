@@ -1,5 +1,11 @@
 {
   "releases": {
+    "1.3.0": {
+      "date": "2025-06-10",
+      "notes": [
+        "🆕 Supports configuration of whether to retain all metadata of the original image (EXIF, ICC, XMP, IPTC)"
+      ]
+    },
     "1.2.1": {
       "date": "2025-06-09",
       "notes": [
