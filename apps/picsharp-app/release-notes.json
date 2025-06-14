@@ -1,5 +1,11 @@
 {
   "releases": {
+    "1.4.0": {
+      "date": "2025-06-14",
+      "notes": [
+        "🆕 Support compressing images or directories from clipboard"
+      ]
+    },
     "1.3.0": {
       "date": "2025-06-10",
       "notes": [
