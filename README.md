@@ -87,7 +87,6 @@ A feature-rich, efficient and flexible cross-platform desktop image compression 
 
 | **Compression**            | **Description**                                                                                                                                                                     | **Status** |
 | -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
-| **Clipboard Support**      | Support compressing images or directories from clipboard                                                                                                                            | ✅         |
 | **Compression Mode**       | Default use Tinypng, if Tinypng compression fails, switch to local compression for retry.                                                                                           | ✅         |
 | **Compression Type**       | Optional lossless compression and lossy compression are available. When the image does not support lossless compression, switch to lossy compression                                | ✅         |
 | **Compression Level**      | Five levels can be selected. When using lossy compression, setting a reasonable compression level can achieve the best visual effect.                                               | ✅         |
@@ -107,6 +106,7 @@ A feature-rich, efficient and flexible cross-platform desktop image compression 
 
 | **Feature**                              | **Description**                                             | **Status**                                                                                                                      |
 | ---------------------------------------- | ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| **Clipboard Support**                    | Support compressing images or directories from clipboard    | ✅                                                                                                                              |
 | **Finder Services menu**                 | Use Finder Services menu to compress images **(Mac Only)**. | ![Finder Services](./doc/finder-compress.png) ![Finder Services](./doc/finder-watch.png)                                        |
 | **Right-click menu for image operation** | Operate on the image before and after compression.          | ![uncompressed-context-menu](./doc/uncompressed-context-menu.png) ![conpressed-context-menu](./doc/conpressed-context-menu.png) |
 | **Image Comparison**                     | Compare the original and compressed images.                 | ![image-comparison](./doc/image-compare.png)                                                                                    |
