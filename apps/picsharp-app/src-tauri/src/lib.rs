@@ -9,6 +9,7 @@ use tauri::{
 };
 use tauri::{AppHandle, Emitter, Listener, Manager, Url};
 use tauri_plugin_fs::FsExt;
+mod clipboard;
 mod command;
 mod file;
 mod file_ext;
@@ -267,6 +268,7 @@ pub fn run() {
             file::ipc_is_file_in_directory,
             file::ipc_copy_image,
             file::ipc_get_file_name,
+            clipboard::ipc_parse_clipboard_images,
             // tinify::ipc_tinify,
             // image_processor::compressors::ipc_compress_images,
             // image_processor::compressors::ipc_compress_single_image,

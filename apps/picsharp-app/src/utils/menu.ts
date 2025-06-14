@@ -149,6 +149,39 @@ export async function initAppMenu() {
     ],
   });
 
+  // const fileSubmenu = await Submenu.new({
+  //   text: t('menu.file'),
+  //   items: [
+  //     await PredefinedMenuItem.new({
+  //       text: t('menu.edit.undo'),
+  //       item: 'Undo',
+  //     }),
+  //     await PredefinedMenuItem.new({
+  //       text: t('menu.edit.redo'),
+  //       item: 'Redo',
+  //     }),
+  //     await PredefinedMenuItem.new({
+  //       item: 'Separator',
+  //     }),
+  //     await PredefinedMenuItem.new({
+  //       text: t('menu.edit.cut'),
+  //       item: 'Cut',
+  //     }),
+  //     await PredefinedMenuItem.new({
+  //       text: t('menu.edit.copy'),
+  //       item: 'Copy',
+  //     }),
+  //     await PredefinedMenuItem.new({
+  //       text: t('menu.edit.paste'),
+  //       item: 'Paste',
+  //     }),
+  //     await PredefinedMenuItem.new({
+  //       text: t('menu.edit.select_all'),
+  //       item: 'SelectAll',
+  //     }),
+  //   ],
+  // });
+
   const defaultMenu = await Menu.default();
   const defaultMenuitems = await defaultMenu.items();
   const windowSubmenu = defaultMenuitems[defaultMenuitems.length - 2];

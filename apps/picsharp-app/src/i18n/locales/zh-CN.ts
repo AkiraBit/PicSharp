@@ -190,6 +190,10 @@ export default {
   'menu.edit.select_all': '全选',
   'menu.window': '窗口',
   'menu.view': '视图',
+  // Clipboard
+  'clipboard.parse_clipboard_images': '正在解析剪贴板图片',
+  'clipboard.parse_clipboard_images_error': '解析剪贴板图片失败: {{error}}',
+  'clipboard.parse_clipboard_images_no_images': '未找到图片',
   //
   'page.compression.process.actions.save': '保存',
   'page.compression.process.actions.compress': '压缩',
@@ -268,9 +272,9 @@ export default {
   'page.compression.classic.app_title': 'PicSharp',
   'page.compression.classic.app_description': '简单高效的图片压缩工具',
   'page.compression.classic.upload_title': '图像上传',
-  'page.compression.classic.upload_description': '拖放文件或文件夹到此处，或使用下方按钮选择',
-  'page.compression.classic.upload_file': '上传文件',
-  'page.compression.classic.upload_directory': '上传目录',
+  'page.compression.classic.upload_description': '粘贴、拖放文件或文件夹到此处',
+  'page.compression.classic.upload_file': '选择文件',
+  'page.compression.classic.upload_directory': '选择目录',
   'page.compression.classic.tinypng_supported_formats': 'TinyPNG支持的图像格式',
   'page.compression.classic.local_supported_formats': '本地压缩支持的图像格式',
   'page.compression.classic.drop_title': '松开鼠标上传图像',

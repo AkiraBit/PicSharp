@@ -119,10 +119,10 @@ function WatchCompressionGuide() {
   return (
     <div className='relative flex min-h-screen flex-col items-center justify-center p-6'>
       <div className='relative z-10 text-center'>
-        <h1 className='dark:text-foreground mb-6 text-3xl font-bold'>
+        {/* <h1 className='dark:text-foreground mb-6 text-3xl font-bold'>
           {' '}
           ✨{t('page.compression.watch.guide.title')}✨
-        </h1>
+        </h1> */}
         <p className='mx-auto max-w-2xl text-lg'>{t('page.compression.watch.guide.description')}</p>
       </div>
       <div className='relative z-10 w-full max-w-5xl'>

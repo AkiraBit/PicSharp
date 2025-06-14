@@ -14,6 +14,10 @@ import { useI18n } from '@/i18n';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import message from '@/components/message';
+import { Menu, MenuItem } from '@tauri-apps/api/menu';
+import { parseClipboardImages } from '@/utils/clipboard';
+import { downloadDir } from '@tauri-apps/api/path';
+import { AppContext } from '@/routes';
 
 function ClassicCompressionGuide() {
   const { progressRef } = useContext(CompressionContext);
@@ -21,6 +25,7 @@ function ClassicCompressionGuide() {
   const dropzoneRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const t = useI18n();
+  const { messageApi } = useContext(AppContext);
 
   const handleFiles = async (paths: string[] | null) => {
     if (!isValidArray(paths)) return;
@@ -67,6 +72,19 @@ function ClassicCompressionGuide() {
     }
   };
 
+  // const handleContextMenu = async (event: React.MouseEvent<HTMLDivElement>) => {
+  //   event.preventDefault();
+  //   const menu = await Menu.new();
+  //   const menuItem = await MenuItem.new({
+  //     text: 'Open',
+  //     action: () => {
+  //       console.log('open');
+  //     },
+  //   });
+  //   await menu.append(menuItem);
+  //   await menu.popup();
+  // };
+
   useEffect(() => {
     const setupDragDrop = async () => {
       dragDropController.current = await getCurrentWebview().onDragDropEvent(async (event) => {
@@ -83,13 +101,60 @@ function ClassicCompressionGuide() {
       });
     };
 
+    const handlePaste = async (event: ClipboardEvent) => {
+      let messageKey = 'parse-clipboard-images';
+      try {
+        event.preventDefault();
+        messageApi?.loading({
+          key: messageKey,
+          content: t('clipboard.parse_clipboard_images'),
+        });
+        let candidateFormat = 'png';
+        if (event.clipboardData) {
+          const items = Array.from(event.clipboardData.items);
+          const hasImages = items.some(
+            (item) => item.kind === 'file' && item.type.startsWith('image/'),
+          );
+          if (hasImages) {
+            candidateFormat =
+              items
+                .find((item) => item.kind === 'file' && item.type.startsWith('image/'))
+                ?.type.split('/')[1] || 'png';
+          }
+        }
+        const tempDir = await downloadDir();
+        const { success, paths, error } = await parseClipboardImages(candidateFormat, tempDir);
+        if (success) {
+          if (isValidArray(paths)) {
+            handleFiles(paths as string[]);
+          } else {
+            messageApi?.info(t('clipboard.parse_clipboard_images_no_images'));
+          }
+        } else {
+          messageApi?.error(
+            t('clipboard.parse_clipboard_images_error', { error: error?.toString() }),
+          );
+        }
+      } catch (error) {
+        messageApi?.error(t('clipboard.parse_clipboard_images_error', { error: error.toString() }));
+      } finally {
+        messageApi?.destroy(messageKey);
+      }
+    };
+
+    const setupPasteListener = () => {
+      document.addEventListener('paste', handlePaste);
+    };
+
     setupDragDrop();
+    setupPasteListener();
 
     return () => {
       if (isFunction(dragDropController.current)) {
         dragDropController.current();
       }
       dragDropController.current = null;
+      document.removeEventListener('paste', handlePaste);
     };
   }, []);
 
@@ -97,9 +162,10 @@ function ClassicCompressionGuide() {
     <div
       ref={dropzoneRef}
       className='relative flex min-h-screen flex-col items-center justify-center p-6 transition-all duration-300 [&.drag-active]:from-indigo-50/50 [&.drag-active]:to-indigo-100/50'
+      // onContextMenu={handleContextMenu}
     >
       <div className='relative text-center'>
-        <h1 className='dark:text-foreground mb-6 text-3xl font-bold'>✨PicSharp✨</h1>
+        {/* <h1 className='dark:text-foreground mb-6 text-3xl font-bold'>✨PicSharp✨</h1> */}
         <p className='mx-auto max-w-2xl text-lg'>
           {t('page.compression.classic.upload_description')}
         </p>

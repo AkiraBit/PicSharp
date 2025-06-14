@@ -194,6 +194,10 @@ const enUS = {
   'menu.edit.select_all': 'Select All',
   'menu.window': 'Window',
   'menu.view': 'View',
+  // Clipboard
+  'clipboard.parse_clipboard_images': 'Parsing clipboard images',
+  'clipboard.parse_clipboard_images_error': 'Failed to parse clipboard images: {{error}}',
+  'clipboard.parse_clipboard_images_no_images': 'No images found',
   //
   'page.compression.process.actions.save': 'Save',
   'page.compression.process.actions.compress': 'Compress',
@@ -270,8 +274,7 @@ const enUS = {
   'page.compression.classic.app_title': 'PicSharp',
   'page.compression.classic.app_description': 'Simple and efficient image compression tool',
   'page.compression.classic.upload_title': 'Image Upload',
-  'page.compression.classic.upload_description':
-    'Drag and drop files or folders here, or use the buttons below to select',
+  'page.compression.classic.upload_description': 'Paste, drag and drop files or folders here',
   'page.compression.classic.upload_file': 'Files',
   'page.compression.classic.upload_directory': 'Folders',
   'page.compression.classic.tinypng_supported_formats': 'TinyPNG Supported Formats',
