@@ -4,8 +4,6 @@ import useSettingsStore from '@/store/settings';
 import useSelector from '@/hooks/useSelector';
 import { SettingsKey } from '@/constants';
 import { Switch } from '@/components/ui/switch';
-import { enable, isEnabled, disable } from '@tauri-apps/plugin-autostart';
-import { useAsyncEffect } from 'ahooks';
 import SettingItem from '../setting-item';
 import { AppContext } from '@/routes';
 
@@ -15,23 +13,10 @@ export default memo(function SettingsGeneralUpdate() {
     useSelector([SettingsKey.AutoCheckUpdate, 'set']),
   );
   const { messageApi } = useContext(AppContext);
-  const handleChangeAutoCheckUpdate = async (value: boolean) => {
-    try {
-      if (value) {
-        await enable();
-      } else {
-        await disable();
-      }
-      set(SettingsKey.Autostart, value);
-    } catch (error) {
-      messageApi?.error(t('tips.autostart.error'));
-    }
-  };
 
-  useAsyncEffect(async () => {
-    const enable = await isEnabled();
-    set(SettingsKey.Autostart, enable);
-  }, []);
+  const handleChangeAutoCheckUpdate = async (value: boolean) => {
+    set(SettingsKey.AutoCheckUpdate, value);
+  };
 
   return (
     <SettingItem

@@ -7,11 +7,15 @@ import checkUpdate from '@/utils/updater';
 import { Loader2 } from 'lucide-react';
 import { Trans } from 'react-i18next';
 import { AppContext } from '@/routes';
+import { invoke } from '@tauri-apps/api/core';
+
+let clickCount = 0;
 
 function SettingsAboutVersion() {
   const t = useI18n();
   const [isChecking, setIsChecking] = useState(false);
   const { messageApi } = useContext(AppContext);
+
   const handleCheckUpdate = async () => {
     try {
       setIsChecking(true);
@@ -27,9 +31,21 @@ function SettingsAboutVersion() {
     }
   };
 
+  const handleTitleClick = () => {
+    clickCount++;
+    if (clickCount === 5) {
+      invoke('ipc_open_devtool');
+      clickCount = 0;
+    }
+  };
+
   return (
     <SettingItem
-      title={t('settings.about.version.title', { version: packageJson.version })}
+      title={
+        <span onClick={handleTitleClick}>
+          {t('settings.about.version.title', { version: packageJson.version })}
+        </span>
+      }
       description={
         <Trans
           // @ts-ignore
