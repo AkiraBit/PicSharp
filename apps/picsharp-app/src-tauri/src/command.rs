@@ -36,7 +36,7 @@ pub async fn ipc_open_system_preference_notifications() -> Response {
 
 #[cfg(target_os = "windows")]
 #[command]
-pub async fn ipc_open_system_preference_notifications() -> Result<String, String> {
+pub async fn ipc_open_system_preference_notifications() -> Response {
     let methods = vec![
         ("explorer", vec!["ms-settings:notifications"]),
         ("start", vec!["ms-settings:notifications"]),
@@ -81,7 +81,7 @@ pub async fn ipc_open_system_preference_notifications() -> Result<String, String
 
 #[cfg(target_os = "linux")]
 #[command]
-pub async fn ipc_open_system_preference_notifications() -> Result<String, String> {
+pub async fn ipc_open_system_preference_notifications() -> Response {
     // Detect desktop environment
     let desktop_env = std::env::var("XDG_CURRENT_DESKTOP")
         .or_else(|_| std::env::var("DESKTOP_SESSION"))
@@ -171,7 +171,7 @@ pub async fn ipc_open_system_preference_notifications() -> Result<String, String
 
 #[cfg(not(any(target_os = "macos", target_os = "windows", target_os = "linux")))]
 #[command]
-pub async fn ipc_open_system_preference_notifications() -> Result<String, String> {
+pub async fn ipc_open_system_preference_notifications() -> Response {
     Ok(serde_json::json!({
         "success": false,
         "error": "Opening system notification settings is not supported on this platform"
