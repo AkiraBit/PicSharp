@@ -11,7 +11,7 @@ import {
   SelectItem,
   SelectTrigger,
 } from '@/components/ui/select';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { isValidArray } from '@/utils';
 import { Empty } from 'antd';
 import { exists } from '@tauri-apps/plugin-fs';
@@ -20,7 +20,10 @@ import { Button } from '@/components/ui/button';
 import useSettingsStore from '@/store/settings';
 import { CompressionOutputMode } from '@/constants';
 import { Badge } from '@/components/ui/badge';
-import message from '@/components/message';
+import { CompressionContext } from '.';
+import useAppStore from '@/store/app';
+import { AppContext } from '@/routes';
+
 const WATCH_HISTORY_KEY = 'compression_watch_history';
 
 export const updateWatchHistory = async (path: string) => {
@@ -37,23 +40,28 @@ export const updateWatchHistory = async (path: string) => {
 };
 
 function WatchCompressionGuide() {
+  const { progressRef } = useContext(CompressionContext);
   const [history, setHistory] = useState<Array<{ name: string; path: string }>>([]);
   const navigate = useNavigate();
   const { setWorking, setWatchingFolder } = useCompressionStore(
     useSelector(['setWorking', 'setWatchingFolder']),
   );
   const t = useI18n();
+  const { messageApi } = useContext(AppContext);
 
   const handleWatch = async () => {
+    const { sidecar } = useAppStore.getState();
+    if (!sidecar?.origin) {
+      messageApi?.error(t('tips.file_watch_not_running'));
+      return;
+    }
     const path = await open({
       directory: true,
       multiple: false,
     });
     if (path) {
       if (!(await exists(path))) {
-        message.warning({
-          title: t('tips.path_not_exists'),
-        });
+        messageApi?.error(t('tips.path_not_exists'));
         return;
       }
       const state = useSettingsStore.getState();
@@ -61,13 +69,12 @@ function WatchCompressionGuide() {
         state.compression_output === CompressionOutputMode.SaveToNewFolder &&
         state.compression_output_save_to_folder === path
       ) {
-        message.warning({
-          title: t('tips.watch_and_save_same_folder'),
-        });
+        messageApi?.error(t('tips.watch_and_save_same_folder'));
         return;
       }
       const newHistory = await updateWatchHistory(path);
       setHistory(newHistory);
+      progressRef.current?.show(true);
       setWorking(true);
       setWatchingFolder(path);
       navigate(`/compression/watch/workspace`);
@@ -75,6 +82,11 @@ function WatchCompressionGuide() {
   };
 
   const handleHistorySelect = async (path: string) => {
+    const { sidecar } = useAppStore.getState();
+    if (!sidecar?.origin) {
+      messageApi?.error(t('tips.file_watch_not_running'));
+      return;
+    }
     const isExists = await exists(path);
     const targetIndex = history.findIndex((item) => item.path === path);
     if (isExists) {
@@ -83,9 +95,7 @@ function WatchCompressionGuide() {
         state.compression_output === CompressionOutputMode.SaveToNewFolder &&
         state.compression_output_save_to_folder === path
       ) {
-        message.warning({
-          title: t('tips.watch_and_save_same_folder'),
-        });
+        messageApi?.error(t('tips.watch_and_save_same_folder'));
         return;
       }
       if (targetIndex !== -1) {
@@ -95,6 +105,7 @@ function WatchCompressionGuide() {
         localStorage.setItem(WATCH_HISTORY_KEY, JSON.stringify(newHistory));
         setHistory(newHistory);
       }
+      progressRef.current?.show(true);
       setWorking(true);
       setWatchingFolder(path);
       navigate(`/compression/watch/workspace`);
@@ -102,9 +113,7 @@ function WatchCompressionGuide() {
       history.splice(targetIndex, 1);
       localStorage.setItem(WATCH_HISTORY_KEY, JSON.stringify(history));
       setHistory([...history]);
-      message.warning({
-        title: t('tips.file_not_exists'),
-      });
+      messageApi?.error(t('tips.file_not_exists'));
     }
   };
 

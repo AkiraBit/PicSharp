@@ -1,12 +1,11 @@
-import { useEffect, useRef, useContext } from 'react';
-import { UnwatchFn } from '@tauri-apps/plugin-fs';
+import { useEffect, useRef, useContext, useLayoutEffect } from 'react';
 import { isFunction, debounce } from 'radash';
 import useCompressionStore from '@/store/compression';
 import WatchFileManager from './watch-file-manager';
 import { getFilename, parsePaths, humanSize } from '@/utils/fs';
 import { watchFolder } from '@/utils/fs-watch';
 import { CompressionOutputMode, VALID_IMAGE_EXTS } from '@/constants';
-import { isValidArray, correctFloat } from '@/utils';
+import { isValidArray, correctFloat, sleep, isMac } from '@/utils';
 import Compressor, { ICompressor } from '@/utils/compressor';
 import { SettingsKey } from '@/constants';
 import { isString } from 'radash';
@@ -17,14 +16,17 @@ import { sendTextNotification } from '@/utils/notification';
 import { appCacheDir, join } from '@tauri-apps/api/path';
 import useAppStore from '@/store/app';
 import { convertFileSrc } from '@tauri-apps/api/core';
-import message from '@/components/message';
 import { AppContext } from '@/routes';
+import { CompressionContext } from '.';
+import { message as systemMessage } from '@tauri-apps/plugin-dialog';
 
 function CompressionWatch() {
+  const { progressRef } = useContext(CompressionContext);
   const navigate = useNavigate();
   const queueRef = useRef<string[]>([]);
   const t = useI18n();
   const { messageApi } = useContext(AppContext);
+  const isFirstInit = useRef(true);
   const handleCompress = async (files: FileInfo[]) => {
     try {
       const { sidecar } = useAppStore.getState();
@@ -160,71 +162,74 @@ function CompressionWatch() {
   });
 
   useEffect(() => {
+    let eventSource: EventSource = null;
     const { watchingFolder, reset } = useCompressionStore.getState();
-    if (!watchingFolder) {
+    function regain() {
       reset();
       navigate('/compression/watch/guide');
+      progressRef.current?.done();
+    }
+    async function handleWatch() {
+      const { sidecar } = useAppStore.getState();
+      eventSource = new EventSource(`${sidecar?.origin}/watch/new-images?path=${watchingFolder}`);
+      eventSource.onopen = () => {
+        console.log('[Sidecar] Watch EventSource opened');
+        isFirstInit.current = false;
+      };
+      eventSource.addEventListener('ready', (event) => {
+        console.log('[Sidecar] Watch EventSource ready');
+        progressRef.current?.done();
+      });
+      eventSource.addEventListener('add', (event) => {
+        const path = event.data;
+        const settingsState = useSettingsStore.getState();
+        const compressionState = useCompressionStore.getState();
+        if (settingsState.compression_output === CompressionOutputMode.SaveAsNewFile) {
+          const filename = getFilename(path);
+          if (
+            !compressionState.fileMap.has(path) &&
+            !filename.endsWith(settingsState.compression_output_save_as_file_suffix)
+          ) {
+            queueRef.current.push(path);
+          }
+        } else {
+          if (!compressionState.fileMap.has(path)) {
+            queueRef.current.push(path);
+          }
+        }
+        throttledProcessData();
+      });
+      eventSource.addEventListener('self-enoent', async () => {
+        console.log('[Sidecar] Watch EventSource self-enoent');
+        eventSource?.close();
+        if (isMac) {
+          await systemMessage(t('tips.file_watch_target_changed'), {
+            kind: 'error',
+          });
+        } else {
+          await messageApi?.error(t('tips.file_watch_target_changed'));
+        }
+        regain();
+      });
+      eventSource.addEventListener('error', async (event) => {
+        console.log('[Sidecar] Watch EventSource error', event);
+        await sleep(1000);
+        if (isFirstInit.current) {
+          isFirstInit.current = false;
+          messageApi?.error(t('tips.file_watch_not_running'));
+        } else {
+          messageApi?.error(t('common.compress_failed_msg'));
+        }
+        regain();
+      });
+    }
+    if (!watchingFolder) {
+      regain();
       return;
     }
-    let unWatch: UnwatchFn | null = null;
-    const handleWatch = async () => {
-      unWatch = await watchFolder(watchingFolder, {
-        onCreate: (type, paths) => {
-          const settingsState = useSettingsStore.getState();
-          const compressionState = useCompressionStore.getState();
-          if (type === 'file') {
-            if (settingsState.compression_output === CompressionOutputMode.SaveAsNewFile) {
-              paths.forEach((p) => {
-                const filename = getFilename(p);
-                if (
-                  !compressionState.fileMap.has(p) &&
-                  !filename.endsWith(settingsState.compression_output_save_as_file_suffix)
-                ) {
-                  queueRef.current.push(p);
-                }
-              });
-            } else {
-              paths.forEach((p) => {
-                if (!compressionState.fileMap.has(p)) {
-                  queueRef.current.push(p);
-                }
-              });
-            }
-            throttledProcessData();
-          }
-        },
-        onRemove: async (type, paths) => {
-          if (type === 'folder' && paths.includes(watchingFolder)) {
-            await message.warning({
-              title: t('tips.watch_folder_deleted'),
-            });
-            reset();
-            navigate('/compression/watch/guide');
-          }
-        },
-        onRename: async (from, to) => {
-          if (from === watchingFolder) {
-            await message.warning({
-              title: t('tips.watch_folder_moved_or_renamed'),
-            });
-            reset();
-            navigate('/compression/watch/guide');
-          }
-        },
-        onMove: async (to) => {
-          if (to === watchingFolder) {
-            await message.warning({
-              title: t('tips.watch_folder_moved_or_renamed'),
-            });
-            reset();
-            navigate('/compression/watch/guide');
-          }
-        },
-      });
-    };
     handleWatch();
     return () => {
-      isFunction(unWatch) && unWatch();
+      eventSource?.close();
     };
   }, []);
 

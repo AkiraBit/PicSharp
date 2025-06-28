@@ -284,11 +284,14 @@ const enUS = {
   'tips.autostart.error': 'Fail to configure autostart',
   'tips.autostart.already_enabled': 'Autostart already enabled',
   'tips.autostart.already_disabled': 'Autostart already disabled',
+  'tips.file_watch_not_running':
+    'File watch service failed to start, please try again or restart the application',
+  'tips.file_watch_target_changed': 'The listening directory has been modified or moved',
 
   // Watch Compression Guide
   'page.compression.watch.guide.title': 'Listen And Auto-Compress',
   'page.compression.watch.guide.description':
-    'Select the directory you want to listen, and when new images are added to the directory, they will be automatically compressed.',
+    'Listen to new images in the directory and automatically compress them.',
   'page.compression.watch.guide.folder': 'Folder',
   'page.compression.watch.guide.history': 'History',
   'page.compression.watch.guide.attention': 'Attention',

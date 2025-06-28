@@ -8,6 +8,7 @@ import { isValidArray } from '@/utils';
 import { Disc3 } from 'lucide-react';
 import { useI18n } from '../../i18n';
 import { Badge } from '@/components/ui/badge';
+import { openPath } from '@tauri-apps/plugin-opener';
 export interface WatchFileManagerProps {}
 
 function WatchFileManager(props: WatchFileManagerProps) {
@@ -30,7 +31,10 @@ function WatchFileManager(props: WatchFileManagerProps) {
     <div className='relative flex h-full flex-col items-center'>
       <Badge
         variant='secondary'
-        className='absolute left-[50%] top-2 -translate-x-1/2 text-nowrap bg-neutral-200/80'
+        className='z-999 fixed left-[50%] top-2 -translate-x-1/2 cursor-pointer text-nowrap bg-neutral-300/60 hover:underline'
+        onClick={() => {
+          openPath(watchingFolder);
+        }}
       >
         {watchingFolder}
       </Badge>

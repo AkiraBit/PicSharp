@@ -37,7 +37,7 @@ export function useNavigate() {
         nextUrl = url.pathname;
       }
 
-      if (url === '/settings' && state.working) {
+      if (url === '/settings') {
         createWebviewWindow('settings', {
           url,
           title: t('nav.settings'),

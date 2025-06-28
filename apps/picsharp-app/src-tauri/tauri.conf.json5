@@ -16,8 +16,10 @@
         "titleBarStyle": "Overlay",
         "hiddenTitle": true,
         "title": "PicSharp",
-        "width": 863,
-        "height": 528,
+        // "width": 863,
+        // "height": 528,
+        "width": 650,
+        "height": 420,
         "center": true
       }
     ],

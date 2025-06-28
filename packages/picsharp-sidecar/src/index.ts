@@ -15,6 +15,7 @@ import tiff from './controllers/compress/tiff';
 import tinify from './controllers/compress/tinify';
 import { findAvailablePort } from './utils';
 import { HTTPException } from 'hono/http-exception';
+import watch from './controllers/watch';
 
 async function main() {
   const argv = yargs(hideBin(process.argv))
@@ -65,7 +66,8 @@ async function main() {
     .route('/compress/gif', gif)
     .route('/compress/avif', avif)
     .route('/compress/tiff', tiff)
-    .route('/compress/tinify', tinify);
+    .route('/compress/tinify', tinify)
+    .route('/watch', watch);
 
   serve(
     {

@@ -29,7 +29,7 @@ function ClassicCompressionGuide() {
 
   const handleFiles = async (paths: string[] | null) => {
     if (!isValidArray(paths)) return;
-    progressRef.current.show(true);
+    progressRef.current?.show(true);
     const files = await parsePaths(paths!, VALID_IMAGE_EXTS);
     if (!isValidArray(files)) {
       progressRef.current?.done();

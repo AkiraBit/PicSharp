@@ -268,6 +268,8 @@ export default {
   'tips.autostart.error': '开机自启动配置错误',
   'tips.autostart.already_enabled': '开机自启动已开启',
   'tips.autostart.already_disabled': '开机自启动已关闭',
+  'tips.file_watch_not_running': '文件监听服务启动失败，请重试或重启应用',
+  'tips.file_watch_target_changed': '监听目录被修改或移动',
   // 经典模式压缩引导页
   'page.compression.classic.app_title': 'PicSharp',
   'page.compression.classic.app_description': '简单高效的图片压缩工具',
@@ -282,8 +284,7 @@ export default {
 
   // 监控文件夹压缩引导页
   'page.compression.watch.guide.title': '监控目录新增图片并自动压缩',
-  'page.compression.watch.guide.description':
-    '选择要监控的目录，当目录内有新增图片时，它们将被自动压缩',
+  'page.compression.watch.guide.description': '监控目录内新增图片并自动压缩',
   'page.compression.watch.guide.folder': '目录',
   'page.compression.watch.guide.history': '历史',
   'page.compression.watch.guide.attention': '注意事项',
