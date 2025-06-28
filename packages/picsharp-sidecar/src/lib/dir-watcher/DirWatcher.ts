@@ -4,24 +4,26 @@ import { watch, watchFile, unwatchFile, FSWatcher } from 'node:fs';
 import type { Stats, StatWatcher } from 'node:fs';
 import { Trie, TrieNode } from './Trie';
 import readdirp, { ReaddirpOptions, EntryInfo } from 'readdirp';
-import { EventType, FsDirWatcherEventMap } from './types';
+import { EventType, DirWatcherEventMap, TrieNodeData } from './types';
 import { exists, hashFile } from './utils';
 import { throttle } from 'radash';
 
-export interface FsDirWatcherOptions {
+export interface DirWatcherOptions {
   ignored?: (path: string) => boolean;
   directoryFilter?: ReaddirpOptions['directoryFilter'];
   fileFilter?: ReaddirpOptions['fileFilter'];
   depth?: ReaddirpOptions['depth'];
 }
 
-export class FsDirWatcher extends EventEmitter<FsDirWatcherEventMap> {
+let num = 0;
+
+export class DirWatcher extends EventEmitter<DirWatcherEventMap> {
   // 当前监听的目录路径
   #path: string;
   // 文件系统快照
-  #snapshot: Trie<Stats> = new Trie<Stats>();
+  #snapshot: Trie<TrieNodeData> = new Trie<TrieNodeData>();
   // 监听选项
-  #options?: FsDirWatcherOptions;
+  #options?: DirWatcherOptions;
   // 自监听器
   #selfWatcher: StatWatcher | null = null;
   // 文件系统监听器
@@ -29,7 +31,7 @@ export class FsDirWatcher extends EventEmitter<FsDirWatcherEventMap> {
   // 节流器
   #throttledEmitters: Map<string, Function> = new Map();
   // 节流时间
-  #throttleMs: number = 500;
+  #throttleMs: number = 1000;
   // 循环队列
   #checkQueue: Map<string, Set<string>> = new Map();
   // 循环队列锁
@@ -37,7 +39,7 @@ export class FsDirWatcher extends EventEmitter<FsDirWatcherEventMap> {
   // 是否已关闭
   public closed: boolean = false;
 
-  constructor(path: string, options?: FsDirWatcherOptions) {
+  constructor(path: string, options?: DirWatcherOptions) {
     super();
     this.#path = path;
     this.#options = options;
@@ -61,14 +63,14 @@ export class FsDirWatcher extends EventEmitter<FsDirWatcherEventMap> {
     }
   };
 
-  #setNodeHash = async (node: TrieNode<Stats>, path: string) => {
+  #setNodeHash = async (node: TrieNode<TrieNodeData>, path: string) => {
     const hash = await hashFile(path);
     node.hash = hash;
   };
 
   #createSnapshot = async (path: string, options?: Partial<ReaddirpOptions>) => {
-    return new Promise<Trie<Stats>>((resolve, reject) => {
-      const snapshot = new Trie<Stats>();
+    return new Promise<Trie<TrieNodeData>>((resolve, reject) => {
+      const snapshot = new Trie<TrieNodeData>();
       const queue: Array<Promise<void>> = [];
       readdirp(path, options)
         .on('data', (entry: EntryInfo) => {
@@ -76,14 +78,25 @@ export class FsDirWatcher extends EventEmitter<FsDirWatcherEventMap> {
           if (stats?.isDirectory()) {
             snapshot.add(fullPath, true);
           } else {
-            const node = snapshot.add(fullPath, false, stats);
+            const { dir, name, ext } = parse(fullPath);
+            const node = snapshot.add(fullPath, false, {
+              fullPath,
+              dir,
+              name: `${name}${ext}`,
+              basename: name,
+              ext,
+              stats: entry.stats,
+            });
             queue.push(this.#setNodeHash(node, fullPath));
           }
         })
         .on('warn', (error) => {
           this.emit(EventType.WALK_WARN, error);
         })
-        .on('error', reject)
+        .on('error', (error) => {
+          console.log('error', error);
+          reject(error);
+        })
         .on('end', async () => {
           await Promise.all(queue);
           resolve(snapshot);
@@ -112,7 +125,7 @@ export class FsDirWatcher extends EventEmitter<FsDirWatcherEventMap> {
     });
   };
 
-  #watch = (path: string, options?: FsDirWatcherOptions) => {
+  #watch = (path: string, options?: DirWatcherOptions) => {
     this.#watcher = watch(path, { recursive: true, persistent: true }, (eventType, filename) => {
       if (!filename) return;
       this.emit(EventType.RAW, eventType, filename);
@@ -159,39 +172,55 @@ export class FsDirWatcher extends EventEmitter<FsDirWatcherEventMap> {
       directoryFilter: this.#options?.directoryFilter,
     });
 
+    // console.log('diffHandler', paths);
+
     for (const path of paths) {
-      // 新节点树
       const newNode = newSnapshot.getNode(path);
       const newParentNode = newSnapshot.getNode(dir);
-      // 旧节点树
+
       const oldNode = this.#snapshot.getNode(path);
       const oldParentNode = this.#snapshot.getNode(dir);
-      // console.log("oldParentNode", oldParentNode.name);
+
       // 判断是否新增
       if (newSnapshot.hasPath(path) && !this.#snapshot.hasPath(path)) {
         if (oldParentNode) {
-          const targetNode = [...oldParentNode.children!.values()]
-            .filter((i) => !i.isDirectory && i.hash)
-            .find((child) => {
-              return child.hash === newNode?.hash;
-            });
+          const targetNode = Array.from(oldParentNode.children!.values()).find((child) => {
+            return !child.isDirectory && child.hash && child.hash === newNode?.hash;
+          });
           if (!targetNode) {
-            this.#snapshot.add(path, newNode?.isDirectory ?? false, newNode?.data);
-            this.emit(EventType.ADD, path);
+            this.#snapshot.add(path, newNode?.isDirectory || false, newNode?.data, newNode?.hash);
+            console.log('add', num++);
+            this.emit(EventType.ADD, {
+              ...newNode?.data!,
+              hash: newNode?.hash!,
+            });
           }
         }
       } else if (!newSnapshot.hasPath(path) && this.#snapshot.hasPath(path)) {
         if (newParentNode) {
-          const targetNode = [...newParentNode.children!.values()]
+          const targetNode = Array.from(newParentNode.children!.values())
             .filter((i) => !i.isDirectory && i.hash)
             .find((child) => {
               return child.hash === oldNode?.hash;
             });
           if (targetNode) {
-            this.emit(EventType.RENAME, oldNode?.name ?? '', targetNode?.name ?? '');
+            this.emit(
+              EventType.RENAME,
+              {
+                ...oldNode?.data!,
+                hash: oldNode?.hash!,
+              },
+              {
+                ...targetNode?.data!,
+                hash: targetNode?.hash!,
+              },
+            );
           } else if (!(await exists(path))) {
             this.#snapshot.remove(path);
-            this.emit(EventType.REMOVE, path);
+            this.emit(EventType.REMOVE, {
+              ...oldNode?.data!,
+              hash: oldNode?.hash!,
+            });
           }
         }
       } else if (newSnapshot.hasPath(path) && this.#snapshot.hasPath(path)) {
@@ -200,15 +229,25 @@ export class FsDirWatcher extends EventEmitter<FsDirWatcherEventMap> {
         if (
           !newNode?.isDirectory &&
           !oldNode?.isDirectory &&
-          newNode?.data?.mtimeMs !== oldNode?.data?.mtimeMs &&
-          newNode?.data?.size !== oldNode?.data?.size
+          newNode?.data?.stats?.mtimeMs !== oldNode?.data?.stats?.mtimeMs &&
+          newNode?.data?.stats?.size !== oldNode?.data?.stats?.size
         ) {
           this.#snapshot.updateLeafNode(path, {
             name: newNode?.name ?? '',
             data: newNode?.data,
             hash: newNode?.hash,
           });
-          this.emit(EventType.CHANGE, path, newNode?.data ?? {}, oldNode?.data ?? {});
+          this.emit(
+            EventType.CHANGE,
+            {
+              ...oldNode?.data!,
+              hash: oldNode?.hash!,
+            },
+            {
+              ...newNode?.data!,
+              hash: newNode?.hash!,
+            },
+          );
         }
       }
     }

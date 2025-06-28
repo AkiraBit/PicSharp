@@ -29,7 +29,6 @@ const ignores = [
 app.get('/new-images', (c) => {
   return streamSSE(c, async (stream) => {
     const { path } = c.req.query();
-    console.log('path', path);
     let ready = false;
     let abort = false;
     const watcher = await watch(path, {
@@ -52,17 +51,15 @@ app.get('/new-images', (c) => {
       if (!ready) {
         ready = true;
         watcher.on(EventType.READY, () => {
-          console.log('ready');
           stream.writeSSE({
             data: '',
             event: 'ready',
             id: String(++id),
           });
           watcher
-            .on(EventType.ADD, (fullPath) => {
-              console.log('add', fullPath);
+            .on(EventType.ADD, (payload) => {
               stream.writeSSE({
-                data: fullPath,
+                data: JSON.stringify(payload),
                 event: 'add',
                 id: String(++id),
               });

@@ -1,7 +1,5 @@
 import { sep } from 'node:path';
 
-type PathBuf = string;
-
 interface TrieStats {
   // 文件数
   fileCount: number;
@@ -15,21 +13,36 @@ interface TrieStats {
  * 文件系统前缀树节点
  * 每个节点包含子节点映射和可选的文件数据
  */
-export interface TrieNode<T = any> {
+export class TrieNode<T = any> {
   // 名称
-  name: string;
-  // 是否为根节点
-  isRoot: boolean;
+  name: string | '#root';
   // 是否为目录节点
   isDirectory: boolean;
   // 父节点
   parent?: TrieNode<T>;
   // 子节点，仅目录节点有
-  children?: Map<PathBuf, TrieNode<T>>;
+  children?: Map<string, TrieNode<T>>;
   // 文件数据，仅文件节点有
   data?: T;
   // 文件哈希，仅文件节点有
   hash?: string;
+
+  constructor(options: Partial<TrieNode<T>>) {
+    this.name = options.name || '';
+    this.isDirectory = options.isDirectory || false;
+    this.parent = options.parent;
+    this.children = options.children;
+    this.data = options.data;
+    this.hash = options.hash;
+  }
+
+  get isLeaf() {
+    return !this.isRoot && !this.isDirectory;
+  }
+
+  get isRoot() {
+    return this.name === '#root';
+  }
 }
 
 /**
@@ -40,18 +53,13 @@ export class Trie<T = any> {
   private root: TrieNode<T>;
 
   constructor() {
-    this.root = {
-      name: '#root',
-      isRoot: true,
-      isDirectory: true,
-      children: new Map(),
-    };
+    this.root = new TrieNode({ name: '#root', isDirectory: true, children: new Map() });
   }
 
   /**
    * 将路径分割为路径段
    */
-  private splitPath(path: PathBuf): string[] {
+  private splitPath(path: string): string[] {
     return path
       .trim()
       .split(sep)
@@ -61,7 +69,12 @@ export class Trie<T = any> {
   /**
    * 获取或创建路径对应的节点
    */
-  private createNode(path: PathBuf, isDirectory: boolean = false): TrieNode<T> {
+  private createNode(
+    path: string,
+    isDirectory: boolean = false,
+    data?: T,
+    hash?: string,
+  ): TrieNode<T> {
     const segments = this.splitPath(path);
     let current = this.root;
 
@@ -72,14 +85,16 @@ export class Trie<T = any> {
 
       if (current.children) {
         if (!current.children.has(segment)) {
-          const newNode: TrieNode<T> = {
+          const newNode = new TrieNode<T>({
             name: segment,
-            isRoot: false,
             parent: current,
             isDirectory: isDirectoryNode,
-          };
+          });
           if (isDirectoryNode) {
             newNode.children = new Map();
+          } else {
+            newNode.data = data;
+            newNode.hash = hash;
           }
           current.children.set(segment, newNode);
         }
@@ -95,13 +110,13 @@ export class Trie<T = any> {
   /**
    * 获取路径对应的节点
    */
-  public getNode(path: PathBuf): TrieNode<T> | null {
+  public getNode(path: string): TrieNode<T> | undefined {
     const segments = this.splitPath(path);
     let current = this.root;
 
     for (const segment of segments) {
       if (!current?.children || !current.children.has(segment)) {
-        return null;
+        return;
       }
       current = current.children.get(segment)!;
     }
@@ -110,16 +125,16 @@ export class Trie<T = any> {
   }
 
   public updateLeafNode(
-    path: PathBuf,
+    path: string,
     payload: {
       name?: string;
       data?: T;
       hash?: string;
     },
-  ): TrieNode<T> | null {
+  ): TrieNode<T> | undefined {
     const node = this.getNode(path);
     if (!node || node.isRoot || !node.data || node.isDirectory) {
-      return null;
+      return;
     }
     if (payload.name) {
       node.name = payload.name;
@@ -134,27 +149,25 @@ export class Trie<T = any> {
   }
 
   // 添加单个文件
-  public add(path: PathBuf, isDirectory: boolean, data?: T): TrieNode<T> {
-    const node = this.createNode(path, isDirectory);
-    if (!node.isDirectory) {
-      node.data = data;
-    }
+  public add(path: string, isDirectory: boolean, data?: T, hash?: string): TrieNode<T> {
+    const node = this.createNode(path, isDirectory, data, hash);
     return node;
   }
 
   // 批量添加文件
   public bulkAdd(
     files: Array<{
-      path: PathBuf;
+      path: string;
       isDirectory: boolean;
       data?: T;
+      hash?: string;
     }>,
   ): Array<TrieNode<T>> {
-    return files.map((file) => this.add(file.path, file.isDirectory, file.data));
+    return files.map((file) => this.add(file.path, file.isDirectory, file.data, file.hash));
   }
 
   // 删除单个文件
-  public remove(path: PathBuf): boolean {
+  public remove(path: string): boolean {
     const node = this.getNode(path);
     if (!node || node.isRoot || !node.parent || !node.parent.children) {
       return false;
@@ -164,7 +177,7 @@ export class Trie<T = any> {
   }
 
   // 批量删除文件
-  public bulkRemove(paths: PathBuf[]): Array<{ path: PathBuf; result: boolean }> {
+  public bulkRemove(paths: string[]): Array<{ path: string; result: boolean }> {
     return paths.map((path) => ({ path, result: this.remove(path) }));
   }
 
@@ -201,12 +214,7 @@ export class Trie<T = any> {
    * 清空所有数据
    */
   public clear(): void {
-    this.root = {
-      name: '#root',
-      isRoot: true,
-      isDirectory: true,
-      children: new Map(),
-    };
+    this.root = new TrieNode({ name: '#root', isDirectory: true, children: new Map() });
   }
 
   /**

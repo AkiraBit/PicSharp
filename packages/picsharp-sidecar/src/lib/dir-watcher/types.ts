@@ -46,15 +46,28 @@ export enum EventType {
   RENAME = 'RENAME',
 }
 
-export interface FsDirWatcherEventMap {
+export interface TrieNodeData {
+  fullPath: string;
+  dir: string;
+  name: string;
+  basename: string;
+  ext: string;
+  stats?: Stats;
+}
+
+export type EventPayload = TrieNodeData & {
+  hash: string;
+};
+
+export interface DirWatcherEventMap {
   [EventType.READY]: [];
   [EventType.WALK_WARN]: [Error];
   [EventType.SELF_ENOENT]: [];
   [EventType.CLOSE]: [];
   [EventType.RAW]: [WatchEventType, string];
   [EventType.ERROR]: [Error];
-  [EventType.ADD]: [string];
-  [EventType.REMOVE]: [string];
-  [EventType.CHANGE]: [string, Partial<Stats>, Partial<Stats>];
-  [EventType.RENAME]: [string, string];
+  [EventType.ADD]: [EventPayload];
+  [EventType.REMOVE]: [EventPayload];
+  [EventType.CHANGE]: [EventPayload, EventPayload];
+  [EventType.RENAME]: [EventPayload, EventPayload];
 }

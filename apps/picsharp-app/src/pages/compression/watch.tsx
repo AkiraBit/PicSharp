@@ -181,11 +181,12 @@ function CompressionWatch() {
         progressRef.current?.done();
       });
       eventSource.addEventListener('add', (event) => {
-        const path = event.data;
+        const payload = JSON.parse(event.data);
+        const path = payload.fullPath;
         const settingsState = useSettingsStore.getState();
         const compressionState = useCompressionStore.getState();
         if (settingsState.compression_output === CompressionOutputMode.SaveAsNewFile) {
-          const filename = getFilename(path);
+          const filename = payload.name;
           if (
             !compressionState.fileMap.has(path) &&
             !filename.endsWith(settingsState.compression_output_save_as_file_suffix)
@@ -218,7 +219,7 @@ function CompressionWatch() {
           isFirstInit.current = false;
           messageApi?.error(t('tips.file_watch_not_running'));
         } else {
-          messageApi?.error(t('common.compress_failed_msg'));
+          messageApi?.error(t('tips.file_watch_not_running'));
         }
         regain();
       });
