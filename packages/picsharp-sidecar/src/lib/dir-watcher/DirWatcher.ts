@@ -165,144 +165,153 @@ export class DirWatcher extends EventEmitter<DirWatcherEventMap> {
   };
 
   #diffHandler = async (dir: string, paths: Set<string>) => {
-    const newSnapshot = await this.#createSnapshot(dir, {
-      depth: 1,
-      type: 'files_directories',
-      alwaysStat: true,
-      fileFilter: this.#options?.fileFilter,
-      directoryFilter: this.#options?.directoryFilter,
-    });
+    try {
+      const newSnapshot = await this.#createSnapshot(dir, {
+        depth: 1,
+        type: 'files_directories',
+        alwaysStat: true,
+        fileFilter: this.#options?.fileFilter,
+        directoryFilter: this.#options?.directoryFilter,
+      });
 
-    for (const path of paths) {
-      const newNode = newSnapshot.getNode(path);
-      const newParentNode = newSnapshot.getNode(dir);
+      for (const path of paths) {
+        const newNode = newSnapshot.getNode(path);
+        const newParentNode = newSnapshot.getNode(dir);
 
-      const oldNode = this.#snapshot.getNode(path);
-      const oldParentNode = this.#snapshot.getNode(dir);
+        const oldNode = this.#snapshot.getNode(path);
+        const oldParentNode = this.#snapshot.getNode(dir);
 
-      // 判断是否新增
-      if (newSnapshot.hasPath(path) && !this.#snapshot.hasPath(path)) {
-        if (oldParentNode) {
-          const targetNode = Array.from(oldParentNode.children!.values()).find((child) => {
-            if (newNode?.isDirectory) {
-              return child.isDirectory && child.data?.name === newNode?.data?.name;
-            } else {
-              return (
-                !child.isDirectory &&
-                child.hash === newNode?.hash &&
-                child.data?.name === newNode?.data?.name
-              );
+        // 判断是否新增
+        if (newSnapshot.hasPath(path) && !this.#snapshot.hasPath(path)) {
+          if (oldParentNode) {
+            const targetNode = Array.from(oldParentNode.children!.values()).find((child) => {
+              if (newNode?.isDirectory) {
+                return child.isDirectory && child.data?.name === newNode?.data?.name;
+              } else {
+                return (
+                  !child.isDirectory &&
+                  child.hash === newNode?.hash &&
+                  child.data?.name === newNode?.data?.name
+                );
+              }
+            });
+            if (!targetNode) {
+              if (newNode?.isDirectory) {
+                const newNodeSnapshot = await this.#createSnapshot(newNode?.fullPath, {
+                  type: 'files_directories',
+                  alwaysStat: true,
+                  fileFilter: this.#options?.fileFilter,
+                  directoryFilter: this.#options?.directoryFilter,
+                });
+                const newNodeData = newNodeSnapshot.getNode(path);
+                this.#snapshot.add(
+                  path,
+                  newNode?.isDirectory || false,
+                  newNodeData?.data,
+                  newNodeData?.hash,
+                  newNodeData?.children,
+                );
+                this.emit(EventType.ADD, {
+                  fullPath: newNode?.fullPath,
+                  isDirectory: true,
+                });
+              } else {
+                this.#snapshot.add(
+                  path,
+                  newNode?.isDirectory || false,
+                  newNode?.data,
+                  newNode?.hash,
+                );
+                this.emit(EventType.ADD, {
+                  ...newNode?.data!,
+                  hash: newNode?.hash!,
+                  isDirectory: false,
+                });
+              }
             }
-          });
-          if (!targetNode) {
-            if (newNode?.isDirectory) {
-              const newNodeSnapshot = await this.#createSnapshot(newNode?.fullPath, {
-                type: 'files_directories',
-                alwaysStat: true,
-                fileFilter: this.#options?.fileFilter,
-                directoryFilter: this.#options?.directoryFilter,
+          }
+        } else if (!newSnapshot.hasPath(path) && this.#snapshot.hasPath(path)) {
+          if (newParentNode) {
+            const targetNode = Array.from(newParentNode.children!.values()).find((child) => {
+              if (oldNode?.isDirectory) {
+                return child.isDirectory && child.data?.name === oldNode?.data?.name;
+              } else {
+                return (
+                  !child.isDirectory &&
+                  child.hash === oldNode?.hash &&
+                  child.data?.name === oldNode?.data?.name
+                );
+              }
+            });
+            if (targetNode) {
+              if (oldNode?.isDirectory) {
+                this.emit(
+                  EventType.RENAME,
+                  {
+                    fullPath: oldNode?.fullPath,
+                    isDirectory: true,
+                  },
+                  {
+                    fullPath: targetNode?.fullPath,
+                    isDirectory: true,
+                  },
+                );
+              } else {
+                this.emit(
+                  EventType.RENAME,
+                  {
+                    ...oldNode?.data!,
+                    hash: oldNode?.hash!,
+                    isDirectory: false,
+                  },
+                  {
+                    ...targetNode?.data!,
+                    hash: targetNode?.hash!,
+                    isDirectory: false,
+                  },
+                );
+              }
+            } else if (!(await exists(path))) {
+              this.#snapshot.remove(path);
+              this.emit(EventType.REMOVE, {
+                ...oldNode?.data!,
+                hash: oldNode?.hash!,
+                isDirectory: !!oldNode?.isDirectory,
               });
-              const newNodeData = newNodeSnapshot.getNode(path);
-              this.#snapshot.add(
-                path,
-                newNode?.isDirectory || false,
-                newNodeData?.data,
-                newNodeData?.hash,
-                newNodeData?.children,
-              );
-              this.emit(EventType.ADD, {
-                fullPath: newNode?.fullPath,
-                isDirectory: true,
-              });
-            } else {
-              this.#snapshot.add(path, newNode?.isDirectory || false, newNode?.data, newNode?.hash);
-              this.emit(EventType.ADD, {
+            }
+          }
+        } else if (newSnapshot.hasPath(path) && this.#snapshot.hasPath(path)) {
+          const newNode = newSnapshot.getNode(path);
+          const oldNode = this.#snapshot.getNode(path);
+          if (
+            !newNode?.isDirectory &&
+            !oldNode?.isDirectory &&
+            newNode?.data?.stats?.mtimeMs !== oldNode?.data?.stats?.mtimeMs &&
+            newNode?.data?.stats?.size !== oldNode?.data?.stats?.size
+          ) {
+            this.#snapshot.updateLeafNode(path, {
+              name: newNode?.name ?? '',
+              data: newNode?.data,
+              hash: newNode?.hash,
+            });
+            this.emit(
+              EventType.CHANGE,
+              {
+                ...oldNode?.data!,
+                hash: oldNode?.hash!,
+                isDirectory: !!oldNode?.isDirectory,
+              },
+              {
                 ...newNode?.data!,
                 hash: newNode?.hash!,
-                isDirectory: false,
-              });
-            }
+                isDirectory: !!newNode?.isDirectory,
+              },
+            );
           }
-        }
-      } else if (!newSnapshot.hasPath(path) && this.#snapshot.hasPath(path)) {
-        if (newParentNode) {
-          const targetNode = Array.from(newParentNode.children!.values()).find((child) => {
-            if (oldNode?.isDirectory) {
-              return child.isDirectory && child.data?.name === oldNode?.data?.name;
-            } else {
-              return (
-                !child.isDirectory &&
-                child.hash === oldNode?.hash &&
-                child.data?.name === oldNode?.data?.name
-              );
-            }
-          });
-          if (targetNode) {
-            if (oldNode?.isDirectory) {
-              this.emit(
-                EventType.RENAME,
-                {
-                  fullPath: oldNode?.fullPath,
-                  isDirectory: true,
-                },
-                {
-                  fullPath: targetNode?.fullPath,
-                  isDirectory: true,
-                },
-              );
-            } else {
-              this.emit(
-                EventType.RENAME,
-                {
-                  ...oldNode?.data!,
-                  hash: oldNode?.hash!,
-                  isDirectory: false,
-                },
-                {
-                  ...targetNode?.data!,
-                  hash: targetNode?.hash!,
-                  isDirectory: false,
-                },
-              );
-            }
-          } else if (!(await exists(path))) {
-            this.#snapshot.remove(path);
-            this.emit(EventType.REMOVE, {
-              ...oldNode?.data!,
-              hash: oldNode?.hash!,
-              isDirectory: !!oldNode?.isDirectory,
-            });
-          }
-        }
-      } else if (newSnapshot.hasPath(path) && this.#snapshot.hasPath(path)) {
-        const newNode = newSnapshot.getNode(path);
-        const oldNode = this.#snapshot.getNode(path);
-        if (
-          !newNode?.isDirectory &&
-          !oldNode?.isDirectory &&
-          newNode?.data?.stats?.mtimeMs !== oldNode?.data?.stats?.mtimeMs &&
-          newNode?.data?.stats?.size !== oldNode?.data?.stats?.size
-        ) {
-          this.#snapshot.updateLeafNode(path, {
-            name: newNode?.name ?? '',
-            data: newNode?.data,
-            hash: newNode?.hash,
-          });
-          this.emit(
-            EventType.CHANGE,
-            {
-              ...oldNode?.data!,
-              hash: oldNode?.hash!,
-              isDirectory: !!oldNode?.isDirectory,
-            },
-            {
-              ...newNode?.data!,
-              hash: newNode?.hash!,
-              isDirectory: !!newNode?.isDirectory,
-            },
-          );
         }
       }
+    } catch (error) {
+      this.#errorHandler(error);
     }
   };
 
