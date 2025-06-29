@@ -57,13 +57,13 @@ pub async fn ipc_open_system_preference_notifications() -> Response {
             Err(e) => {
                 let error_msg = format!("Failed to open Notifications settings on Windows: {}", e);
                 error!("{}", error_msg);
-                Response::new(
+                return Response::new(
                     serde_json::json!({
                         "success": false,
                         "error": error_msg
                     })
                     .to_string(),
-                )
+                );
             }
         }
     }
@@ -166,7 +166,7 @@ pub async fn ipc_open_system_preference_notifications() -> Response {
             "Failed to open Notifications settings on Linux. Desktop environment: {}. Please open your system settings and navigate to Notifications manually.",
             desktop_env
         )
-    }))
+    }).to_string())
 }
 
 #[cfg(not(any(target_os = "macos", target_os = "windows", target_os = "linux")))]
