@@ -72,17 +72,18 @@ export class DirWatcher extends EventEmitter<DirWatcherEventMap> {
     return new Promise<Trie<TrieNodeData>>((resolve, reject) => {
       const snapshot = new Trie<TrieNodeData>();
       const queue: Array<Promise<void>> = [];
+      snapshot.add(path, true);
       readdirp(path, options)
         .on('data', (entry: EntryInfo) => {
           const { fullPath, stats } = entry;
           if (stats?.isDirectory()) {
             snapshot.add(fullPath, true);
           } else {
-            const { dir, name, ext } = parse(fullPath);
+            const { dir, name, ext, base } = parse(fullPath);
             const node = snapshot.add(fullPath, false, {
               fullPath,
               dir,
-              name: `${name}${ext}`,
+              name: base,
               basename: name,
               ext,
               stats: entry.stats,
@@ -172,8 +173,6 @@ export class DirWatcher extends EventEmitter<DirWatcherEventMap> {
       directoryFilter: this.#options?.directoryFilter,
     });
 
-    // console.log('diffHandler', paths);
-
     for (const path of paths) {
       const newNode = newSnapshot.getNode(path);
       const newParentNode = newSnapshot.getNode(dir);
@@ -185,41 +184,93 @@ export class DirWatcher extends EventEmitter<DirWatcherEventMap> {
       if (newSnapshot.hasPath(path) && !this.#snapshot.hasPath(path)) {
         if (oldParentNode) {
           const targetNode = Array.from(oldParentNode.children!.values()).find((child) => {
-            return !child.isDirectory && child.hash && child.hash === newNode?.hash;
+            if (newNode?.isDirectory) {
+              return child.isDirectory && child.data?.name === newNode?.data?.name;
+            } else {
+              return (
+                !child.isDirectory &&
+                child.hash === newNode?.hash &&
+                child.data?.name === newNode?.data?.name
+              );
+            }
           });
           if (!targetNode) {
-            this.#snapshot.add(path, newNode?.isDirectory || false, newNode?.data, newNode?.hash);
-            console.log('add', num++);
-            this.emit(EventType.ADD, {
-              ...newNode?.data!,
-              hash: newNode?.hash!,
-            });
+            if (newNode?.isDirectory) {
+              const newNodeSnapshot = await this.#createSnapshot(newNode?.fullPath, {
+                type: 'files_directories',
+                alwaysStat: true,
+                fileFilter: this.#options?.fileFilter,
+                directoryFilter: this.#options?.directoryFilter,
+              });
+              const newNodeData = newNodeSnapshot.getNode(path);
+              this.#snapshot.add(
+                path,
+                newNode?.isDirectory || false,
+                newNodeData?.data,
+                newNodeData?.hash,
+                newNodeData?.children,
+              );
+              this.emit(EventType.ADD, {
+                fullPath: newNode?.fullPath,
+                isDirectory: true,
+              });
+            } else {
+              this.#snapshot.add(path, newNode?.isDirectory || false, newNode?.data, newNode?.hash);
+              this.emit(EventType.ADD, {
+                ...newNode?.data!,
+                hash: newNode?.hash!,
+                isDirectory: false,
+              });
+            }
           }
         }
       } else if (!newSnapshot.hasPath(path) && this.#snapshot.hasPath(path)) {
         if (newParentNode) {
-          const targetNode = Array.from(newParentNode.children!.values())
-            .filter((i) => !i.isDirectory && i.hash)
-            .find((child) => {
-              return child.hash === oldNode?.hash;
-            });
+          const targetNode = Array.from(newParentNode.children!.values()).find((child) => {
+            if (oldNode?.isDirectory) {
+              return child.isDirectory && child.data?.name === oldNode?.data?.name;
+            } else {
+              return (
+                !child.isDirectory &&
+                child.hash === oldNode?.hash &&
+                child.data?.name === oldNode?.data?.name
+              );
+            }
+          });
           if (targetNode) {
-            this.emit(
-              EventType.RENAME,
-              {
-                ...oldNode?.data!,
-                hash: oldNode?.hash!,
-              },
-              {
-                ...targetNode?.data!,
-                hash: targetNode?.hash!,
-              },
-            );
+            if (oldNode?.isDirectory) {
+              this.emit(
+                EventType.RENAME,
+                {
+                  fullPath: oldNode?.fullPath,
+                  isDirectory: true,
+                },
+                {
+                  fullPath: targetNode?.fullPath,
+                  isDirectory: true,
+                },
+              );
+            } else {
+              this.emit(
+                EventType.RENAME,
+                {
+                  ...oldNode?.data!,
+                  hash: oldNode?.hash!,
+                  isDirectory: false,
+                },
+                {
+                  ...targetNode?.data!,
+                  hash: targetNode?.hash!,
+                  isDirectory: false,
+                },
+              );
+            }
           } else if (!(await exists(path))) {
             this.#snapshot.remove(path);
             this.emit(EventType.REMOVE, {
               ...oldNode?.data!,
               hash: oldNode?.hash!,
+              isDirectory: !!oldNode?.isDirectory,
             });
           }
         }
@@ -242,10 +293,12 @@ export class DirWatcher extends EventEmitter<DirWatcherEventMap> {
             {
               ...oldNode?.data!,
               hash: oldNode?.hash!,
+              isDirectory: !!oldNode?.isDirectory,
             },
             {
               ...newNode?.data!,
               hash: newNode?.hash!,
+              isDirectory: !!newNode?.isDirectory,
             },
           );
         }

@@ -41,7 +41,7 @@ app.get('/new-images', (c) => {
       },
     });
     stream.onAbort(() => {
-      console.log('abort');
+      console.log(`Watch <${path}> aborted`);
       watcher.close();
       stream.close();
       abort = true;

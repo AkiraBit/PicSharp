@@ -19,6 +19,7 @@ import { convertFileSrc } from '@tauri-apps/api/core';
 import { AppContext } from '@/routes';
 import { CompressionContext } from '.';
 import { message as systemMessage } from '@tauri-apps/plugin-dialog';
+import { message } from '@/components/message';
 
 function CompressionWatch() {
   const { progressRef } = useContext(CompressionContext);
@@ -161,6 +162,20 @@ function CompressionWatch() {
     }
   });
 
+  const alert = async (title: string, content?: string) => {
+    if (isMac) {
+      await systemMessage(content, {
+        kind: 'error',
+        title,
+      });
+    } else {
+      await message?.error({
+        title,
+        description: content,
+      });
+    }
+  };
+
   useEffect(() => {
     let eventSource: EventSource = null;
     const { watchingFolder, reset } = useCompressionStore.getState();
@@ -203,13 +218,7 @@ function CompressionWatch() {
       eventSource.addEventListener('self-enoent', async () => {
         console.log('[Sidecar] Watch EventSource self-enoent');
         eventSource?.close();
-        if (isMac) {
-          await systemMessage(t('tips.file_watch_target_changed'), {
-            kind: 'error',
-          });
-        } else {
-          await messageApi?.error(t('tips.file_watch_target_changed'));
-        }
+        await alert(t('tips.file_watch_target_changed'));
         regain();
       });
       eventSource.addEventListener('error', async (event) => {
@@ -219,7 +228,7 @@ function CompressionWatch() {
           isFirstInit.current = false;
           messageApi?.error(t('tips.file_watch_not_running'));
         } else {
-          messageApi?.error(t('tips.file_watch_not_running'));
+          await alert(t('tips.file_watch_abort'));
         }
         regain();
       });

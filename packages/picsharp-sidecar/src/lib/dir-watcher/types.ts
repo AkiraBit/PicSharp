@@ -48,15 +48,17 @@ export enum EventType {
 
 export interface TrieNodeData {
   fullPath: string;
-  dir: string;
-  name: string;
-  basename: string;
-  ext: string;
+  dir?: string;
+  name?: string;
+  basename?: string;
+  ext?: string;
+  // 只有非目录节点有
   stats?: Stats;
 }
 
 export type EventPayload = TrieNodeData & {
-  hash: string;
+  isDirectory: boolean;
+  hash?: string;
 };
 
 export interface DirWatcherEventMap {

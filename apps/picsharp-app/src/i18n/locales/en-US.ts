@@ -286,6 +286,7 @@ const enUS = {
   'tips.autostart.already_disabled': 'Autostart already disabled',
   'tips.file_watch_not_running':
     'File watch service failed to start, please try again or restart the application',
+  'tips.file_watch_abort': 'File watch service has been terminated',
   'tips.file_watch_target_changed': 'The listening directory has been modified or moved',
 
   // Watch Compression Guide
