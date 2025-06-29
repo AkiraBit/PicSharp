@@ -22,6 +22,7 @@ export default memo(function SettingsGeneralAutostart() {
       }
       set(SettingsKey.Autostart, value);
     } catch (error) {
+      console.error('Failed to control autostart', error);
       toast.error(t('tips.autostart.error'));
     }
   };

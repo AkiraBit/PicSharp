@@ -1,17 +1,23 @@
 import { useI18n } from '@/i18n';
-import { memo } from 'react';
+import { memo, useContext } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import { Button } from '@/components/ui/button';
-import { platform } from '@tauri-apps/plugin-os';
 import SettingItem from '../setting-item';
-
-const isMacOS = platform() === 'macos';
+import { AppContext } from '@/routes';
 
 export default memo(function SettingsGeneralNotification() {
   const t = useI18n();
 
+  const { messageApi } = useContext(AppContext);
+
   const handleChangeNotification = async () => {
-    await invoke('ipc_open_system_preference_notifications');
+    const result = await invoke<{ success: boolean; error?: string }>(
+      'ipc_open_system_preference_notifications',
+    );
+    if (!result.success) {
+      console.error('Failed to open system notification settings', result.error);
+      messageApi?.error(result.error ?? 'Failed to open system notification settings');
+    }
   };
 
   return (
@@ -19,11 +25,9 @@ export default memo(function SettingsGeneralNotification() {
       title={t('settings.general.notification.title')}
       description={t('settings.general.notification.description')}
     >
-      {isMacOS && (
-        <Button variant='outline' onClick={handleChangeNotification} className='w-full'>
-          {t('settings.general.notification.got_to_set')}
-        </Button>
-      )}
+      <Button variant='outline' onClick={handleChangeNotification} className='w-full'>
+        {t('settings.general.notification.got_to_set')}
+      </Button>
     </SettingItem>
   );
 });
