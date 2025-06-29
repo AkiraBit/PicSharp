@@ -218,19 +218,22 @@ function CompressionWatch() {
       eventSource.addEventListener('self-enoent', async () => {
         console.log('[Sidecar] Watch EventSource self-enoent');
         eventSource?.close();
-        await alert(t('tips.file_watch_target_changed'));
         regain();
+        alert(t('tips.file_watch_target_changed'));
+      });
+      eventSource.addEventListener('fault', async (event) => {
+        console.log('[Sidecar] Watch EventSource fault', event);
       });
       eventSource.addEventListener('error', async (event) => {
         console.log('[Sidecar] Watch EventSource error', event);
         await sleep(1000);
+        regain();
         if (isFirstInit.current) {
           isFirstInit.current = false;
           messageApi?.error(t('tips.file_watch_not_running'));
         } else {
-          await alert(t('tips.file_watch_abort'));
+          alert(t('tips.file_watch_abort'));
         }
-        regain();
       });
     }
     if (!watchingFolder) {

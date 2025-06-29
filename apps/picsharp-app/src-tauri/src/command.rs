@@ -137,7 +137,7 @@ pub async fn ipc_open_system_preference_notifications() -> Response {
     }
 
     // If all commands fail, try to open generic settings
-    let fallback_commands = vec![
+    let fallback_commands: Vec<(&_, Vec<_>)> = vec![
         ("gnome-control-center", vec![]),
         ("systemsettings5", vec![]),
         ("xfce4-settings-manager", vec![]),
