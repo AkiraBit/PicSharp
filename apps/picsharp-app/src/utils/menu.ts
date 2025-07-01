@@ -197,5 +197,3 @@ export async function initAppMenu() {
     await menu.setAsAppMenu();
   }
 }
-
-initAppMenu();

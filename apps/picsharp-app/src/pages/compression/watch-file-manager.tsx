@@ -13,7 +13,6 @@ export interface WatchFileManagerProps {}
 
 function WatchFileManager(props: WatchFileManagerProps) {
   const { files, watchingFolder } = useCompressionStore(useSelector(['files', 'watchingFolder']));
-  const t = useI18n();
 
   const [pageIndex, setPageIndex] = useState(1);
   const [pageSize, setPageSize] = useState(100);

@@ -5,7 +5,7 @@ import { VALID_IMAGE_EXTS } from '../../constants';
 import { watch, EventType } from '../../lib/dir-watcher';
 
 const app = new Hono();
-let id = BigInt(0);
+let id = 0;
 
 const ignores = [
   '.pnpm',

@@ -2,8 +2,7 @@ import { useEffect, useRef, useContext, useLayoutEffect } from 'react';
 import { isFunction, debounce } from 'radash';
 import useCompressionStore from '@/store/compression';
 import WatchFileManager from './watch-file-manager';
-import { getFilename, parsePaths, humanSize } from '@/utils/fs';
-import { watchFolder } from '@/utils/fs-watch';
+import { parsePaths, humanSize } from '@/utils/fs';
 import { CompressionOutputMode, VALID_IMAGE_EXTS } from '@/constants';
 import { isValidArray, correctFloat, sleep, isMac } from '@/utils';
 import Compressor, { ICompressor } from '@/utils/compressor';
@@ -28,6 +27,7 @@ function CompressionWatch() {
   const t = useI18n();
   const { messageApi } = useContext(AppContext);
   const isFirstInit = useRef(true);
+
   const handleCompress = async (files: FileInfo[]) => {
     try {
       const { sidecar } = useAppStore.getState();

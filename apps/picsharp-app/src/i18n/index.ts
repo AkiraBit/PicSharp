@@ -61,8 +61,8 @@ i18next.on('languageChanged', async (lng) => {
     if (platform() === 'macos') {
       initAppMenu();
     }
-    const menu = await createTrayMenu();
-    window.__TRAY_INSTANCE?.setMenu(menu);
+    const trayMenu = await createTrayMenu();
+    window.__TRAY_INSTANCE?.setMenu(trayMenu);
   }
 });
 
