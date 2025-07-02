@@ -3,9 +3,10 @@ import { streamSSE } from 'hono/streaming';
 import { parse } from 'node:path';
 import { VALID_IMAGE_EXTS } from '../../constants';
 import { watch, EventType } from '../../lib/dir-watcher';
+import { jsonBigInt } from '../../utils';
 
 const app = new Hono();
-let id = 0;
+let id = BigInt(0);
 
 const ignores = [
   '.pnpm',
@@ -55,28 +56,28 @@ app.get('/new-images', (c) => {
             stream.writeSSE({
               data: '',
               event: 'ready',
-              id: String(++id),
+              id: id.toString(),
             });
             watcher
               .on(EventType.ADD, (payload) => {
                 stream.writeSSE({
-                  data: JSON.stringify(payload),
+                  data: JSON.stringify(payload, jsonBigInt),
                   event: 'add',
-                  id: String(++id),
+                  id: id.toString(),
                 });
               })
               .on(EventType.SELF_ENOENT, () => {
                 stream.writeSSE({
                   data: '',
                   event: 'self-enoent',
-                  id: String(++id),
+                  id: id.toString(),
                 });
               })
               .on(EventType.ERROR, (error) => {
                 stream.writeSSE({
                   data: error.toString(),
                   event: 'fault',
-                  id: String(++id),
+                  id: id.toString(),
                 });
               });
           });
@@ -85,14 +86,14 @@ app.get('/new-images', (c) => {
         await stream.writeSSE({
           data: 'ping',
           event: 'ping',
-          id: String(++id),
+          id: id.toString(),
         });
       }
     } catch (error: any) {
       await stream.writeSSE({
         data: error.toString(),
         event: 'abort',
-        id: String(++id),
+        id: id.toString(),
       });
       stream.close();
     }

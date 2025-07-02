@@ -145,3 +145,14 @@ export function createExtOutputPath(inputPath: string, ext: string) {
     `${path.basename(inputPath, path.extname(inputPath))}.${ext}`,
   );
 }
+
+export function isBigInt(value: unknown): value is BigInt {
+  return typeof value === 'bigint';
+}
+
+export function jsonBigInt(key: string, value: unknown): unknown {
+  if (isBigInt(value)) {
+    return value.toString();
+  }
+  return value;
+}
