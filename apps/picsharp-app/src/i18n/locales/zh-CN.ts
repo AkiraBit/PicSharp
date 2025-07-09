@@ -271,6 +271,7 @@ export default {
   'tips.file_watch_not_running': '文件监听服务启动失败，请重试或重启应用',
   'tips.file_watch_abort': '文件监听服务已终止',
   'tips.file_watch_target_changed': '监听目录被修改或移动',
+  'tips.path_not_dir': '{{path}} 不是目录',
   // 经典模式压缩引导页
   'page.compression.classic.app_title': 'PicSharp',
   'page.compression.classic.app_description': '简单高效的图片压缩工具',

@@ -162,7 +162,6 @@ function ClassicCompressionGuide() {
     <div
       ref={dropzoneRef}
       className='relative flex min-h-screen flex-col items-center justify-center p-6 transition-all duration-300 [&.drag-active]:from-indigo-50/50 [&.drag-active]:to-indigo-100/50'
-      // onContextMenu={handleContextMenu}
     >
       <div className='relative text-center'>
         {/* <h1 className='dark:text-foreground mb-6 text-3xl font-bold'>✨PicSharp✨</h1> */}

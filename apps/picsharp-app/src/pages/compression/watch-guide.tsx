@@ -11,10 +11,10 @@ import {
   SelectItem,
   SelectTrigger,
 } from '@/components/ui/select';
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useState, useContext, useRef } from 'react';
 import { isValidArray } from '@/utils';
 import { Empty } from 'antd';
-import { exists } from '@tauri-apps/plugin-fs';
+import { exists, stat } from '@tauri-apps/plugin-fs';
 import { basename } from '@tauri-apps/api/path';
 import { Button } from '@/components/ui/button';
 import useSettingsStore from '@/store/settings';
@@ -23,6 +23,8 @@ import { Badge } from '@/components/ui/badge';
 import { CompressionContext } from '.';
 import useAppStore from '@/store/app';
 import { AppContext } from '@/routes';
+import { getCurrentWebview } from '@tauri-apps/api/webview';
+import { UnlistenFn } from '@tauri-apps/api/event';
 
 const WATCH_HISTORY_KEY = 'compression_watch_history';
 
@@ -48,17 +50,21 @@ function WatchCompressionGuide() {
   );
   const t = useI18n();
   const { messageApi } = useContext(AppContext);
+  const dragDropController = useRef<UnlistenFn | null>(null);
+  const dropzoneRef = useRef<HTMLDivElement>(null);
 
-  const handleWatch = async () => {
+  const handleWatch = async (path?: string) => {
     const { sidecar } = useAppStore.getState();
     if (!sidecar?.origin) {
       messageApi?.error(t('tips.file_watch_not_running'));
       return;
     }
-    const path = await open({
-      directory: true,
-      multiple: false,
-    });
+    if (!path) {
+      path = await open({
+        directory: true,
+        multiple: false,
+      });
+    }
     if (path) {
       if (!(await exists(path))) {
         messageApi?.error(t('tips.path_not_exists'));
@@ -118,15 +124,41 @@ function WatchCompressionGuide() {
   };
 
   useEffect(() => {
+    const setupDragDrop = async () => {
+      dragDropController.current = await getCurrentWebview().onDragDropEvent(async (event) => {
+        if (!dropzoneRef.current) return;
+
+        if (event.payload.type === 'enter') {
+          dropzoneRef.current.classList.add('drag-active');
+        } else if (event.payload.type === 'leave') {
+          dropzoneRef.current.classList.remove('drag-active');
+        } else if (event.payload.type === 'drop') {
+          dropzoneRef.current.classList.remove('drag-active');
+          const path = event.payload.paths[0];
+          if (path) {
+            const isDir = (await stat(path)).isDirectory;
+            if (isDir) {
+              handleWatch(path);
+            } else {
+              messageApi?.error(t('tips.path_not_dir', { path }));
+            }
+          }
+        }
+      });
+    };
     const history = localStorage.getItem(WATCH_HISTORY_KEY);
     const arr = JSON.parse(history || '[]');
     if (isValidArray(arr)) {
       setHistory(arr);
     }
+    setupDragDrop();
   }, []);
 
   return (
-    <div className='relative flex min-h-screen flex-col items-center justify-center p-6'>
+    <div
+      ref={dropzoneRef}
+      className='relative flex min-h-screen flex-col items-center justify-center p-6'
+    >
       <div className='relative z-10 text-center'>
         {/* <h1 className='dark:text-foreground mb-6 text-3xl font-bold'>
           {' '}
@@ -141,7 +173,10 @@ function WatchCompressionGuide() {
               <div className='text-center'>
                 {/* 上传按钮 */}
                 <div className='flex flex-col items-center justify-center gap-3 sm:flex-row'>
-                  <Button onClick={handleWatch} className='flex items-center justify-center gap-2'>
+                  <Button
+                    onClick={() => handleWatch()}
+                    className='flex items-center justify-center gap-2'
+                  >
                     <FolderOpen size={18} />
                     {t('page.compression.watch.guide.folder')}
                   </Button>
