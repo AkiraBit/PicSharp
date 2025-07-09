@@ -1,5 +1,12 @@
 {
   "releases": {
+    "1.5.0": {
+      "date": "2025-07-09",
+      "notes": [
+        "⚙️ Refactor \"Watch & Auto-Compress\", enhance stability and fault tolerance under different operating systems.",
+        "🐛 Fix some known bugs."
+      ]
+    },
     "1.4.0": {
       "date": "2025-06-14",
       "notes": [
