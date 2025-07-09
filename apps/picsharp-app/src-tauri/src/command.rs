@@ -167,19 +167,25 @@ pub async fn ipc_open_system_preference_notifications() -> Response {
     //         desktop_env
     //     )
     // }).to_string())
-    Ok(serde_json::json!({
-        "success": false,
-        "error": "Opening system notification settings is not supported on this platform"
-    }))
+    Response::new(
+        serde_json::json!({
+            "success": false,
+            "error": "Opening system notification settings is not supported on this platform"
+        })
+        .to_string(),
+    )
 }
 
 #[cfg(not(any(target_os = "macos", target_os = "windows", target_os = "linux")))]
 #[command]
 pub async fn ipc_open_system_preference_notifications() -> Response {
-    Ok(serde_json::json!({
-        "success": false,
-        "error": "Opening system notification settings is not supported on this platform"
-    }))
+    Response::new(
+        serde_json::json!({
+            "success": false,
+            "error": "Opening system notification settings is not supported on this platform"
+        })
+        .to_string(),
+    )
 }
 
 pub async fn kill_processes_by_name(process_name_pattern: &str) -> Result<String, String> {
