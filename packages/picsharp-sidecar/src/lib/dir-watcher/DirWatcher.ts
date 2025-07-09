@@ -5,7 +5,8 @@ import type { Stats, StatWatcher } from 'node:fs';
 import { Trie, TrieNode } from './Trie';
 import readdirp, { ReaddirpOptions, EntryInfo } from 'readdirp';
 import { EventType, DirWatcherEventMap, TrieNodeData } from './types';
-import { exists, hashFile } from './utils';
+import { exists } from './utils';
+import { hashFile } from '../../utils';
 import { throttle } from 'radash';
 
 export interface DirWatcherOptions {
@@ -281,8 +282,6 @@ export class DirWatcher extends EventEmitter<DirWatcherEventMap> {
             }
           }
         } else if (newSnapshot.hasPath(path) && this.#snapshot.hasPath(path)) {
-          const newNode = newSnapshot.getNode(path);
-          const oldNode = this.#snapshot.getNode(path);
           if (
             !newNode?.isDirectory &&
             !oldNode?.isDirectory &&

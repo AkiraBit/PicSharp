@@ -30,12 +30,12 @@ function WatchFileManager(props: WatchFileManagerProps) {
     <div className='relative flex h-full flex-col items-center'>
       <Badge
         variant='secondary'
-        className='z-100 fixed left-[50%] top-2 -translate-x-1/2 cursor-pointer text-nowrap bg-neutral-300/60 hover:underline'
+        className='z-100 fixed left-[calc(50%+67px)] top-2 -translate-x-[calc(50%+39px)] cursor-pointer text-nowrap bg-neutral-300/60 hover:underline'
         onClick={() => {
           openPath(watchingFolder);
         }}
       >
-        {watchingFolder}
+        <span className='max-w-[60vw] truncate'>{watchingFolder}</span>
       </Badge>
       {isValidArray(dataList) ? (
         <div className='w-full flex-1 px-3 pb-4 pt-9'>

@@ -4,7 +4,13 @@ import type { Config } from 'svgo';
 import { readFile, writeFile, copyFile } from 'node:fs/promises';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
-import { calCompressionRate, checkFile, createOutputPath, copyFileToTemp } from '../../utils';
+import {
+  calCompressionRate,
+  checkFile,
+  createOutputPath,
+  copyFileToTemp,
+  hashFile,
+} from '../../utils';
 import { SaveMode } from '../../constants';
 const app = new Hono();
 
@@ -68,6 +74,7 @@ app.post('/', zValidator('json', PayloadSchema), async (context) => {
     compression_rate: availableCompressRate ? compressRatio : 0,
     original_temp_path: tempFilePath,
     available_compress_rate: availableCompressRate,
+    hash: await hashFile(newOutputPath),
     debug: {
       compressedSize: optimizedContent.data.length,
       compressionRate: compressRatio,

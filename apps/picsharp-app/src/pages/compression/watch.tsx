@@ -27,6 +27,7 @@ function CompressionWatch() {
   const t = useI18n();
   const { messageApi } = useContext(AppContext);
   const isFirstInit = useRef(true);
+  const historys = useRef<Set<string>>(new Set());
 
   const handleCompress = async (files: FileInfo[]) => {
     try {
@@ -91,6 +92,7 @@ function CompressionWatch() {
             targetFile.outputPath = res.output_path;
             targetFile.originalTempPath = convertFileSrc(res.original_temp_path);
             targetFile.saveType = outputMode;
+            historys.current.add(res.hash);
             if (isValidArray(res.convert_results)) {
               targetFile.convertResults = res.convert_results;
             }
@@ -162,7 +164,7 @@ function CompressionWatch() {
     }
   });
 
-  const alert = async (title: string, content?: string) => {
+  const alert = async (title: string, content: string = '') => {
     if (isMac) {
       await systemMessage(content, {
         kind: 'error',
@@ -198,21 +200,28 @@ function CompressionWatch() {
       eventSource.addEventListener('add', (event) => {
         const payload = JSON.parse(event.data);
         const path = payload.fullPath;
-        const settingsState = useSettingsStore.getState();
-        const compressionState = useCompressionStore.getState();
-        if (settingsState.compression_output === CompressionOutputMode.SaveAsNewFile) {
-          const filename = payload.name;
-          if (
-            !compressionState.fileMap.has(path) &&
-            !filename.endsWith(settingsState.compression_output_save_as_file_suffix)
-          ) {
-            queueRef.current.push(path);
-          }
-        } else {
-          if (!compressionState.fileMap.has(path)) {
-            queueRef.current.push(path);
-          }
+        const hash = payload.hash;
+        console.log('hash', hash);
+
+        if (!historys.current.has(hash)) {
+          queueRef.current.push(path);
         }
+
+        // const settingsState = useSettingsStore.getState();
+        // const compressionState = useCompressionStore.getState();
+        // if (settingsState.compression_output === CompressionOutputMode.SaveAsNewFile) {
+        //   const filename = payload.name;
+        //   if (
+        //     !compressionState.fileMap.has(path) &&
+        //     !filename.endsWith(settingsState.compression_output_save_as_file_suffix)
+        //   ) {
+        //     queueRef.current.push(path);
+        //   }
+        // } else {
+        //   if (!compressionState.fileMap.has(path)) {
+        //     queueRef.current.push(path);
+        //   }
+        // }
         throttledProcessData();
       });
       eventSource.addEventListener('self-enoent', async () => {
@@ -236,13 +245,23 @@ function CompressionWatch() {
         }
       });
     }
+    function handlePageVisible() {
+      if (document.visibilityState === 'visible') {
+        if (eventSource.readyState === EventSource.CLOSED && !isFirstInit.current) {
+          regain();
+          alert(t('tips.file_watch_abort'));
+        }
+      }
+    }
     if (!watchingFolder) {
       regain();
       return;
     }
     handleWatch();
+    window.addEventListener('visibilitychange', handlePageVisible);
     return () => {
       eventSource?.close();
+      window.removeEventListener('visibilitychange', handlePageVisible);
     };
   }, []);
 

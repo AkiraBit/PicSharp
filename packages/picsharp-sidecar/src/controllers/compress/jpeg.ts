@@ -11,6 +11,7 @@ import {
   copyFileToTemp,
   isWindows,
   isValidArray,
+  hashFile,
 } from '../../utils';
 import { SaveMode } from '../../constants';
 import { bulkConvert, ConvertFormat } from '../../services/convert';
@@ -118,6 +119,7 @@ app.post('/', zValidator('json', PayloadSchema), async (context) => {
     compression_rate: availableCompressRate ? compressionRate : 0,
     original_temp_path: tempFilePath,
     available_compress_rate: availableCompressRate,
+    hash: await hashFile(newOutputPath),
     debug: {
       compressedSize,
       compressionRate,

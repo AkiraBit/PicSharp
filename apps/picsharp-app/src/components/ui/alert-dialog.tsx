@@ -130,7 +130,7 @@ function showAlertDialog({
     const [loading, setLoading] = useState(false);
     return (
       <AlertDialog open={true}>
-        <AlertDialogContent>
+        <AlertDialogContent aria-describedby=''>
           <AlertDialogHeader>
             <AlertDialogTitle>{title}</AlertDialogTitle>
             {description ? (

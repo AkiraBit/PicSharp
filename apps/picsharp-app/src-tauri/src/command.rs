@@ -83,90 +83,94 @@ pub async fn ipc_open_system_preference_notifications() -> Response {
 #[command]
 pub async fn ipc_open_system_preference_notifications() -> Response {
     // Detect desktop environment
-    let desktop_env = std::env::var("XDG_CURRENT_DESKTOP")
-        .or_else(|_| std::env::var("DESKTOP_SESSION"))
-        .unwrap_or_default()
-        .to_lowercase();
+    // let desktop_env = std::env::var("XDG_CURRENT_DESKTOP")
+    //     .or_else(|_| std::env::var("DESKTOP_SESSION"))
+    //     .unwrap_or_default()
+    //     .to_lowercase();
 
     // Define commands for different desktop environments
-    let commands = match desktop_env.as_str() {
-        env if env.contains("gnome") => vec![
-            ("gnome-control-center", vec!["notifications"]),
-            ("/usr/bin/gnome-control-center", vec!["notifications"]),
-        ],
-        env if env.contains("kde") || env.contains("plasma") => vec![
-            ("systemsettings5", vec!["kcm_notifications"]),
-            ("kcmshell5", vec!["kcm_notifications"]),
-        ],
-        env if env.contains("xfce") => vec![
-            ("xfce4-notifyd-config", vec![]),
-            ("xfce4-settings-manager", vec!["-s", "xfce4-notifyd"]),
-        ],
-        env if env.contains("mate") => vec![
-            ("mate-notification-properties", vec![]),
-            ("mate-control-center", vec!["notifications"]),
-        ],
-        env if env.contains("cinnamon") => vec![
-            ("cinnamon-settings", vec!["notifications"]),
-            ("/usr/bin/cinnamon-settings", vec!["notifications"]),
-        ],
-        env if env.contains("lxqt") => vec![("lxqt-config-notificationd", vec![])],
-        _ => vec![
-            // Fallback: try common commands
-            ("gnome-control-center", vec!["notifications"]),
-            ("systemsettings5", vec!["kcm_notifications"]),
-            ("xfce4-notifyd-config", vec![]),
-            ("mate-notification-properties", vec![]),
-            ("cinnamon-settings", vec!["notifications"]),
-        ],
-    };
+    // let commands = match desktop_env.as_str() {
+    //     env if env.contains("gnome") => vec![
+    //         ("gnome-control-center", vec!["notifications"]),
+    //         ("/usr/bin/gnome-control-center", vec!["notifications"]),
+    //     ],
+    //     env if env.contains("kde") || env.contains("plasma") => vec![
+    //         ("systemsettings5", vec!["kcm_notifications"]),
+    //         ("kcmshell5", vec!["kcm_notifications"]),
+    //     ],
+    //     env if env.contains("xfce") => vec![
+    //         ("xfce4-notifyd-config", vec![]),
+    //         ("xfce4-settings-manager", vec!["-s", "xfce4-notifyd"]),
+    //     ],
+    //     env if env.contains("mate") => vec![
+    //         ("mate-notification-properties", vec![]),
+    //         ("mate-control-center", vec!["notifications"]),
+    //     ],
+    //     env if env.contains("cinnamon") => vec![
+    //         ("cinnamon-settings", vec!["notifications"]),
+    //         ("/usr/bin/cinnamon-settings", vec!["notifications"]),
+    //     ],
+    //     env if env.contains("lxqt") => vec![("lxqt-config-notificationd", vec![])],
+    //     _ => vec![
+    //         // Fallback: try common commands
+    //         ("gnome-control-center", vec!["notifications"]),
+    //         ("systemsettings5", vec!["kcm_notifications"]),
+    //         ("xfce4-notifyd-config", vec![]),
+    //         ("mate-notification-properties", vec![]),
+    //         ("cinnamon-settings", vec!["notifications"]),
+    //     ],
+    // };
 
     // Try each command until one succeeds
-    for (cmd, args) in commands {
-        match Command::new(cmd).args(&args).spawn() {
-            Ok(_) => {
-                return Response::new(
-                    serde_json::json!({
-                        "success": true,
-                    })
-                    .to_string(),
-                );
-            }
-            Err(_) => continue,
-        }
-    }
+    // for (cmd, args) in commands {
+    //     match Command::new(cmd).args(&args).spawn() {
+    //         Ok(_) => {
+    //             return Response::new(
+    //                 serde_json::json!({
+    //                     "success": true,
+    //                 })
+    //                 .to_string(),
+    //             );
+    //         }
+    //         Err(_) => continue,
+    //     }
+    // }
 
-    // If all commands fail, try to open generic settings
-    let fallback_commands: Vec<(&_, Vec<_>)> = vec![
-        ("gnome-control-center", vec![]),
-        ("systemsettings5", vec![]),
-        ("xfce4-settings-manager", vec![]),
-        ("mate-control-center", vec![]),
-        ("cinnamon-settings", vec![]),
-        ("lxqt-config", vec![]),
-    ];
+    // // If all commands fail, try to open generic settings
+    // let fallback_commands: Vec<(&_, Vec<_>)> = vec![
+    //     ("gnome-control-center", vec![]),
+    //     ("systemsettings5", vec![]),
+    //     ("xfce4-settings-manager", vec![]),
+    //     ("mate-control-center", vec![]),
+    //     ("cinnamon-settings", vec![]),
+    //     ("lxqt-config", vec![]),
+    // ];
 
-    for (cmd, args) in fallback_commands {
-        match Command::new(cmd).args(&args).spawn() {
-            Ok(_) => {
-                return Response::new(
-                    serde_json::json!({
-                        "success": true,
-                    })
-                    .to_string(),
-                );
-            }
-            Err(_) => continue,
-        }
-    }
+    // for (cmd, args) in fallback_commands {
+    //     match Command::new(cmd).args(&args).spawn() {
+    //         Ok(_) => {
+    //             return Response::new(
+    //                 serde_json::json!({
+    //                     "success": true,
+    //                 })
+    //                 .to_string(),
+    //             );
+    //         }
+    //         Err(_) => continue,
+    //     }
+    // }
 
-    Response::new(serde_json::json!({
+    // Response::new(serde_json::json!({
+    //     "success": false,
+    //     "error": format!(
+    //         "Failed to open Notifications settings on Linux. Desktop environment: {}. Please open your system settings and navigate to Notifications manually.",
+    //         desktop_env
+    //     )
+    // }).to_string())
+    Ok(serde_json::json!({
         "success": false,
-        "error": format!(
-            "Failed to open Notifications settings on Linux. Desktop environment: {}. Please open your system settings and navigate to Notifications manually.",
-            desktop_env
-        )
-    }).to_string())
+        "error": "Opening system notification settings is not supported on this platform"
+    }))
 }
 
 #[cfg(not(any(target_os = "macos", target_os = "windows", target_os = "linux")))]

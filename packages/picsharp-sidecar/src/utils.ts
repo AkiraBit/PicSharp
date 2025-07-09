@@ -3,7 +3,8 @@ import path from 'node:path';
 import fs from 'node:fs/promises';
 import { nanoid } from 'nanoid';
 import getPort from './get-port';
-import sharp from 'sharp';
+import { createHash } from 'node:crypto';
+import { createReadStream } from 'node:fs';
 
 export const calCompressionRate = (originalSize: number, compressedSize: number) => {
   return Number(((originalSize - compressedSize) / originalSize).toFixed(2));
@@ -155,4 +156,15 @@ export function jsonBigInt(key: string, value: unknown): unknown {
     return value.toString();
   }
   return value;
+}
+
+export function hashFile(filePath: string, algorithm = 'md5', highWaterMark = 1024 * 1024) {
+  return new Promise<string>((resolve, reject) => {
+    const hash = createHash(algorithm);
+    const stream = createReadStream(filePath, { highWaterMark });
+    stream.on('error', reject);
+    hash.on('error', reject);
+    stream.on('data', (chunk) => hash.update(chunk));
+    stream.on('end', () => resolve(hash.digest('hex')));
+  });
 }

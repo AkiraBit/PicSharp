@@ -9,6 +9,7 @@ import {
   createOutputPath,
   copyFileToTemp,
   isValidArray,
+  hashFile,
 } from '../../utils';
 import { SaveMode } from '../../constants';
 import { request } from 'undici';
@@ -125,9 +126,10 @@ app.post('/', zValidator('json', PayloadSchema), async (context) => {
     compression_rate: availableCompressRate ? compressRatio : 0,
     original_temp_path: tempFilePath,
     available_compress_rate: availableCompressRate,
+    hash: await hashFile(input_path),
     debug: {
       compressedSize: data.output.size,
-      compressionRate: compressRatio,
+      compressionRate: newOutputPath,
       options,
       process_options,
     },
