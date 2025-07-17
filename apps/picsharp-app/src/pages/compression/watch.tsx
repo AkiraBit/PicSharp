@@ -200,7 +200,7 @@ function CompressionWatch() {
       eventSource.addEventListener('add', (event) => {
         const payload = JSON.parse(event.data);
         const path = payload.fullPath;
-        const hash = payload.hash;
+        const hash = payload.content_hash;
         console.log('hash', hash);
 
         if (!historys.current.has(hash)) {

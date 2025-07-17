@@ -23,6 +23,7 @@
   "dependencies": {
     "@hono/node-server": "^1.14.1",
     "@hono/zod-validator": "^0.4.3",
+    "dirspy": "^1.0.3",
     "fs-extra": "^11.3.0",
     "hono": "^4.7.7",
     "mime": "^4.0.7",

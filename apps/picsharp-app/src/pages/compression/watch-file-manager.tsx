@@ -30,7 +30,7 @@ function WatchFileManager(props: WatchFileManagerProps) {
     <div className='relative flex h-full flex-col items-center'>
       <Badge
         variant='secondary'
-        className='z-100 fixed left-[calc(50%+67px)] top-2 -translate-x-[calc(50%+39px)] cursor-pointer text-nowrap bg-neutral-300/60 hover:underline'
+        className='fixed left-[calc(50%+67px)] top-2 z-[10] -translate-x-[calc(50%+39px)] cursor-pointer text-nowrap bg-neutral-300/60 hover:underline'
         onClick={() => {
           openPath(watchingFolder);
         }}
@@ -55,7 +55,7 @@ function WatchFileManager(props: WatchFileManagerProps) {
           <Disc3 className='text-foreground h-16 w-16 dark:text-neutral-400' />
         </div>
       )}
-      <div className='sticky bottom-2 flex flex-col gap-1'>
+      <div className='sticky bottom-2 z-[20] flex flex-col gap-1'>
         {files.length > pageSize && (
           <ToolbarPagination
             total={files.length}

@@ -2,8 +2,8 @@ import { Hono } from 'hono';
 import { streamSSE } from 'hono/streaming';
 import { parse } from 'node:path';
 import { VALID_IMAGE_EXTS } from '../../constants';
-import { watch, EventType } from '../../lib/dir-watcher';
 import { jsonBigInt } from '../../utils';
+import { watch, Event } from 'dirspy';
 
 const app = new Hono();
 let id = BigInt(0);
@@ -34,6 +34,10 @@ app.get('/new-images', (c) => {
       let ready = false;
       let abort = false;
       const watcher = await watch(path, {
+        ignore(path) {
+          const ext = parse(path).ext;
+          return ignores.some((ignore) => path.includes(ignore)) || !VALID_IMAGE_EXTS.includes(ext);
+        },
         fileFilter: (entry) => {
           if (ignores.some((ignore) => entry.fullPath.includes(ignore))) return false;
           return VALID_IMAGE_EXTS.includes(parse(entry.path).ext);
@@ -52,28 +56,28 @@ app.get('/new-images', (c) => {
         if (abort) break;
         if (!ready) {
           ready = true;
-          watcher.on(EventType.READY, () => {
+          watcher.on(Event.READY, () => {
             stream.writeSSE({
               data: '',
               event: 'ready',
               id: id.toString(),
             });
             watcher
-              .on(EventType.ADD, (payload) => {
+              .on(Event.ADD, (payload) => {
                 stream.writeSSE({
                   data: JSON.stringify(payload, jsonBigInt),
                   event: 'add',
                   id: id.toString(),
                 });
               })
-              .on(EventType.SELF_ENOENT, () => {
+              .on(Event.SELF_ENOENT, () => {
                 stream.writeSSE({
                   data: '',
                   event: 'self-enoent',
                   id: id.toString(),
                 });
               })
-              .on(EventType.ERROR, (error) => {
+              .on(Event.ERROR, (error) => {
                 stream.writeSSE({
                   data: error.toString(),
                   event: 'fault',
