@@ -1,5 +1,11 @@
 {
   "releases": {
+    "1.5.1": {
+      "date": "2025-07-17",
+      "notes": [
+        "🚀 Switch the \"[dirspy](https://github.com/AkiraBit/dirspy)\" library to implement the file monitoring function to enhance stability and reduce resource usage."
+      ]
+    },
     "1.5.0": {
       "date": "2025-07-09",
       "notes": [
