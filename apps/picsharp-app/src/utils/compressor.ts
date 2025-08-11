@@ -50,6 +50,7 @@ export namespace ICompressor {
     available_compress_rate: boolean;
     hash: string;
     convert_results?: ConvertResult[];
+    ssim: number;
   }
 
   export interface FailedItem {

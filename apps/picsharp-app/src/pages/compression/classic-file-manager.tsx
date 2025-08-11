@@ -8,6 +8,7 @@ import { Empty } from 'antd';
 import { isValidArray, preventDefault } from '@/utils';
 import { useNavigate } from '@/hooks/useNavigate';
 import { useI18n } from '@/i18n';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 function FileManager() {
   const { files } = useCompressionStore(useSelector(['files']));
@@ -33,11 +34,11 @@ function FileManager() {
   }, []);
 
   return (
-    <div className='relative flex h-full flex-col items-center' onContextMenu={preventDefault}>
+    <ScrollArea className='relative h-full min-w-[350px] flex-col' onContextMenu={preventDefault}>
       {isValidArray(dataList) ? (
-        <div className='w-full flex-1 px-3 py-4'>
+        <div className='w-full flex-1 px-3 pt-3'>
           <div
-            className='grid grid-cols-1 gap-3 contain-layout sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8'
+            className='grid grid-cols-2 gap-3 pb-[65px] contain-layout sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7'
             style={{
               contentVisibility: 'auto',
             }}
@@ -52,7 +53,7 @@ function FileManager() {
           <Empty description={t('no_data')} />
         </div>
       )}
-      <div className='sticky bottom-2 flex flex-col gap-1'>
+      <div className='absolute bottom-2 left-[50%] flex translate-x-[-50%] flex-col gap-1'>
         {files.length > pageSize && (
           <ToolbarPagination
             total={files.length}
@@ -70,7 +71,7 @@ function FileManager() {
         )}
         <Toolbar mode='classic' />
       </div>
-    </div>
+    </ScrollArea>
   );
 }
 

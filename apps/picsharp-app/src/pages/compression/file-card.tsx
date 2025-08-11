@@ -182,27 +182,29 @@ function FileCard(props: FileCardProps) {
 
   return (
     <div
-      className='bg-background group relative overflow-hidden rounded-lg border transition-all duration-300 hover:shadow-lg dark:border-neutral-700'
+      className='bg-background group relative rounded-lg border transition-all duration-300 hover:shadow-lg dark:border-neutral-700'
       onContextMenu={fileContextMenuHandler}
     >
-      <div className='relative flex aspect-[4/3] items-center justify-center overflow-hidden bg-neutral-200/30 p-2 dark:bg-neutral-700/30'>
+      <div className='text-0 relative flex aspect-[4/3] items-center justify-center overflow-hidden p-1'>
         <StatusBadge status={file.status} errorMessage={file.errorMessage} />
-        <div className='absolute bottom-2 left-2'>
+        {/* <div className='absolute bottom-2 left-2'>
           <ImgTag type={file.ext} />
+        </div> */}
+        <div className='text-0 flex aspect-[4/3] w-full items-center justify-center overflow-hidden rounded-md bg-neutral-200/30 dark:bg-neutral-700/70'>
+          <img
+            src={file.assetPath}
+            alt={file.name}
+            className='max-h-full object-contain transition-all duration-300 hover:scale-110'
+            loading='lazy'
+            ref={imgRef}
+          />
         </div>
-        <img
-          src={file.assetPath}
-          alt={file.name}
-          className='aspect-[4/3] object-contain'
-          loading='lazy'
-          ref={imgRef}
-        />
       </div>
-      <div className='p-2'>
+      <div className='px-2 pb-2'>
         <Tooltip title={file.path} arrow={false}>
-          <h3 className='text-foreground max-w-[100%] overflow-hidden text-ellipsis whitespace-nowrap font-medium'>
-            {file.name}
-          </h3>
+          <div className='text-foreground text-md max-w-[100%] overflow-hidden text-ellipsis whitespace-nowrap font-normal'>
+            {file.name.replace(`.${file.ext}`, '')}
+          </div>
         </Tooltip>
         <div className='flex items-center justify-between'>
           <div className='flex items-center gap-1'>
@@ -276,7 +278,7 @@ export default memo(FileCard);
 const StatusBadge = ({ status, errorMessage }: Pick<FileInfo, 'status' | 'errorMessage'>) => {
   const t = useI18n();
   return (
-    <div className='absolute right-2 top-1'>
+    <div className='absolute right-2 top-1 z-10'>
       {status === ICompressor.Status.Processing && (
         <Badge variant='processing'>
           <RefreshCw className='mr-1 h-3 w-3 animate-spin' />

@@ -40,6 +40,7 @@ declare global {
     errorMessage?: string;
     saveType?: CompressionOutputMode;
     convertResults?: ConvertResult[];
+    ssim: number;
   }
 }
 

@@ -177,6 +177,7 @@ function ToolbarCompress() {
               targetFile.compressedDiskSize = res.output_size;
               targetFile.formattedCompressedBytesSize = humanSize(res.output_size);
               targetFile.compressRate = `${correctFloat(res.compression_rate * 100)}%`;
+              targetFile.ssim = res.ssim;
             } else {
               targetFile.compressedBytesSize = targetFile.bytesSize;
               targetFile.compressedDiskSize = targetFile.diskSize;

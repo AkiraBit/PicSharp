@@ -34,6 +34,7 @@ export enum SettingsKey {
   CompressionOutputSaveToFolder = 'compression_output_save_to_folder',
   CompressionConvert = 'compression_convert',
   CompressionConvertAlpha = 'compression_convert_alpha',
+  CompressionWatchFileIgnore = 'compression_watch_file_ignore',
   TinypngApiKeys = 'tinypng_api_keys',
   TinypngPreserveMetadata = 'tinypng_preserve_metadata',
 }

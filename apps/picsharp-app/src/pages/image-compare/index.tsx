@@ -2,7 +2,7 @@ import { ReactCompareSlider, ReactCompareSliderImage } from 'react-compare-slide
 import { parseOpenWithFiles } from '@/utils/launch';
 import { Badge } from '@/components/ui/badge';
 import { useI18n } from '@/i18n';
-import { isMac } from '@/utils';
+import { isMac, ssimToQualityScore } from '@/utils';
 import { cn } from '@/lib/utils';
 
 const launchPayload = parseOpenWithFiles();
@@ -24,6 +24,7 @@ export default function ImageCompare() {
             {file?.name}
           </span>
           <Badge variant='mini'>-{file?.compressRate}</Badge>
+          <Badge variant='mini'>画质保留率: {ssimToQualityScore(file?.ssim).toFixed(0)}%</Badge>
         </div>
         <div></div>
       </div>

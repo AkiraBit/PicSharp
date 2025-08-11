@@ -34,6 +34,7 @@ interface SettingsState {
   [SettingsKey.CompressionOutputSaveToFolder]: string;
   [SettingsKey.CompressionConvert]: ConvertFormat[];
   [SettingsKey.CompressionConvertAlpha]: string;
+  [SettingsKey.CompressionWatchFileIgnore]: string[];
   [SettingsKey.TinypngApiKeys]: Array<{
     api_key: string;
     name: string;
@@ -72,6 +73,7 @@ const useSettingsStore = create(
       [SettingsKey.CompressionOutputSaveToFolder]: '',
       [SettingsKey.CompressionConvert]: [],
       [SettingsKey.CompressionConvertAlpha]: '#FFFFFF',
+      [SettingsKey.CompressionWatchFileIgnore]: [],
       [SettingsKey.TinypngApiKeys]: [],
       [SettingsKey.TinypngPreserveMetadata]: [
         TinypngMetadata.Copyright,

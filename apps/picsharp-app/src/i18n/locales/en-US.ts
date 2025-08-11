@@ -109,6 +109,10 @@ const enUS = {
   'settings.compression.convert_alpha.title': 'Alpha Background Fill',
   'settings.compression.convert_alpha.description':
     'Specifies which color to use for fill when an image with a transparent background is converted to an image format that does not support transparency (e.g. WEBP, AVIF, PNG to JPG).',
+  // Settings.Compression.FileIgnore
+  'settings.compression.file_ignore.title': 'Ignoring Files',
+  'settings.compression.file_ignore.description':
+    'When watching for new images, these files will be ignored, multiple files separated by line breaks, support glob syntax.',
   // Settings.Tinypng
   'settings.tinypng.title': 'TinyPNG',
   // Settings.Tinypng.ApiKeys

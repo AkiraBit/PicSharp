@@ -1,11 +1,11 @@
-@import '@fontsource/ibm-plex-mono';
+/* @import '@fontsource/ibm-plex-mono';
 @import '@fontsource/ibm-plex-mono/200.css';
 @import '@fontsource/ibm-plex-mono/300.css';
 @import '@fontsource/ibm-plex-mono/400.css';
 @import '@fontsource/ibm-plex-mono/500.css';
 @import '@fontsource/ibm-plex-mono/600.css';
 @import '@fontsource/ibm-plex-mono/700.css';
-@import '@fontsource/ibm-plex-mono/400-italic.css';
+@import '@fontsource/ibm-plex-mono/400-italic.css'; */
 
 @tailwind base;
 @tailwind components;
@@ -15,7 +15,7 @@
 *::before,
 *::after {
   box-sizing: border-box;
-  /* font-family: IBM Plex Mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace, sans-serif; */
+  font-family: -apple-system,BlinkMacSystemFont,PingFang SC,Hiragino Sans GB,Microsoft YaHei,sans-serif;
 }
 
 html,

@@ -5,6 +5,8 @@ import { nanoid } from 'nanoid';
 import getPort from './get-port';
 import { createHash } from 'node:crypto';
 import { createReadStream } from 'node:fs';
+import ssim from 'ssim.js';
+import sharp from 'sharp';
 
 export const calCompressionRate = (originalSize: number, compressedSize: number) => {
   return Number(((originalSize - compressedSize) / originalSize).toFixed(2));
@@ -167,4 +169,33 @@ export function hashFile(filePath: string, algorithm = 'md5', highWaterMark = 10
     stream.on('data', (chunk) => hash.update(chunk));
     stream.on('end', () => resolve(hash.digest('hex')));
   });
+}
+
+export async function getImageRawData(path: string) {
+  const instance = sharp(path);
+  const buffer = await instance.ensureAlpha().raw().toBuffer();
+  const metadata = await instance.metadata();
+  return {
+    data: new Uint8ClampedArray(buffer),
+    width: metadata.width,
+    height: metadata.height,
+  };
+}
+
+export async function calculateSSIM(original: string, compressed: string) {
+  const originalData = await getImageRawData(original);
+  const compressedData = await getImageRawData(compressed);
+  const { mssim } = ssim(
+    {
+      width: originalData.width,
+      height: originalData.height,
+      data: originalData.data,
+    },
+    {
+      width: compressedData.width,
+      height: compressedData.height,
+      data: compressedData.data,
+    },
+  );
+  return mssim;
 }

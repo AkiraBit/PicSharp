@@ -8,6 +8,7 @@ import Level from './level';
 import { useEffect, useRef } from 'react';
 import Convert from './convert';
 import Metadata from './metadata';
+import WatchIgnore from './watch-ignore';
 
 export default function SettingsCompression() {
   const outputElRef = useRef<HTMLDivElement>(null);
@@ -36,6 +37,9 @@ export default function SettingsCompression() {
       </Card>
       <Card>
         <Convert />
+      </Card>
+      <Card>
+        <WatchIgnore />
       </Card>
     </Section>
   );

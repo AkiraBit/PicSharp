@@ -12,6 +12,7 @@ import {
   isWindows,
   isValidArray,
   hashFile,
+  calculateSSIM,
 } from '../../utils';
 import { SaveMode } from '../../constants';
 import { bulkConvert, ConvertFormat } from '../../services/convert';
@@ -102,9 +103,10 @@ app.post('/', zValidator('json', PayloadSchema), async (context) => {
   });
 
   const tempFilePath = options.temp_dir ? await copyFileToTemp(input_path, options.temp_dir) : '';
-
+  let mssim = 1;
   if (availableCompressRate) {
     await writeFile(newOutputPath, compressedImageBuffer);
+    mssim = await calculateSSIM(input_path, newOutputPath);
   } else {
     if (input_path !== newOutputPath) {
       await copyFile(input_path, newOutputPath);
@@ -120,6 +122,7 @@ app.post('/', zValidator('json', PayloadSchema), async (context) => {
     original_temp_path: tempFilePath,
     available_compress_rate: availableCompressRate,
     hash: await hashFile(newOutputPath),
+    ssim: mssim,
     debug: {
       compressedSize,
       compressionRate,

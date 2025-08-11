@@ -106,6 +106,10 @@ export default {
   'settings.compression.convert_alpha.title': '透明背景填充',
   'settings.compression.convert_alpha.description':
     '当具有透明背景的图像转换为不支持透明通道的图像格式（如WEBP、AVIF、PNG转为JPG）时，指定使用哪种颜色进行填充',
+  // Settings.Compression.FileIgnore
+  'settings.compression.file_ignore.title': '忽略文件',
+  'settings.compression.file_ignore.description':
+    '当监听新增图片时，将会忽略这些文件，多个文件用换行符分隔，支持glob语法',
   // Settings.Tinypng
   'settings.tinypng.title': 'TinyPNG',
   // Settings.Tinypng.ApiKeys
