@@ -73,6 +73,9 @@ rustc-wrapper = "~/.cargo/bin/sccache"
 
 # TODO: cleanup features on objc2 crates
 [target.'cfg(target_os = "macos")'.dependencies]
+cocoa = "0.25"
+objc = "0.2.7"
+objc-foundation = "0.1.1"
 objc2-uniform-type-identifiers = { version = "0.3.0", features = [
   "UTCoreTypes",
   "UTType",

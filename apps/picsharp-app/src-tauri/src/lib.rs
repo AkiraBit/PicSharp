@@ -16,6 +16,15 @@ mod file_ext;
 // mod image_processor;
 mod inspect;
 // mod tinify;
+#[cfg(target_os = "macos")]
+#[macro_use]
+extern crate cocoa;
+
+#[cfg(target_os = "macos")]
+#[macro_use]
+extern crate objc;
+#[cfg(target_os = "macos")]
+mod macos;
 mod upload;
 mod window;
 
@@ -160,7 +169,7 @@ fn get_files_from_argv(argv: Vec<String>) -> Vec<PathBuf> {
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    tauri::Builder::default()
+    let builder = tauri::Builder::default()
         .plugin(tauri_plugin_single_instance::init(|app, args, cwd| {
             info!("Single instance init -> args: {:?}", args);
             info!("Single instance init -> cwd: {:?}", cwd);
@@ -207,6 +216,43 @@ pub fn run() {
         ))
         .plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_clipboard_manager::init())
+        .plugin(tauri_plugin_store::Builder::new().build())
+        .plugin(tauri_plugin_os::init())
+        .plugin(tauri_plugin_upload::init())
+        .plugin(tauri_plugin_http::init())
+        .plugin(
+            tauri_plugin_log::Builder::new()
+                .target(tauri_plugin_log::Target::new(
+                    tauri_plugin_log::TargetKind::Stdout,
+                ))
+                .build(),
+        )
+        .plugin(tauri_plugin_fs::init())
+        .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_opener::init())
+        .invoke_handler(tauri::generate_handler![
+            file::ipc_parse_paths,
+            file::ipc_count_valid_files,
+            file::ipc_is_file_in_directory,
+            file::ipc_copy_image,
+            file::ipc_get_file_name,
+            clipboard::ipc_parse_clipboard_images,
+            // tinify::ipc_tinify,
+            // image_processor::compressors::ipc_compress_images,
+            // image_processor::compressors::ipc_compress_single_image,
+            // image_processor::compressors::ipc_is_apng,
+            command::ipc_open_system_preference_notifications,
+            command::ipc_kill_processes_by_name,
+            command::ipc_kill_picsharp_sidecar_processes,
+            command::ipc_open_devtool,
+            window::ipc_spawn_window,
+            #[cfg(target_os = "macos")]
+            macos::traffic_light::set_traffic_lights,
+        ]);
+    #[cfg(target_os = "macos")]
+    let builder = builder.plugin(macos::traffic_light::init());
+
+    builder
         .setup(|app| {
             match init_settings(&app.handle()) {
                 Ok(()) => {
@@ -248,37 +294,6 @@ pub fn run() {
                 });
             Ok(())
         })
-        .plugin(tauri_plugin_store::Builder::new().build())
-        .plugin(tauri_plugin_os::init())
-        .plugin(tauri_plugin_upload::init())
-        .plugin(tauri_plugin_http::init())
-        .plugin(
-            tauri_plugin_log::Builder::new()
-                .target(tauri_plugin_log::Target::new(
-                    tauri_plugin_log::TargetKind::Stdout,
-                ))
-                .build(),
-        )
-        .plugin(tauri_plugin_fs::init())
-        .plugin(tauri_plugin_dialog::init())
-        .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![
-            file::ipc_parse_paths,
-            file::ipc_count_valid_files,
-            file::ipc_is_file_in_directory,
-            file::ipc_copy_image,
-            file::ipc_get_file_name,
-            clipboard::ipc_parse_clipboard_images,
-            // tinify::ipc_tinify,
-            // image_processor::compressors::ipc_compress_images,
-            // image_processor::compressors::ipc_compress_single_image,
-            // image_processor::compressors::ipc_is_apng,
-            command::ipc_open_system_preference_notifications,
-            command::ipc_kill_processes_by_name,
-            command::ipc_kill_picsharp_sidecar_processes,
-            command::ipc_open_devtool,
-            window::ipc_spawn_window,
-        ])
         .build(tauri::generate_context!())
         .expect("Error while running Picsharp application")
         .run(|app, event| {

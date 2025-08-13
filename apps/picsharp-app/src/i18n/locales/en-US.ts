@@ -9,8 +9,8 @@ const enUS = {
   'common.compress_failed_msg': 'Compress Failed, Please check the image file and try again.',
   // Nav
   'nav.home': 'Home',
-  'nav.compression': 'Compression',
-  'nav.watch': 'Watch & Auto-Compress',
+  'nav.compression': 'Compress',
+  'nav.watch': 'Watch',
   'nav.settings': 'Settings',
   'nav.update': 'New Version PicSharp Available!',
   // Update

@@ -8,7 +8,6 @@ import useSettingsStore from '@/store/settings';
 import useSelector from '@/hooks/useSelector';
 import { sleep } from '@/utils';
 import { showAlertDialog } from '@/components/ui/alert-dialog';
-import Header from './header';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { AppContext } from '@/routes';
 import { useContext } from 'react';
@@ -59,18 +58,24 @@ export default function SettingsLayout() {
   };
 
   return (
-    <div className='flex h-full flex-col pt-5'>
-      <Header title={t('settings.title')} className='px-5'>
-        <Button variant='default' size='sm' onClick={handleReload}>
-          <RefreshCw className='h-5 w-5' />
-          {t('settings.reload')}
-        </Button>
-        <Button variant='secondary' size='sm' onClick={handleReset}>
-          <FolderSync className='h-5 w-5' />
-          {t('settings.reset_all')}
-        </Button>
-      </Header>
-      <Separator className='my-4' />
+    <div className='flex h-full flex-col'>
+      <div
+        className='flex h-[48px] items-center justify-between px-5'
+        data-tauri-drag-region='true'
+      >
+        <div></div>
+        <div className='flex items-center gap-2'>
+          <Button variant='default' size='sm' onClick={handleReload}>
+            <RefreshCw className='h-5 w-5' />
+            {t('settings.reload')}
+          </Button>
+          <Button variant='secondary' size='sm' onClick={handleReset}>
+            <FolderSync className='h-5 w-5' />
+            {t('settings.reset_all')}
+          </Button>
+        </div>
+      </div>
+      <Separator className='mb-4' />
       <div className='flex flex-1 flex-col space-y-4 overflow-auto lg:flex-row lg:space-y-0'>
         <aside className='px-6 lg:w-1/6'>
           <SidebarNav items={sidebarNavItems} />

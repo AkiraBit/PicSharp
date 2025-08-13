@@ -1,4 +1,3 @@
-import SidebarNav from './sidebar-nav';
 import ErrorBoundary from '../error-boundary';
 import { Outlet } from 'react-router';
 import { useEffect, useRef, useLayoutEffect, useContext } from 'react';
@@ -22,6 +21,8 @@ import { onOpenUrl } from '@tauri-apps/plugin-deep-link';
 import checkForUpdate from '@/utils/updater';
 import { useAsyncEffect } from 'ahooks';
 import { AppContext } from '@/routes';
+import Header from './header';
+import { cn } from '@/lib/utils';
 
 if (isProd) {
   window.oncontextmenu = (e) => {
@@ -197,10 +198,22 @@ export default function AppLayout() {
   }, []);
 
   return (
-    <div className='bg-background flex h-screen w-screen'>
-      <PageProgress ref={progressRef} />
-      {getCurrentWebviewWindow().label === 'main' && <SidebarNav />}
-      <div className='bg-background dark:bg-background h-screen flex-1 bg-gradient-to-b from-blue-50 to-white dark:bg-none'>
+    <ErrorBoundary>
+      <div className='h-screen w-screen bg-[#222222]'>
+        <PageProgress ref={progressRef} />
+        {getCurrentWebviewWindow().label === 'main' && <Header />}
+        <div
+          className={cn(
+            'overflow-hidden rounded-t-xl bg-[#181818]',
+            getCurrentWebviewWindow().label === 'main' ? 'h-[calc(100%-48px)]' : 'h-full',
+          )}
+        >
+          <main className='relative h-full overflow-hidden'>
+            <Outlet />
+          </main>
+        </div>
+        {/* {getCurrentWebviewWindow().label === 'main' && <SidebarNav />} */}
+        {/* <div className='bg-background dark:bg-background h-screen flex-1 bg-gradient-to-b from-blue-50 to-white dark:bg-none'>
         <ErrorBoundary>
           <main className='relative h-full overflow-hidden'>
             {isMac && (
@@ -214,7 +227,8 @@ export default function AppLayout() {
             </div>
           </main>
         </ErrorBoundary>
+      </div> */}
       </div>
-    </div>
+    </ErrorBoundary>
   );
 }

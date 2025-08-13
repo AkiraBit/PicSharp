@@ -10,7 +10,7 @@ export default {
   // Nav
   'nav.home': '首页',
   'nav.compression': '批量压缩',
-  'nav.watch': '监听文件夹并自动压缩',
+  'nav.watch': '监听文件',
   'nav.settings': '设置',
   'nav.update': '有新版本 PicSharp 可更新！',
   // Update

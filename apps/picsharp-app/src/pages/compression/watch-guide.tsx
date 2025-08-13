@@ -25,6 +25,10 @@ import useAppStore from '@/store/app';
 import { AppContext } from '@/routes';
 import { getCurrentWebview } from '@tauri-apps/api/webview';
 import { UnlistenFn } from '@tauri-apps/api/event';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { CircleHelpIcon } from 'lucide-react';
+import Folder from '@/components/animated-icon/folder';
+import { ContextMenu } from '@/components/context-menu';
 
 const WATCH_HISTORY_KEY = 'compression_watch_history';
 
@@ -157,13 +161,32 @@ function WatchCompressionGuide() {
   return (
     <div
       ref={dropzoneRef}
-      className='relative flex min-h-screen flex-col items-center justify-center p-6'
+      className='group relative flex h-full flex-col items-center justify-center p-6'
+      onContextMenu={(e) => {
+        e.preventDefault();
+        ContextMenu.open({
+          x: e.clientX,
+          y: e.clientY,
+          items: [
+            { type: 'item', name: '重命名', shortcut: 'F2', onClick: () => {} },
+            { type: 'item', name: '打开', shortcut: '⌘O', onClick: () => {} },
+            { type: 'separator' },
+            {
+              type: 'item',
+              name: '更多',
+              children: [
+                { type: 'item', name: '复制路径', shortcut: 'Ctrl+Shift+C', onClick: () => {} },
+                { type: 'item', name: '删除', danger: true, shortcut: 'Delete', onClick: () => {} },
+              ],
+              onClick: () => {},
+            },
+          ],
+          onClose: () => {},
+        });
+      }}
     >
-      <div className='relative z-10 text-center'>
-        {/* <h1 className='dark:text-foreground mb-6 text-3xl font-bold'>
-          {' '}
-          ✨{t('page.compression.watch.guide.title')}✨
-        </h1> */}
+      <Folder />
+      <div className='relative z-10 mt-10 text-center'>
         <p className='mx-auto max-w-2xl text-lg'>{t('page.compression.watch.guide.description')}</p>
       </div>
       <div className='relative z-10 w-full max-w-5xl'>
@@ -203,37 +226,51 @@ function WatchCompressionGuide() {
                   </Select>
                 </div>
               </div>
-
-              {/* 支持的格式展示 */}
-              <div className='mt-2 text-center'>
-                <p className='dark:text-foreground mb-2 text-sm text-slate-500'>
-                  {t('page.compression.classic.tinypng_supported_formats')}
-                </p>
-                <div className='flex flex-wrap justify-center gap-2'>
-                  {['PNG/Animated PNG', 'JPEG', 'WebP', 'AVIF'].map((format) => (
-                    <Badge key={format} variant='minor' className='font-normal'>
-                      {format}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-              <div className='mt-2 text-center'>
-                <p className='dark:text-foreground mb-2 text-sm text-slate-500'>
-                  {t('page.compression.classic.local_supported_formats')}
-                </p>
-                <div className='flex flex-wrap justify-center gap-2'>
-                  {['PNG', 'JPEG', 'WebP/Animated WebP', 'AVIF', 'TIFF', 'GIF', 'SVG'].map(
-                    (format) => (
-                      <Badge key={format} variant='minor' className='font-normal'>
-                        {format}
-                      </Badge>
-                    ),
-                  )}
-                </div>
-              </div>
             </div>
           </div>
         </div>
+      </div>
+      <div className='absolute bottom-2 right-2'>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant='ghost' size='icon' className='cursor-pointer text-neutral-400'>
+              <CircleHelpIcon size={32} />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent
+            className='w-80 dark:bg-neutral-800'
+            sideOffset={10}
+            align='end'
+            alignOffset={0}
+          >
+            <div className='text-center'>
+              <p className='dark:text-foreground mb-2 text-sm text-slate-500'>
+                {t('page.compression.classic.tinypng_supported_formats')}
+              </p>
+              <div className='flex flex-wrap justify-center gap-2'>
+                {['PNG/Animated PNG', 'JPEG', 'WebP', 'AVIF'].map((format) => (
+                  <Badge key={format} variant='minor' className='font-normal'>
+                    {format}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+            <div className='mt-2 text-center'>
+              <p className='dark:text-foreground mb-2 text-sm text-slate-500'>
+                {t('page.compression.classic.local_supported_formats')}
+              </p>
+              <div className='flex flex-wrap justify-center gap-2'>
+                {['PNG', 'JPEG', 'WebP/Animated WebP', 'AVIF', 'TIFF', 'GIF', 'SVG'].map(
+                  (format) => (
+                    <Badge key={format} variant='minor' className='font-normal'>
+                      {format}
+                    </Badge>
+                  ),
+                )}
+              </div>
+            </div>
+          </PopoverContent>
+        </Popover>
       </div>
     </div>
   );

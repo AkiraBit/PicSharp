@@ -16,8 +16,6 @@
         "titleBarStyle": "Overlay",
         "hiddenTitle": true,
         "title": "PicSharp",
-        // "width": 863,
-        // "height": 528,
         "width": 1024,
         "height": 670,
         "center": true
@@ -25,15 +23,6 @@
     ],
     "security": {
       "dangerousDisableAssetCspModification": true,
-      // "csp": {
-      //   "default-src": "'self' customprotocol: asset:",
-      //   "connect-src": "ipc: http://ipc.localhost http://localhost",
-      //   "font-src": [
-      //     "https://fonts.gstatic.com"
-      //   ],
-      //   "img-src": "'self' asset: http://asset.localhost blob: data:",
-      //   "style-src": "'unsafe-inline' 'self' https://fonts.googleapis.com"
-      // },
       "assetProtocol": {
         "enable": true,
         "scope": [
@@ -92,8 +81,7 @@
         "mimeType": "image/*",
         "role": "Editor"
       }
-    ],
-    createUpdaterArtifacts: true
+    ]
   },
   "plugins": {
     "cli": {
