@@ -18,7 +18,7 @@ import { Menu, MenuItem } from '@tauri-apps/api/menu';
 import { parseClipboardImages } from '@/utils/clipboard';
 import { downloadDir } from '@tauri-apps/api/path';
 import { AppContext } from '@/routes';
-import UploadWidget from '@/components/upload-widget';
+import UploadWidget from '@/components/animated-icon/upload-widget';
 import { CircleHelpIcon } from '@/components/animated-icon/quetion';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 

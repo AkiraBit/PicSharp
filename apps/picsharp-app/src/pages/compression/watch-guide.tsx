@@ -1,19 +1,11 @@
 import { open } from '@tauri-apps/plugin-dialog';
 import useSelector from '@/hooks/useSelector';
-import { FolderOpen, FolderClock } from 'lucide-react';
+import { FolderClock } from 'lucide-react';
 import useCompressionStore from '../../store/compression';
 import { useNavigate } from '@/hooks/useNavigate';
 import { useI18n } from '../../i18n';
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-} from '@/components/ui/select';
 import { useEffect, useState, useContext, useRef } from 'react';
 import { isValidArray } from '@/utils';
-import { Empty } from 'antd';
 import { exists, stat } from '@tauri-apps/plugin-fs';
 import { basename } from '@tauri-apps/api/path';
 import { Button } from '@/components/ui/button';
@@ -28,7 +20,6 @@ import { UnlistenFn } from '@tauri-apps/api/event';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { CircleHelpIcon } from 'lucide-react';
 import Folder from '@/components/animated-icon/folder';
-import { ContextMenu } from '@/components/context-menu';
 
 const WATCH_HISTORY_KEY = 'compression_watch_history';
 
@@ -161,74 +152,49 @@ function WatchCompressionGuide() {
   return (
     <div
       ref={dropzoneRef}
-      className='group relative flex h-full flex-col items-center justify-center p-6'
-      onContextMenu={(e) => {
-        e.preventDefault();
-        ContextMenu.open({
-          x: e.clientX,
-          y: e.clientY,
-          items: [
-            { type: 'item', name: '重命名', shortcut: 'F2', onClick: () => {} },
-            { type: 'item', name: '打开', shortcut: '⌘O', onClick: () => {} },
-            { type: 'separator' },
-            {
-              type: 'item',
-              name: '更多',
-              children: [
-                { type: 'item', name: '复制路径', shortcut: 'Ctrl+Shift+C', onClick: () => {} },
-                { type: 'item', name: '删除', danger: true, shortcut: 'Delete', onClick: () => {} },
-              ],
-              onClick: () => {},
-            },
-          ],
-          onClose: () => {},
-        });
-      }}
+      className='group relative flex h-full cursor-pointer flex-col items-center justify-center p-6'
+      onClick={() => handleWatch()}
     >
       <Folder />
-      <div className='relative z-10 mt-10 text-center'>
+      <div className='relative z-10 mt-5 text-center'>
         <p className='mx-auto max-w-2xl text-lg'>{t('page.compression.watch.guide.description')}</p>
       </div>
-      <div className='relative z-10 w-full max-w-5xl'>
-        <div className='flex flex-col gap-8 md:flex-row'>
-          <div className='flex-1'>
-            <div className='group relative flex flex-col items-center justify-center gap-6 p-8'>
-              <div className='text-center'>
-                {/* 上传按钮 */}
-                <div className='flex flex-col items-center justify-center gap-3 sm:flex-row'>
-                  <Button
-                    onClick={() => handleWatch()}
-                    className='flex items-center justify-center gap-2'
-                  >
-                    <FolderOpen size={18} />
-                    {t('page.compression.watch.guide.folder')}
-                  </Button>
-                  <Select defaultValue='' onValueChange={handleHistorySelect}>
-                    <SelectTrigger className='w-[max-content]'>
-                      <div className='flex items-center justify-center gap-2 transition-colors'>
-                        <FolderClock size={18} />
-                        {t('page.compression.watch.guide.history')}
-                      </div>
-                    </SelectTrigger>
-                    <SelectContent className='max-h-[260px] overflow-y-auto'>
-                      {isValidArray(history) ? (
-                        <SelectGroup>
-                          {history.map((item) => (
-                            <SelectItem key={item.path} value={item.path} title={item.path}>
-                              {item.name}
-                            </SelectItem>
-                          ))}
-                        </SelectGroup>
-                      ) : (
-                        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={t('no_data')} />
-                      )}
-                    </SelectContent>
-                  </Select>
-                </div>
+      <div className='relative z-10 mt-5 w-full max-w-5xl'>
+        {isValidArray(history) ? (
+          <div className='mx-auto max-w-xl'>
+            <div className='mb-2 flex items-center justify-between gap-2 text-sm text-neutral-500'>
+              <div className='flex items-center gap-2'>
+                <FolderClock size={18} />
+                {t('page.compression.watch.guide.history')} ({history.length})
               </div>
             </div>
+            <div className='max-h-[220px] overflow-y-auto rounded-md border border-neutral-200 dark:border-neutral-800'>
+              <ul
+                className='divide-y divide-neutral-200 dark:divide-neutral-800'
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  const path = (e.target as HTMLElement).dataset.path;
+                  if (path) {
+                    handleHistorySelect(path);
+                  }
+                }}
+              >
+                {history.map((item) => (
+                  <li
+                    key={item.path}
+                    className='flex cursor-pointer items-center justify-between gap-4 px-3 py-2 text-sm hover:bg-neutral-50 dark:hover:bg-neutral-800/40'
+                    data-path={item.path}
+                    title={item.path}
+                  >
+                    <span className='max-w-[50%] truncate font-medium'>{item.name}</span>
+                    <span className='max-w-[50%] truncate text-neutral-400'>{item.path}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
-        </div>
+        ) : null}
       </div>
       <div className='absolute bottom-2 right-2'>
         <Popover>
