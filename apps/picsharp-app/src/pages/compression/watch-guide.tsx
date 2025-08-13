@@ -1,6 +1,6 @@
 import { open } from '@tauri-apps/plugin-dialog';
 import useSelector from '@/hooks/useSelector';
-import { FolderClock } from 'lucide-react';
+import { FolderClock, Plus } from 'lucide-react';
 import useCompressionStore from '../../store/compression';
 import { useNavigate } from '@/hooks/useNavigate';
 import { useI18n } from '../../i18n';
@@ -167,6 +167,10 @@ function WatchCompressionGuide() {
                 <FolderClock size={18} />
                 {t('page.compression.watch.guide.history')} ({history.length})
               </div>
+              <Button variant='ghost' size='sm' className='cursor-pointer text-neutral-400'>
+                <Plus size={18} />
+                {t('page.compression.watch.guide.open_folder')}
+              </Button>
             </div>
             <div className='max-h-[220px] overflow-y-auto rounded-md border border-neutral-200 dark:border-neutral-800'>
               <ul

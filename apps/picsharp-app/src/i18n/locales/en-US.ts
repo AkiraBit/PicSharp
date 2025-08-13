@@ -298,6 +298,7 @@ const enUS = {
   'page.compression.watch.guide.title': 'Listen And Auto-Compress',
   'page.compression.watch.guide.description':
     'Listen to new images in the directory and automatically compress them.',
+  'page.compression.watch.guide.open_folder': 'Open Folder',
   'page.compression.watch.guide.folder': 'Folder',
   'page.compression.watch.guide.history': 'History',
   'page.compression.watch.guide.attention': 'Attention',
