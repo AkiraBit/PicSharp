@@ -5,7 +5,7 @@ import useCompressionStore from '../../store/compression';
 import { useNavigate } from '@/hooks/useNavigate';
 import { useI18n } from '../../i18n';
 import { useEffect, useState, useContext, useRef } from 'react';
-import { isValidArray } from '@/utils';
+import { isValidArray, stopPropagation } from '@/utils';
 import { exists, stat } from '@tauri-apps/plugin-fs';
 import { basename } from '@tauri-apps/api/path';
 import { Button } from '@/components/ui/button';
@@ -200,7 +200,7 @@ function WatchCompressionGuide() {
           </div>
         ) : null}
       </div>
-      <div className='absolute bottom-2 right-2'>
+      <div className='absolute bottom-2 right-2' onClick={stopPropagation}>
         <Popover>
           <PopoverTrigger asChild>
             <Button variant='ghost' size='icon' className='cursor-pointer text-neutral-400'>

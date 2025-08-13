@@ -1,15 +1,13 @@
 import { memo, useEffect, useRef, useContext } from 'react';
-import ImgTag from '@/components/img-tag';
 import { openPath, revealItemInDir } from '@tauri-apps/plugin-opener';
 import useCompressionStore from '@/store/compression';
 import useSelector from '@/hooks/useSelector';
 import { writeText } from '@tauri-apps/plugin-clipboard-manager';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
-import { useI18n, t } from '@/i18n';
+import { useI18n } from '@/i18n';
 import { useUpdate } from 'ahooks';
 import { exists } from '@tauri-apps/plugin-fs';
-import { Menu, MenuItem } from '@tauri-apps/api/menu';
 import { getOSPlatform, isValidArray } from '@/utils';
 import { convertFileSrc, invoke } from '@tauri-apps/api/core';
 import { RefreshCw } from 'lucide-react';
@@ -19,6 +17,11 @@ import { ICompressor } from '@/utils/compressor';
 import { undoSave } from '@/utils/fs';
 import { Divider, Tooltip } from 'antd';
 import { AppContext } from '@/routes';
+import {
+  ContextMenu,
+  ImperativeContextMenuNode,
+  ImperativeContextMenuItem,
+} from '@/components/context-menu';
 
 export interface FileCardProps {
   path: FileInfo['path'];
@@ -52,9 +55,11 @@ function FileCard(props: FileCardProps) {
     };
     const osPlatform = getOSPlatform();
     const fileRevealLabel = FILE_REVEAL_LABELS[osPlatform] || FILE_REVEAL_LABELS.default;
-    const compareMenuItem = await MenuItem.new({
-      text: t('compression.file_action.compare_file'),
-      action: async () => {
+    const menuItems: ImperativeContextMenuNode[] = [];
+    const compareMenuItem: ImperativeContextMenuItem = {
+      type: 'item',
+      name: t('compression.file_action.compare_file'),
+      onClick: async () => {
         try {
           if (imgRef.current) {
             const imageBitmap = await window.createImageBitmap(imgRef.current);
@@ -86,10 +91,11 @@ function FileCard(props: FileCardProps) {
           console.error('image compare error', err);
         }
       },
-    });
-    const openFileMenuItem = await MenuItem.new({
-      text: t('compression.file_action.open_file'),
-      action: async () => {
+    };
+    const openFileMenuItem: ImperativeContextMenuItem = {
+      type: 'item',
+      name: t('compression.file_action.open_file'),
+      onClick: async () => {
         let path = file.status === ICompressor.Status.Completed ? file.outputPath : file.path;
         if (await exists(path)) {
           openPath(path);
@@ -97,10 +103,11 @@ function FileCard(props: FileCardProps) {
           messageApi?.error(t('tips.file_not_exists'));
         }
       },
-    });
-    const revealMenuItem = await MenuItem.new({
-      text: fileRevealLabel,
-      action: async () => {
+    };
+    const revealMenuItem: ImperativeContextMenuItem = {
+      type: 'item',
+      name: fileRevealLabel,
+      onClick: async () => {
         let path = file.status === ICompressor.Status.Completed ? file.outputPath : file.path;
         if (await exists(path)) {
           revealItemInDir(path);
@@ -108,26 +115,38 @@ function FileCard(props: FileCardProps) {
           messageApi?.error(t('tips.file_not_exists'));
         }
       },
-    });
-    const copyPathMenuItem = await MenuItem.new({
-      text: t('compression.file_action.copy_path'),
-      action: async () => {
+    };
+    const copyPathMenuItem: ImperativeContextMenuItem = {
+      type: 'item',
+      name: t('compression.file_action.copy_path'),
+      onClick: async () => {
         let path = file.status === ICompressor.Status.Completed ? file.outputPath : file.path;
         await writeText(path);
         messageApi?.success(t('tips.file_path_copied'));
       },
-    });
-    const copyFileMenuItem = await MenuItem.new({
-      text: t('compression.file_action.copy_file'),
-      action: async () => {
+    };
+    const copyFileMenuItem: ImperativeContextMenuItem = {
+      type: 'item',
+      name: t('compression.file_action.copy_file'),
+      onClick: async () => {
         let path = file.status === ICompressor.Status.Completed ? file.outputPath : file.path;
         await invoke('ipc_copy_image', { path });
         messageApi?.success(t('tips.file_copied'));
       },
-    });
-    const undoMenuItem = await MenuItem.new({
-      text: t('compression.file_action.undo'),
-      action: async () => {
+    };
+    const copyAsMarkdownMenuItem: ImperativeContextMenuItem = {
+      type: 'item',
+      name: t('compression.file_action.copy_as_markdown'),
+      onClick: async () => {
+        let path = file.status === ICompressor.Status.Completed ? file.outputPath : file.path;
+        await writeText(`![${file.name}](${path})`);
+        messageApi?.success(t('tips.markdown_code_copied'));
+      },
+    };
+    const undoMenuItem: ImperativeContextMenuItem = {
+      type: 'item',
+      name: t('compression.file_action.undo'),
+      onClick: async () => {
         const { success, message: undoMessage } = await undoSave(file);
         if (success) {
           file.status = ICompressor.Status.Undone;
@@ -145,8 +164,7 @@ function FileCard(props: FileCardProps) {
           messageApi?.error(t(undoMessage as any));
         }
       },
-    });
-    const menu = await Menu.new();
+    };
 
     if (
       file.status === ICompressor.Status.Completed &&
@@ -154,16 +172,32 @@ function FileCard(props: FileCardProps) {
       file.originalTempPath &&
       imgRef.current
     ) {
-      menu.append(compareMenuItem);
+      menuItems.push(compareMenuItem);
+      menuItems.push({
+        type: 'separator',
+      });
     }
     if (file.status === ICompressor.Status.Completed && file.outputPath && file.originalTempPath) {
-      menu.append(undoMenuItem);
+      menuItems.push(undoMenuItem);
+      menuItems.push({
+        type: 'separator',
+      });
     }
-    menu.append(openFileMenuItem);
-    menu.append(revealMenuItem);
-    menu.append(copyPathMenuItem);
-    menu.append(copyFileMenuItem);
-    menu.popup();
+    menuItems.push(openFileMenuItem);
+    menuItems.push(revealMenuItem);
+    menuItems.push({
+      type: 'separator',
+    });
+    menuItems.push({
+      type: 'item',
+      name: t('compression.file_action.copy'),
+      children: [copyPathMenuItem, copyFileMenuItem, copyAsMarkdownMenuItem],
+    });
+    ContextMenu.open({
+      x: event.clientX,
+      y: event.clientY,
+      items: menuItems,
+    });
   };
 
   useEffect(() => {
