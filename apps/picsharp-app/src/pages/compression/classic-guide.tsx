@@ -182,11 +182,11 @@ function ClassicCompressionGuide() {
             <div className='group relative flex flex-col items-center justify-center gap-6 p-8'>
               <div className='text-center'>
                 <div className='flex flex-col items-center justify-center gap-3 sm:flex-row'>
-                  <Button onClick={handleSelectFile}>
+                  <Button onClick={handleSelectFile} variant='secondary'>
                     <Upload size={18} />
                     {t('page.compression.classic.upload_file')}
                   </Button>
-                  <Button onClick={handleSelectDirectory}>
+                  <Button onClick={handleSelectDirectory} variant='secondary'>
                     <Folder size={18} />
                     {t('page.compression.classic.upload_directory')}
                   </Button>

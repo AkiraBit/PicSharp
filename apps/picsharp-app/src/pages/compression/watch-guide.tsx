@@ -20,6 +20,7 @@ import { UnlistenFn } from '@tauri-apps/api/event';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { CircleHelpIcon } from 'lucide-react';
 import Folder from '@/components/animated-icon/folder';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const WATCH_HISTORY_KEY = 'compression_watch_history';
 
@@ -152,8 +153,7 @@ function WatchCompressionGuide() {
   return (
     <div
       ref={dropzoneRef}
-      className='group relative flex h-full cursor-pointer flex-col items-center justify-center p-6'
-      onClick={() => handleWatch()}
+      className='group relative flex h-full flex-col items-center justify-center p-6'
     >
       <Folder />
       <div className='relative z-10 mt-5 text-center'>
@@ -167,14 +167,19 @@ function WatchCompressionGuide() {
                 <FolderClock size={18} />
                 {t('page.compression.watch.guide.history')} ({history.length})
               </div>
-              <Button variant='ghost' size='sm' className='cursor-pointer text-neutral-400'>
+              <Button
+                variant='ghost'
+                size='sm'
+                className='cursor-pointer text-neutral-400'
+                onClick={() => handleWatch()}
+              >
                 <Plus size={18} />
                 {t('page.compression.watch.guide.open_folder')}
               </Button>
             </div>
-            <div className='max-h-[220px] overflow-y-auto rounded-md border border-neutral-200 dark:border-neutral-800'>
+            <ScrollArea className='h-[220px] rounded-md border border-neutral-200 dark:border-neutral-800'>
               <ul
-                className='divide-y divide-neutral-200 dark:divide-neutral-800'
+                className='max-w-xl divide-y divide-neutral-200 dark:divide-neutral-800'
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
@@ -187,7 +192,7 @@ function WatchCompressionGuide() {
                 {history.map((item) => (
                   <li
                     key={item.path}
-                    className='flex cursor-pointer items-center justify-between gap-4 px-3 py-2 text-sm hover:bg-neutral-50 dark:hover:bg-neutral-800/40'
+                    className='flex cursor-pointer items-center justify-between gap-4 px-4 py-2 text-sm hover:bg-neutral-50 dark:hover:bg-neutral-800/40'
                     data-path={item.path}
                     title={item.path}
                   >
@@ -196,9 +201,21 @@ function WatchCompressionGuide() {
                   </li>
                 ))}
               </ul>
-            </div>
+            </ScrollArea>
           </div>
-        ) : null}
+        ) : (
+          <div className='flex w-full items-center justify-center'>
+            <Button
+              variant='secondary'
+              size='sm'
+              className='cursor-pointer text-neutral-400'
+              onClick={() => handleWatch()}
+            >
+              <Plus size={18} className='cursor-pointer' />
+              {t('page.compression.watch.guide.open_folder')}
+            </Button>
+          </div>
+        )}
       </div>
       <div className='absolute bottom-2 right-2' onClick={stopPropagation}>
         <Popover>
