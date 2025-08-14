@@ -194,6 +194,15 @@ export default {
   'menu.edit.select_all': '全选',
   'menu.window': '窗口',
   'menu.view': '视图',
+  // Window Controls
+  'window.controls.minimize': '最小化',
+  'window.controls.maximize': '最大化',
+  'window.controls.restore': '还原',
+  'window.controls.fullscreen': '全屏',
+  'window.controls.exit_fullscreen': '退出全屏',
+  'window.controls.always_on_top': '置顶',
+  'window.controls.cancel_always_on_top': '取消置顶',
+  'window.controls.close': '关闭',
   // Clipboard
   'clipboard.parse_clipboard_images': '正在解析剪贴板图片',
   'clipboard.parse_clipboard_images_error': '解析剪贴板图片失败: {{error}}',

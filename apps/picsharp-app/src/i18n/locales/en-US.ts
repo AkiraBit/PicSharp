@@ -198,6 +198,15 @@ const enUS = {
   'menu.edit.select_all': 'Select All',
   'menu.window': 'Window',
   'menu.view': 'View',
+  // Window Controls
+  'window.controls.minimize': 'Minimize',
+  'window.controls.maximize': 'Maximize',
+  'window.controls.restore': 'Restore',
+  'window.controls.fullscreen': 'Fullscreen',
+  'window.controls.exit_fullscreen': 'Exit Fullscreen',
+  'window.controls.always_on_top': 'Always on Top',
+  'window.controls.cancel_always_on_top': 'Cancel Always on Top',
+  'window.controls.close': 'Close',
   // Clipboard
   'clipboard.parse_clipboard_images': 'Parsing clipboard images',
   'clipboard.parse_clipboard_images_error': 'Failed to parse clipboard images: {{error}}',

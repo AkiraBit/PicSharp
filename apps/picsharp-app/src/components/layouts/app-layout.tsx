@@ -199,12 +199,12 @@ export default function AppLayout() {
 
   return (
     <ErrorBoundary>
-      <div className='h-screen w-screen bg-[#222222]'>
+      <div className='h-screen w-screen dark:bg-[#222222]'>
         <PageProgress ref={progressRef} />
         {getCurrentWebviewWindow().label === 'main' && <Header />}
         <div
           className={cn(
-            'overflow-hidden rounded-t-xl bg-[#181818]',
+            'overflow-hidden rounded-t-xl dark:bg-[#181818]',
             getCurrentWebviewWindow().label === 'main' ? 'h-[calc(100%-48px)]' : 'h-full',
           )}
         >
@@ -212,22 +212,6 @@ export default function AppLayout() {
             <Outlet />
           </main>
         </div>
-        {/* {getCurrentWebviewWindow().label === 'main' && <SidebarNav />} */}
-        {/* <div className='bg-background dark:bg-background h-screen flex-1 bg-gradient-to-b from-blue-50 to-white dark:bg-none'>
-        <ErrorBoundary>
-          <main className='relative h-full overflow-hidden'>
-            {isMac && (
-              <div
-                data-tauri-drag-region='true'
-                className='draggable absolute left-0 top-0 z-50 h-6 w-full select-none'
-              ></div>
-            )}
-            <div className='h-full'>
-              <Outlet />
-            </div>
-          </main>
-        </ErrorBoundary>
-      </div> */}
       </div>
     </ErrorBoundary>
   );

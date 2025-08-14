@@ -20,6 +20,7 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { SettingsGearIcon } from '@/components/animated-icon/setting';
 import { useNavigate } from '@/hooks/useNavigate';
 import { useEffect, useMemo, useState } from 'react';
+import WindowControl from '@/components/window-control';
 
 export interface NavLink {
   title: string;
@@ -69,7 +70,7 @@ function Header() {
 
   return (
     <header
-      className='relative flex h-[48px] w-full flex-shrink-0 items-center justify-center bg-[#222222]'
+      className='relative flex h-[48px] w-full flex-shrink-0 items-center justify-center dark:bg-[#222222]'
       data-tauri-drag-region={isMac}
     >
       <Tabs value={activeTab}>
@@ -101,6 +102,7 @@ function Header() {
             </Button>
           </div>
         </Link>
+        <WindowControl showControls={!isMac} showFullscreen={!isMac} />
       </div>
     </header>
   );
