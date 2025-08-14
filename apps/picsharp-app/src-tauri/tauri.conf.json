@@ -10,30 +10,9 @@
     "frontendDist": "../dist"
   },
   "app": {
-    "windows": [
-      {
-        "resizable": true,
-        "titleBarStyle": "Overlay",
-        "hiddenTitle": true,
-        "title": "PicSharp",
-        // "width": 863,
-        // "height": 528,
-        "width": 1024,
-        "height": 670,
-        "center": true
-      }
-    ],
+    "windows": [],
     "security": {
       "dangerousDisableAssetCspModification": true,
-      // "csp": {
-      //   "default-src": "'self' customprotocol: asset:",
-      //   "connect-src": "ipc: http://ipc.localhost http://localhost",
-      //   "font-src": [
-      //     "https://fonts.gstatic.com"
-      //   ],
-      //   "img-src": "'self' asset: http://asset.localhost blob: data:",
-      //   "style-src": "'unsafe-inline' 'self' https://fonts.googleapis.com"
-      // },
       "assetProtocol": {
         "enable": true,
         "scope": [
@@ -86,14 +65,17 @@
           "avif",
           "gif",
           "svg",
-          "tiff"
+          "tiff",
+          "tif",
+          "heic",
+          "heif"
         ],
         "description": "Image file",
         "mimeType": "image/*",
         "role": "Editor"
       }
     ],
-    createUpdaterArtifacts: true
+    "createUpdaterArtifacts": true
   },
   "plugins": {
     "cli": {

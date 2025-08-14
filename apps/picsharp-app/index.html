@@ -23,13 +23,14 @@
   </style>
   <script>
     const root = window.document.documentElement;
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    const currentTheme = localStorage.getItem('app-theme') || 'system';
-    if(currentTheme === 'system') {
-      root.classList.add(mediaQuery.matches ? 'dark' : 'light');
-    }else{
-      root.classList.add(currentTheme);
-    }
+    // const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    // const currentTheme = localStorage.getItem('app-theme') || 'system';
+    // if(currentTheme === 'system') {
+    //   root.classList.add(mediaQuery.matches ? 'dark' : 'light');
+    // }else{
+    //   root.classList.add(currentTheme);
+    // }
+    root.classList.add('dark');
   </script>
 </head>
 

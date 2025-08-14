@@ -20,7 +20,7 @@ tauri-build = { version = "2", features = ["config-json5"] }
 
 [dependencies]
 glob = "0.3.1"
-tauri = { version = "2", features = ["protocol-asset", "tray-icon", "devtools"] }
+tauri = { version = "2", features = [ "protocol-asset", "tray-icon", "devtools"] }
 tauri-plugin-opener = "2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"

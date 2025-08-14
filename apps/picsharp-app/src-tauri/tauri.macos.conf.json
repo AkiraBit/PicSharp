@@ -1,14 +1,5 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "PicSharp",
-  "version": "../package.json",
-  "identifier": "com.PicSharp.app",
-  "build": {
-    "beforeDevCommand": "pnpm dev",
-    "devUrl": "http://localhost:1420",
-    "beforeBuildCommand": "pnpm build",
-    "frontendDist": "../dist"
-  },
   "app": {
     "windows": [
       {
@@ -18,90 +9,9 @@
         "title": "PicSharp",
         "width": 1024,
         "height": 670,
-        "center": true
-      }
-    ],
-    "security": {
-      "dangerousDisableAssetCspModification": true,
-      "assetProtocol": {
-        "enable": true,
-        "scope": [
-          "**"
-        ]
-      }
-    }
-  },
-  "bundle": {
-    "active": true,
-    "targets": "all",
-    "category": "Productivity",
-    "copyright": "Copyright (c) AkiraBit 2025. All rights reserved.",
-    "homepage": "https://github.com/AkiraBit/PicSharp",
-    "icon": [
-      "icons/32x32.png",
-      "icons/128x128.png",
-      "icons/128x128@2x.png",
-      "icons/icon.icns",
-      "icons/icon.ico"
-    ],
-    "resources": [
-      "resources/**/*"
-    ],
-    "externalBin": [
-      "binaries/picsharp-sidecar"
-    ],
-    "windows": {
-      "webviewInstallMode": {
-        "type": "embedBootstrapper"
-      }
-    },
-    "macOS": {
-      "entitlements": "./Entitlements.plist",
-      "minimumSystemVersion": "12.0"
-    },
-    "linux": {
-      "deb": {
-        "section": "text"
-      }
-    },
-    "fileAssociations": [
-      {
-        "name": "image",
-        "ext": [
-          "png",
-          "jpg",
-          "jpeg",
-          "webp",
-          "avif",
-          "gif",
-          "svg",
-          "tiff"
-        ],
-        "description": "Image file",
-        "mimeType": "image/*",
-        "role": "Editor"
+        "center": true,
+        "theme": "Dark"
       }
     ]
-  },
-  "plugins": {
-    "cli": {
-      "description": "PicSharp CLI",
-      "args": [
-        {
-          "name": "file",
-          "index": 1,
-          "takesValue": true
-        }
-      ]
-    },
-    "deep-link": {
-      "desktop": {
-        "schemes": ["picsharp"]
-      }
-    },
-    "updater": {
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDU0Nzg5NjY2MDRFOTlCNjQKUldSa20ra0VacFo0VkswUU1WaE45WFFzN3YvYXFZMkQ4c0xVdHZJaVhMNFZmNHd1MHIrUjNQMHgK",
-      "endpoints": ["https://github.com/AkiraBit/PicSharp/releases/latest/download/latest.json"]
-    }
   }
 }
