@@ -4,7 +4,6 @@ import { z } from 'zod';
 import { SaveMode } from '../../constants';
 import { ConvertFormat } from '../../services/convert';
 import { InMemoryJobQueue } from '../../core/queue';
-import { JobState } from '../../core/types';
 
 // 路由层负责参数校验与任务入队；尽可能保持与旧接口参数一致
 

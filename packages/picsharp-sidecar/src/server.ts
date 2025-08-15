@@ -1,5 +1,4 @@
 import { serve } from '@hono/node-server';
-import { Hono } from 'hono';
 import { loadConfig } from './config';
 import { findAvailablePort } from './utils';
 import { createApp } from './app';
@@ -8,17 +7,20 @@ import path from 'node:path';
 import { WorkerPool } from './core/worker-pool';
 import { ClusterPool } from './core/cluster-pool';
 import { Scheduler } from './core/scheduler';
+import { isDev } from './utils';
 
-export async function startServer(cliPort?: number) {
-  const config = loadConfig(cliPort);
+interface StartServerOptions {
+  port: number;
+}
+
+export async function startServer(options: StartServerOptions) {
+  const config = loadConfig(options.port);
   const port = await findAvailablePort(config.port);
 
   // 初始化 runtime: 队列 + worker 池 + 调度器
   const runtime = createRuntime<any, any>(config);
 
   // 启动 worker 池（支持 cluster 开关）
-  const isBuilt = __dirname.includes('/dist');
-  const isDev = process.env.NODE_ENV !== 'production' && !isBuilt;
   if (config.useCluster) {
     const childFile = path.join(
       __dirname,

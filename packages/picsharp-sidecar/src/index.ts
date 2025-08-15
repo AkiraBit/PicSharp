@@ -32,7 +32,9 @@ async function main() {
     return;
   }
 
-  await startServer(argv.port);
+  await startServer({
+    port: argv.port,
+  });
 }
 
 main();
