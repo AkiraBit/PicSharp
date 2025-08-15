@@ -34,6 +34,7 @@ function SettingsCompressionConvert() {
       description={t('settings.compression.file_ignore.description')}
     >
       <PathTagsInput
+        title={t('settings.compression.file_ignore.title')}
         value={ignores}
         onChange={(next) => {
           set(SettingsKey.CompressionWatchFileIgnore, next);

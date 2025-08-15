@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
 import { Maximize2 } from 'lucide-react';
 
 export interface PathTagsInputProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange'> {
+  title?: string;
   value?: string[];
   onChange: (next: string[]) => void;
   placeholder?: string;
@@ -149,6 +150,7 @@ const EditableTag = React.memo(function EditableTag({
 });
 
 export function PathTagsInput({
+  title,
   value,
   onChange,
   placeholder,
@@ -384,7 +386,7 @@ export function PathTagsInput({
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className='w-[90vw] max-w-3xl dark:bg-neutral-900'>
           <DialogHeader>
-            <DialogTitle>编辑路径列表</DialogTitle>
+            <DialogTitle>{title}</DialogTitle>
           </DialogHeader>
           <div className='flex flex-col gap-2'>
             <div
