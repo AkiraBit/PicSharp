@@ -8,6 +8,8 @@ import { createCompressRouter } from './features/compress/router';
 import { createJobsRouter } from './api/jobs.router';
 import { createJobsSSERouter } from './api/jobs.sse';
 import { createWatchRouter } from './features/watch/router';
+import { createBatchRouter } from './api/batch.router';
+import { createBatchSSERouter } from './api/batch.sse';
 
 export function createApp(queue?: InMemoryJobQueue<any, any>) {
   const app = new Hono()
@@ -37,6 +39,8 @@ export function createApp(queue?: InMemoryJobQueue<any, any>) {
     app.route('/v2/jobs', createJobsRouter(queue));
     app.route('/v2/jobs', createJobsSSERouter());
     app.route('/v2/watch', createWatchRouter(queue));
+    app.route('/v2/batch', createBatchRouter(queue));
+    app.route('/v2/batch', createBatchSSERouter());
   }
 
   return app;

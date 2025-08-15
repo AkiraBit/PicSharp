@@ -53,7 +53,9 @@
   "bin": "dist/index.js",
   "pkg": {
     "assets": [
-      "node_modules/@img/**/*"
+      "node_modules/@img/**/*",
+      "./dist/workers/**/*",
+      "./dist/features/**/*"
     ]
   },
   "engines": {

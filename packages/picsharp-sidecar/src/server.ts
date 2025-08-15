@@ -17,7 +17,8 @@ export async function startServer(cliPort?: number) {
   const runtime = createRuntime<any, any>(config);
 
   // 启动 worker 池（支持 cluster 开关）
-  const isDev = process.env.NODE_ENV !== 'production';
+  const isBuilt = __dirname.includes('/dist');
+  const isDev = process.env.NODE_ENV !== 'production' && !isBuilt;
   if (config.useCluster) {
     const childFile = path.join(
       __dirname,

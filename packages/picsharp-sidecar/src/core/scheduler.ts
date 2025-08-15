@@ -3,6 +3,7 @@ import { Job, JobState } from './types';
 import { WorkerPool } from './worker-pool';
 import { AppConfig } from '../config';
 import { createJobLogger } from './logger';
+import { eventBus } from './events';
 
 export class Scheduler<TPayload, TResult> {
   private queue: InMemoryJobQueue<TPayload, TResult>;
@@ -49,6 +50,7 @@ export class Scheduler<TPayload, TResult> {
         const result = await this.pool.run(job.id, job.payload);
         const elapsedMs = Date.now() - startedAt;
         this.queue.succeed(job.id, result);
+        eventBus.emitJobEvent({ type: 'completed', jobId: job.id, result });
         jobLogger.info({ event: 'success', elapsed_ms: elapsedMs }, 'job succeeded');
         resolve(result);
       } catch (err) {
@@ -70,6 +72,7 @@ export class Scheduler<TPayload, TResult> {
             const res2 = await this.pool.run(job.id, job.payload);
             const elapsedMs2 = Date.now() - startedAt2;
             this.queue.succeed(job.id, res2);
+            eventBus.emitJobEvent({ type: 'completed', jobId: job.id, result: res2 });
             jobLogger.info(
               { event: 'success', elapsed_ms: elapsedMs2, retried: true },
               'job retried and succeeded',
@@ -77,6 +80,7 @@ export class Scheduler<TPayload, TResult> {
             resolve(res2);
           } catch (err2) {
             this.queue.fail(job.id, err2);
+            eventBus.emitJobEvent({ type: 'failed', jobId: job.id, error: (err2 as any)?.message });
             jobLogger.error(
               { event: 'error', err: (err2 as any)?.message, retried: true },
               'job retried and failed',
@@ -85,6 +89,7 @@ export class Scheduler<TPayload, TResult> {
           }
         } else {
           this.queue.fail(job.id, err);
+          eventBus.emitJobEvent({ type: 'failed', jobId: job.id, error: (err as any)?.message });
           jobLogger.error({ event: 'fatal', err: (err as any)?.message }, 'job failed finally');
           reject(err);
         }
