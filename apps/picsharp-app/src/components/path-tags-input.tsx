@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from './ui/scroll-area';
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
+import { Maximize2 } from 'lucide-react';
 
 export interface PathTagsInputProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange'> {
   value?: string[];
@@ -12,22 +14,28 @@ export interface PathTagsInputProps extends Omit<React.HTMLAttributes<HTMLDivEle
   placeholder?: string;
   disabled?: boolean;
   /**
+   * 是否对 onChange 做动画帧节流，减少快速删除时的外部重渲染压力（默认 true）
+   */
+  optimizeOnChange?: boolean;
+  /**
    * 自定义输入框的 aria-label，便于无障碍
    */
   inputAriaLabel?: string;
 }
 
 interface EditableTagProps {
+  index: number;
   text: string;
   isEditing: boolean;
   disabled?: boolean;
-  onRequestEdit: () => void;
-  onConfirmEdit: (next: string) => void;
+  onRequestEdit: (index: number) => void;
+  onConfirmEdit: (index: number, next: string) => void;
   onCancelEdit: () => void;
-  onRemove: () => void;
+  onRemove: (index: number) => void;
 }
 
-function EditableTag({
+const EditableTag = React.memo(function EditableTag({
+  index,
   text,
   isEditing,
   disabled,
@@ -57,11 +65,11 @@ function EditableTag({
           ref={inputRef}
           value={editingValue}
           onChange={(e) => setEditingValue(e.target.value)}
-          onBlur={() => onConfirmEdit(editingValue.trim())}
+          onBlur={() => onConfirmEdit(index, editingValue.trim())}
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
               e.preventDefault();
-              onConfirmEdit(editingValue.trim());
+              onConfirmEdit(index, editingValue.trim());
             }
             if (e.key === 'Escape') {
               e.preventDefault();
@@ -78,7 +86,7 @@ function EditableTag({
           variant='ghost'
           size='icon'
           disabled={disabled}
-          onClick={() => onRemove()}
+          onClick={() => onRemove(index)}
           aria-label='Remove path'
           className='h-6 w-6 text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100'
         >
@@ -99,18 +107,18 @@ function EditableTag({
           )}
           onClick={() => {
             if (!disabled) {
-              onRequestEdit();
+              onRequestEdit(index);
             }
           }}
           onKeyDown={(e) => {
             if (disabled) return;
             if (e.key === 'Enter') {
               e.preventDefault();
-              onRequestEdit();
+              onRequestEdit(index);
             }
             if (e.key === 'Backspace' || e.key === 'Delete') {
               e.preventDefault();
-              onRemove();
+              onRemove(index);
             }
           }}
           role='button'
@@ -124,7 +132,7 @@ function EditableTag({
             disabled={disabled}
             onClick={(e) => {
               e.stopPropagation();
-              onRemove();
+              onRemove(index);
             }}
             aria-label='Remove path'
             className='h-5 w-5 text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100'
@@ -138,7 +146,7 @@ function EditableTag({
       </TooltipContent>
     </Tooltip>
   );
-}
+});
 
 export function PathTagsInput({
   value,
@@ -146,16 +154,31 @@ export function PathTagsInput({
   placeholder,
   disabled,
   className,
+  optimizeOnChange = true,
   inputAriaLabel = 'Path input',
   ...divProps
 }: PathTagsInputProps) {
   const containerRef = React.useRef<HTMLDivElement>(null);
   const inputRef = React.useRef<HTMLInputElement>(null);
+  const dialogInputRef = React.useRef<HTMLInputElement>(null);
   const [pendingText, setPendingText] = React.useState('');
   const [editingIndex, setEditingIndex] = React.useState<number | null>(null);
   const isControlled = value !== undefined;
   const [uncontrolledTags, setUncontrolledTags] = React.useState<string[]>(() => value ?? []);
   const tags = isControlled ? (value as string[]) : uncontrolledTags;
+  const [isDialogOpen, setIsDialogOpen] = React.useState(false);
+  const [isPending, startTransition] = React.useTransition();
+  const scheduledNextRef = React.useRef<string[] | null>(null);
+  const rafIdRef = React.useRef<number | null>(null);
+
+  React.useEffect(() => {
+    return () => {
+      if (rafIdRef.current != null) {
+        cancelAnimationFrame(rafIdRef.current);
+        rafIdRef.current = null;
+      }
+    };
+  }, []);
 
   // 当外部传入 value（受控）时，保持内部状态同步，便于在受控/非受控切换时行为稳定
   React.useEffect(() => {
@@ -167,11 +190,26 @@ export function PathTagsInput({
   const applyNext = React.useCallback(
     (next: string[]) => {
       if (!isControlled) {
-        setUncontrolledTags(next);
+        startTransition(() => {
+          setUncontrolledTags(next);
+        });
       }
-      onChange(next);
+      if (!optimizeOnChange) {
+        onChange(next);
+        return;
+      }
+      scheduledNextRef.current = next;
+      if (rafIdRef.current == null) {
+        rafIdRef.current = requestAnimationFrame(() => {
+          if (scheduledNextRef.current) {
+            onChange(scheduledNextRef.current);
+            scheduledNextRef.current = null;
+          }
+          rafIdRef.current = null;
+        });
+      }
     },
-    [isControlled, onChange],
+    [isControlled, onChange, optimizeOnChange],
   );
 
   const commitTokens = React.useCallback(
@@ -210,6 +248,17 @@ export function PathTagsInput({
     },
     [applyNext, tags],
   );
+
+  const handleRequestEdit = React.useCallback((i: number) => setEditingIndex(i), []);
+  const handleConfirmEdit = React.useCallback(
+    (i: number, next: string) => {
+      updateIndex(i, next);
+      setEditingIndex(null);
+    },
+    [updateIndex],
+  );
+  const handleCancelEdit = React.useCallback(() => setEditingIndex(null), []);
+  const handleRemove = React.useCallback((i: number) => removeIndex(i), [removeIndex]);
 
   const handlePaste: React.ClipboardEventHandler<HTMLInputElement> = React.useCallback(
     (e) => {
@@ -270,53 +319,125 @@ export function PathTagsInput({
   );
 
   return (
-    <div
-      {...divProps}
-      ref={containerRef}
-      className={cn(
-        'flex min-h-[60px] w-full flex-wrap items-start gap-2 rounded-md border border-neutral-200 bg-transparent text-base shadow-sm focus-within:ring-1 focus-within:ring-neutral-950 md:text-sm dark:border-neutral-600 dark:focus-within:ring-neutral-300',
-        disabled && 'cursor-not-allowed opacity-60',
-        className,
-      )}
-      onClick={() => {
-        if (!disabled) {
-          inputRef.current?.focus();
-        }
-      }}
-    >
-      <ScrollArea className='h-full w-full'>
-        <div className='flex h-full w-full flex-wrap gap-1 p-2'>
-          {tags.map((text, index) => (
-            <div key={`${index}-${text}`} data-path-tag tabIndex={0} className='focus:outline-none'>
-              <EditableTag
-                text={text}
-                isEditing={editingIndex === index}
-                disabled={disabled}
-                onRequestEdit={() => setEditingIndex(index)}
-                onConfirmEdit={(next) => {
-                  updateIndex(index, next);
-                  setEditingIndex(null);
-                }}
-                onCancelEdit={() => setEditingIndex(null)}
-                onRemove={() => removeIndex(index)}
-              />
+    <>
+      <div
+        {...divProps}
+        ref={containerRef}
+        className={cn(
+          'group relative flex min-h-[60px] w-full flex-wrap items-start gap-2 rounded-md border border-neutral-200 bg-transparent text-base shadow-sm focus-within:ring-1 focus-within:ring-neutral-950 md:text-sm dark:border-neutral-600 dark:focus-within:ring-neutral-300',
+          disabled && 'cursor-not-allowed opacity-60',
+          className,
+        )}
+        onClick={() => {
+          if (!disabled) {
+            inputRef.current?.focus();
+          }
+        }}
+      >
+        <ScrollArea className='h-full w-full'>
+          <div className='flex h-full w-full flex-wrap gap-1 p-2'>
+            {tags.map((text, index) => (
+              <div key={index} data-path-tag tabIndex={0} className='focus:outline-none'>
+                <EditableTag
+                  index={index}
+                  text={text}
+                  isEditing={editingIndex === index}
+                  disabled={disabled}
+                  onRequestEdit={handleRequestEdit}
+                  onConfirmEdit={handleConfirmEdit}
+                  onCancelEdit={handleCancelEdit}
+                  onRemove={handleRemove}
+                />
+              </div>
+            ))}
+            <input
+              ref={inputRef}
+              value={pendingText}
+              onChange={handleInputChange}
+              onKeyDown={handleKeyDown}
+              onPaste={handlePaste}
+              disabled={disabled}
+              aria-label={inputAriaLabel}
+              placeholder={tags.length === 0 ? placeholder : undefined}
+              className={cn(
+                'h-0 min-w-[120px] flex-1 bg-transparent p-0 text-neutral-900 placeholder:text-neutral-500 focus:h-auto focus:p-1 focus:outline-none dark:text-neutral-100 dark:placeholder:text-neutral-400',
+              )}
+            />
+          </div>
+        </ScrollArea>
+
+        <Button
+          type='button'
+          variant='link'
+          size='icon'
+          aria-label='Expand paths editor'
+          className='absolute right-0 top-0 opacity-0 transition-opacity group-hover:opacity-100'
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsDialogOpen(true);
+          }}
+        >
+          <Maximize2 className='h-2 w-2' />
+        </Button>
+      </div>
+
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className='w-[90vw] max-w-3xl dark:bg-neutral-900'>
+          <DialogHeader>
+            <DialogTitle>编辑路径列表</DialogTitle>
+          </DialogHeader>
+          <div className='flex flex-col gap-2'>
+            <div
+              className={cn(
+                'flex min-h-[240px] w-full flex-wrap items-start gap-2 rounded-md border border-neutral-200 bg-transparent text-base shadow-sm focus-within:ring-1 focus-within:ring-neutral-950 md:text-sm dark:border-neutral-600 dark:focus-within:ring-neutral-300',
+                disabled && 'cursor-not-allowed opacity-60',
+              )}
+              onClick={() => {
+                if (!disabled) {
+                  dialogInputRef.current?.focus();
+                }
+              }}
+            >
+              <ScrollArea className='h-[50vh] w-full'>
+                <div className='flex h-full w-full flex-wrap gap-1 p-2'>
+                  {tags.map((text, index) => (
+                    <div
+                      key={`dialog-${index}`}
+                      data-path-tag
+                      tabIndex={0}
+                      className='focus:outline-none'
+                    >
+                      <EditableTag
+                        index={index}
+                        text={text}
+                        isEditing={editingIndex === index}
+                        disabled={disabled}
+                        onRequestEdit={handleRequestEdit}
+                        onConfirmEdit={handleConfirmEdit}
+                        onCancelEdit={handleCancelEdit}
+                        onRemove={handleRemove}
+                      />
+                    </div>
+                  ))}
+                  <input
+                    ref={dialogInputRef}
+                    value={pendingText}
+                    onChange={handleInputChange}
+                    onKeyDown={handleKeyDown}
+                    onPaste={handlePaste}
+                    disabled={disabled}
+                    aria-label={inputAriaLabel}
+                    placeholder={tags.length === 0 ? placeholder : undefined}
+                    className={cn(
+                      'h-0 min-w-[160px] flex-1 bg-transparent p-0 text-neutral-900 placeholder:text-neutral-500 focus:h-auto focus:p-1 focus:outline-none dark:text-neutral-100 dark:placeholder:text-neutral-400',
+                    )}
+                  />
+                </div>
+              </ScrollArea>
             </div>
-          ))}
-          <input
-            ref={inputRef}
-            value={pendingText}
-            onChange={handleInputChange}
-            onKeyDown={handleKeyDown}
-            onPaste={handlePaste}
-            disabled={disabled}
-            aria-label={inputAriaLabel}
-            placeholder={tags.length === 0 ? placeholder : undefined}
-            className={cn(
-              'h-0 min-w-[120px] flex-1 bg-transparent p-0 text-neutral-900 placeholder:text-neutral-500 focus:h-auto focus:p-1 focus:outline-none dark:text-neutral-100 dark:placeholder:text-neutral-400',
-            )}
-          />
-        </div>
-      </ScrollArea>
-    </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
