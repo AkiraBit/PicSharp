@@ -204,7 +204,7 @@ export default function AppLayout() {
         {getCurrentWebviewWindow().label === 'main' && <Header />}
         <div
           className={cn(
-            'overflow-hidden rounded-t-xl dark:bg-[#181818]',
+            'select-none overflow-hidden rounded-t-xl dark:bg-[#181818]',
             getCurrentWebviewWindow().label === 'main' ? 'h-[calc(100%-48px)]' : 'h-full',
           )}
         >

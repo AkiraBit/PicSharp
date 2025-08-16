@@ -10,8 +10,8 @@ import {
   isValidArray,
   hashFile,
 } from '../../../utils';
-import { SaveMode } from '../../../constants';
-import { ConvertFormat, bulkConvert } from '../../../services/convert';
+import { SaveMode, ConvertFormat } from '../../../constants';
+import { bulkConvert } from '../../../services/convert';
 
 export interface TinifyOptions {
   limit_compress_rate?: number;
@@ -36,19 +36,14 @@ interface TinifyResult {
   output: { width: number; height: number; ratio: number; size: number; type: string; url: string };
 }
 
-export async function handleTinify(
-  payload: {
-    codec: 'tinify';
-    inputPath: string;
-    options: TinifyOptions;
-    processOptions: TinifyProcessOptions;
-  },
-  onProgress?: (stage: 'starting' | 'processing' | 'writing' | 'converting' | 'completed') => void,
-) {
+export async function handleTinify(payload: {
+  inputPath: string;
+  options: TinifyOptions;
+  processOptions: TinifyProcessOptions;
+}) {
   const { inputPath, options, processOptions } = payload;
   await checkFile(inputPath);
 
-  onProgress?.('starting');
   const response = await request<TinifyResult>(`https://api.tinify.com/shrink`, {
     method: 'POST',
     headers: {
@@ -70,7 +65,6 @@ export async function handleTinify(
 
   const tempFilePath = options.temp_dir ? await copyFileToTemp(inputPath, options.temp_dir) : '';
 
-  onProgress?.('writing');
   if (availableCompressRate) {
     const body: Record<string, any> = {};
     if (isValidArray(processOptions.preserveMetadata)) {
@@ -109,7 +103,6 @@ export async function handleTinify(
   };
 
   if (isValidArray(options.convert_types)) {
-    onProgress?.('converting');
     const results = await bulkConvert(
       newOutputPath,
       options.convert_types as ConvertFormat[],
@@ -118,6 +111,5 @@ export async function handleTinify(
     (result as any).convert_results = results;
   }
 
-  onProgress?.('completed');
   return result;
 }

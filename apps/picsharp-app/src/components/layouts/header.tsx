@@ -77,7 +77,9 @@ function Header() {
         <TabsList className='dark:bg-[#181818]'>
           {navigation.primary.map((item) => (
             <Link key={item.key} to={item.href}>
-              <TabsTrigger value={item.key}>{item.title}</TabsTrigger>
+              <TabsTrigger value={item.key} className='select-none'>
+                {item.title}
+              </TabsTrigger>
             </Link>
           ))}
         </TabsList>

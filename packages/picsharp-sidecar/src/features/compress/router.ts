@@ -1,11 +1,8 @@
 import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
-import { SaveMode } from '../../constants';
-import { ConvertFormat } from '../../services/convert';
+import { SaveMode, ConvertFormat } from '../../constants';
 import { InMemoryJobQueue } from '../../core/queue';
-
-// 路由层负责参数校验与任务入队；尽可能保持与旧接口参数一致
 
 const OptionsSchema = z
   .object({

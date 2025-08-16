@@ -11,8 +11,8 @@ import {
   hashFile,
   calculateSSIM,
 } from '../../../utils';
-import { SaveMode } from '../../../constants';
-import { bulkConvert, ConvertFormat } from '../../../services/convert';
+import { SaveMode, ConvertFormat } from '../../../constants';
+import { bulkConvert } from '../../../services/convert';
 
 export interface JpegOptions {
   limit_compress_rate?: number;
@@ -72,18 +72,11 @@ interface NormalizedJpegProcessOptions {
   force: boolean;
 }
 
-/**
- * 在 worker 中执行的 JPEG 压缩流程，尽量保持返回字段与旧接口一致
- */
-export async function handleJpeg(
-  payload: {
-    codec: 'jpeg';
-    inputPath: string;
-    options: JpegOptions;
-    processOptions: JpegProcessOptions;
-  },
-  onProgress?: (stage: 'starting' | 'processing' | 'writing' | 'converting' | 'completed') => void,
-) {
+export async function handleJpeg(payload: {
+  inputPath: string;
+  options: JpegOptions;
+  processOptions: JpegProcessOptions;
+}) {
   const { inputPath, options, processOptions } = payload;
   await checkFile(inputPath);
 
@@ -116,20 +109,18 @@ export async function handleJpeg(
     force: processOptions.force ?? true,
   };
 
-  onProgress?.('starting');
   const originalSize = await getFileSize(inputPath);
 
   if (isWindows && opts.save.mode === SaveMode.Overwrite) {
     sharp.cache(false);
   }
 
-  const instance = sharp(inputPath, { limitInputPixels: false });
+  const sharpInstance = sharp(inputPath, { limitInputPixels: false });
   if (opts.keep_metadata) {
-    instance.keepMetadata();
+    sharpInstance.keepMetadata();
   }
 
-  onProgress?.('processing');
-  const compressedImageBuffer = await instance.jpeg(proc).toBuffer();
+  const compressedImageBuffer = await sharpInstance.jpeg(proc).toBuffer();
   const compressedSize = compressedImageBuffer.byteLength;
   const compressionRate = calCompressionRate(originalSize, compressedSize);
   const availableCompressRate = compressionRate >= (opts.limit_compress_rate || 0);
@@ -143,7 +134,6 @@ export async function handleJpeg(
   const tempFilePath = opts.temp_dir ? await copyFileToTemp(inputPath, opts.temp_dir) : '';
   let mssim = 1;
 
-  onProgress?.('writing');
   if (availableCompressRate) {
     await writeFile(newOutputPath, compressedImageBuffer);
     mssim = await calculateSSIM(inputPath, newOutputPath);
@@ -172,11 +162,14 @@ export async function handleJpeg(
   };
 
   if (isValidArray(opts.convert_types)) {
-    onProgress?.('converting');
-    const results = await bulkConvert(newOutputPath, opts.convert_types, opts.convert_alpha);
+    const results = await bulkConvert(
+      newOutputPath,
+      opts.convert_types,
+      opts.convert_alpha,
+      sharpInstance,
+    );
     (result as any).convert_results = results;
   }
 
-  onProgress?.('completed');
   return result;
 }

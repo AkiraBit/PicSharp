@@ -178,7 +178,11 @@ export default function WindowControl({
                 }
                 onClick={handleToggleAlwaysOnTop}
               >
-                {isAlwaysOnTop ? <PinOff className='size-4' /> : <Pin className='size-4' />}
+                {isAlwaysOnTop ? (
+                  <PinOff className='size-4 text-emerald-500' />
+                ) : (
+                  <Pin className='size-4' />
+                )}
               </Button>
             </TooltipTrigger>
             <TooltipContent>

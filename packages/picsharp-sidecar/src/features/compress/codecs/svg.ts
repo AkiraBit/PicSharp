@@ -24,19 +24,11 @@ const defaultSvgoConfigs: Config = {
   plugins: [{ name: 'preset-default', params: {} }],
 };
 
-/**
- * 在 worker 中执行的 SVG 优化流程
- */
-export async function handleSvg(
-  payload: { codec: 'svg'; inputPath: string; options: SvgOptions },
-  onProgress?: (stage: 'starting' | 'processing' | 'writing' | 'completed') => void,
-) {
+export async function handleSvg(payload: { inputPath: string; options: SvgOptions }) {
   const { inputPath, options } = payload;
   await checkFile(inputPath);
 
-  onProgress?.('starting');
   const originalContent = await readFile(inputPath, 'utf-8');
-  onProgress?.('processing');
   const optimizedContent = optimize(originalContent, defaultSvgoConfigs);
   const compressRatio = calCompressionRate(originalContent.length, optimizedContent.data.length);
 
@@ -49,7 +41,7 @@ export async function handleSvg(
   });
 
   const tempFilePath = options.temp_dir ? await copyFileToTemp(inputPath, options.temp_dir) : '';
-  onProgress?.('writing');
+
   if (availableCompressRate) {
     await writeFile(newOutputPath, optimizedContent.data);
   } else {
@@ -58,7 +50,6 @@ export async function handleSvg(
     }
   }
 
-  onProgress?.('completed');
   return {
     input_path: inputPath,
     input_size: originalContent.length,

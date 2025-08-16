@@ -10,8 +10,8 @@ import {
   isValidArray,
   hashFile,
 } from '../../../utils';
-import { SaveMode } from '../../../constants';
-import { bulkConvert, ConvertFormat } from '../../../services/convert';
+import { SaveMode, ConvertFormat } from '../../../constants';
+import { bulkConvert } from '../../../services/convert';
 
 export interface AvifOptions {
   limit_compress_rate?: number;
@@ -55,16 +55,11 @@ interface NormalizedAvifProcessOptions {
   bitdepth: 8 | 10 | 12;
 }
 
-export async function handleAvif(
-  payload: {
-    codec: 'avif';
-    inputPath: string;
-    options: AvifOptions;
-    processOptions: AvifProcessOptions;
-  },
-  onProgress?: (stage: 'starting' | 'processing' | 'writing' | 'converting' | 'completed') => void,
-) {
-  // 参数校验放在路由层；worker 侧只做最小校验与执行
+export async function handleAvif(payload: {
+  inputPath: string;
+  options: AvifOptions;
+  processOptions: AvifProcessOptions;
+}) {
   const { inputPath, options, processOptions } = payload;
   await checkFile(inputPath);
 
@@ -89,21 +84,19 @@ export async function handleAvif(
     bitdepth: (processOptions.bitdepth ?? 8) as 8 | 10 | 12,
   };
 
-  onProgress?.('starting');
   const originalSize = await getFileSize(inputPath);
 
-  // Windows 覆盖写入时关闭 sharp 缓存，降低文件句柄争用
+  // Windows disables the sharp cache when overwriting to reduce file handle contention
   if (isWindows && normalizedOptions.save.mode === SaveMode.Overwrite) {
     sharp.cache(false);
   }
 
-  const instance = sharp(inputPath, { limitInputPixels: false });
+  const sharpInstance = sharp(inputPath, { limitInputPixels: false });
   if (normalizedOptions.keep_metadata) {
-    instance.keepMetadata();
+    sharpInstance.keepMetadata();
   }
 
-  onProgress?.('processing');
-  const compressedImageBuffer = await instance.avif(normalizedProcess).toBuffer();
+  const compressedImageBuffer = await sharpInstance.avif(normalizedProcess).toBuffer();
   const compressedSize = compressedImageBuffer.byteLength;
   const compressionRate = calCompressionRate(originalSize, compressedSize);
   const availableCompressRate = compressionRate >= (normalizedOptions.limit_compress_rate || 0);
@@ -118,7 +111,6 @@ export async function handleAvif(
     ? await copyFileToTemp(inputPath, normalizedOptions.temp_dir)
     : '';
 
-  onProgress?.('writing');
   if (availableCompressRate) {
     await writeFile(newOutputPath, compressedImageBuffer);
   } else {
@@ -145,15 +137,14 @@ export async function handleAvif(
   };
 
   if (isValidArray(normalizedOptions.convert_types)) {
-    onProgress?.('converting');
     const results = await bulkConvert(
       newOutputPath,
       normalizedOptions.convert_types,
       normalizedOptions.convert_alpha,
+      sharpInstance,
     );
     (result as any).convert_results = results;
   }
 
-  onProgress?.('completed');
   return result;
 }

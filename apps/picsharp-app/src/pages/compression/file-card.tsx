@@ -22,6 +22,7 @@ import {
   ImperativeContextMenuNode,
   ImperativeContextMenuItem,
 } from '@/components/context-menu';
+import ImageViewer, { ImageViewerRef } from '@/components/image-viewer';
 
 export interface FileCardProps {
   path: FileInfo['path'];
@@ -33,7 +34,7 @@ function FileCard(props: FileCardProps) {
   const t = useI18n();
   const { eventEmitter, fileMap } = useCompressionStore(useSelector(['eventEmitter', 'fileMap']));
   const file = fileMap.get(path);
-  const imgRef = useRef<HTMLImageElement>(null);
+  const imgRef = useRef<ImageViewerRef>(null);
   const { messageApi } = useContext(AppContext);
 
   const handleRevealFile = async (event: React.MouseEvent<HTMLDivElement>) => {
@@ -62,10 +63,10 @@ function FileCard(props: FileCardProps) {
       onClick: async () => {
         try {
           if (imgRef.current) {
-            const imageBitmap = await window.createImageBitmap(imgRef.current);
-            const [width, height] = calImageWindowSize(imageBitmap.width, imageBitmap.height);
-            imageBitmap.close();
-            const label = `PicSharp-${file.id}`;
+            const dimensions = imgRef.current.getSize();
+            if (!dimensions) return;
+            const [width, height] = calImageWindowSize(dimensions.width, dimensions.height);
+            const label = `PicSharp_Compare_${file.id}`;
             const windows = await getAllWebviewWindows();
             const targetWindow = windows.find((w) => w.label === label);
             if (targetWindow) {
@@ -225,13 +226,19 @@ function FileCard(props: FileCardProps) {
           <ImgTag type={file.ext} />
         </div> */}
         <div className='text-0 flex aspect-[4/3] w-full items-center justify-center overflow-hidden rounded-md bg-neutral-200/30 dark:bg-neutral-700/70'>
-          <img
+          <ImageViewer
+            src={file.assetPath}
+            path={file.path}
+            ext={file.ext}
+            imgClassName='max-h-full object-contain transition-all duration-300 hover:scale-110'
+          />
+          {/* <img
             src={file.assetPath}
             alt={file.name}
             className='max-h-full object-contain transition-all duration-300 hover:scale-110'
             loading='lazy'
             ref={imgRef}
-          />
+          /> */}
         </div>
       </div>
       <div className='px-2 pb-2'>

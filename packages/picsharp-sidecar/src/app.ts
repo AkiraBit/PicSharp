@@ -4,12 +4,7 @@ import { logger } from 'hono/logger';
 import { timeout } from 'hono/timeout';
 import { HTTPException } from 'hono/http-exception';
 import { InMemoryJobQueue } from './core/queue';
-import { createCompressRouter } from './features/compress/router';
-import { createJobsRouter } from './api/jobs.router';
-import { createJobsSSERouter } from './api/jobs.sse';
-import { createWatchRouter } from './features/watch/router';
-import { createBatchRouter } from './api/batch.router';
-import { createBatchSSERouter } from './api/batch.sse';
+import { createCodecRouter } from './router/api/codec';
 
 export function createApp(queue?: InMemoryJobQueue<any, any>) {
   const app = new Hono()
@@ -26,22 +21,30 @@ export function createApp(queue?: InMemoryJobQueue<any, any>) {
       console.error('[ERROR Catch]', err);
       return c.json({ status: 500, message: err.message || 'Internal Server Error' }, 500);
     })
-    .get('/ping', (c) => c.text('pong'))
-    .get('/health', (c) =>
-      c.json({
-        status: 'ok',
-        queueLength: queue ? queue.length : 0,
-      }),
-    );
+    .get('/ping', (c) => c.text('pong'));
+  app.route('/api/codec', createCodecRouter());
+  // .get('/health', (c) =>
+  //   c.json({
+  //     status: 'ok',
+  //     queueLength: queue ? queue.length : 0,
+  //   }),
+  // )
+  // .get('/api/health', (c) =>
+  //   c.json({
+  //     status: 'ok',
+  //     queueLength: queue ? queue.length : 0,
+  //   }),
+  // );
 
-  if (queue) {
-    app.route('/v2/compress', createCompressRouter(queue));
-    app.route('/v2/jobs', createJobsRouter(queue));
-    app.route('/v2/jobs', createJobsSSERouter());
-    app.route('/v2/watch', createWatchRouter(queue));
-    app.route('/v2/batch', createBatchRouter(queue));
-    app.route('/v2/batch', createBatchSSERouter());
-  }
+  // if (queue) {
+  //   // 普通接口（api 前缀）
+  //   app.route('/api/jobs', createJobsRouter(queue));
+  //   app.route('/api/watch', createWatchRouter(queue));
+  //   app.route('/api/batch', createBatchRouter(queue));
+  //   // 流式接口（stream 前缀：SSE）
+  //   app.route('/stream/jobs', createJobsSSERouter());
+  //   app.route('/stream/batch', createBatchSSERouter());
+  // }
 
   return app;
 }

@@ -10,8 +10,8 @@ import {
   isValidArray,
   hashFile,
 } from '../../../utils';
-import { SaveMode } from '../../../constants';
-import { bulkConvert, ConvertFormat } from '../../../services/convert';
+import { SaveMode, ConvertFormat } from '../../../constants';
+import { bulkConvert } from '../../../services/convert';
 
 export interface WebpOptions {
   limit_compress_rate?: number;
@@ -73,15 +73,11 @@ interface NormalizedWebpProcessOptions {
   force: boolean;
 }
 
-export async function handleWebp(
-  payload: {
-    codec: 'webp';
-    inputPath: string;
-    options: WebpOptions;
-    processOptions: WebpProcessOptions;
-  },
-  onProgress?: (stage: 'starting' | 'processing' | 'writing' | 'converting' | 'completed') => void,
-) {
+export async function handleWebp(payload: {
+  inputPath: string;
+  options: WebpOptions;
+  processOptions: WebpProcessOptions;
+}) {
   const { inputPath, options, processOptions } = payload;
   await checkFile(inputPath);
 
@@ -114,20 +110,18 @@ export async function handleWebp(
     force: processOptions.force ?? true,
   };
 
-  onProgress?.('starting');
   const originalSize = await getFileSize(inputPath);
 
   if (isWindows && opts.save.mode === SaveMode.Overwrite) {
     sharp.cache(false);
   }
 
-  const instance = sharp(inputPath, { animated: true, limitInputPixels: false });
+  const sharpInstance = sharp(inputPath, { animated: true, limitInputPixels: false });
   if (opts.keep_metadata) {
-    instance.keepMetadata();
+    sharpInstance.keepMetadata();
   }
 
-  onProgress?.('processing');
-  const compressedImageBuffer = await instance.webp(proc as any).toBuffer();
+  const compressedImageBuffer = await sharpInstance.webp(proc as any).toBuffer();
   const compressedSize = compressedImageBuffer.byteLength;
   const compressionRate = calCompressionRate(originalSize, compressedSize);
   const availableCompressRate = compressionRate >= (opts.limit_compress_rate || 0);
@@ -140,7 +134,6 @@ export async function handleWebp(
 
   const tempFilePath = opts.temp_dir ? await copyFileToTemp(inputPath, opts.temp_dir) : '';
 
-  onProgress?.('writing');
   if (availableCompressRate) {
     await writeFile(newOutputPath, compressedImageBuffer);
   } else {
@@ -167,11 +160,14 @@ export async function handleWebp(
   };
 
   if (isValidArray(opts.convert_types)) {
-    onProgress?.('converting');
-    const results = await bulkConvert(newOutputPath, opts.convert_types, opts.convert_alpha);
+    const results = await bulkConvert(
+      newOutputPath,
+      opts.convert_types,
+      opts.convert_alpha,
+      sharpInstance,
+    );
     (result as any).convert_results = results;
   }
 
-  onProgress?.('completed');
   return result;
 }

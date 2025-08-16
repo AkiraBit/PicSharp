@@ -10,8 +10,8 @@ import {
   isValidArray,
   hashFile,
 } from '../../../utils';
-import { SaveMode } from '../../../constants';
-import { bulkConvert, ConvertFormat } from '../../../services/convert';
+import { SaveMode, ConvertFormat } from '../../../constants';
+import { bulkConvert } from '../../../services/convert';
 
 export interface GifOptions {
   limit_compress_rate?: number;
@@ -67,18 +67,11 @@ interface NormalizedGifProcessOptions {
   force: boolean;
 }
 
-/**
- * 在 worker 中执行的 GIF 压缩流程，保持返回字段与旧接口一致
- */
-export async function handleGif(
-  payload: {
-    codec: 'gif';
-    inputPath: string;
-    options: GifOptions;
-    processOptions: GifProcessOptions;
-  },
-  onProgress?: (stage: 'starting' | 'processing' | 'writing' | 'converting' | 'completed') => void,
-) {
+export async function handleGif(payload: {
+  inputPath: string;
+  options: GifOptions;
+  processOptions: GifProcessOptions;
+}) {
   const { inputPath, options, processOptions } = payload;
   await checkFile(inputPath);
 
@@ -109,20 +102,18 @@ export async function handleGif(
     force: processOptions.force ?? true,
   };
 
-  onProgress?.('starting');
   const originalSize = await getFileSize(inputPath);
 
   if (isWindows && opts.save.mode === SaveMode.Overwrite) {
     sharp.cache(false);
   }
 
-  const instance = sharp(inputPath, { animated: true, limitInputPixels: false });
+  const sharpInstance = sharp(inputPath, { animated: true, limitInputPixels: false });
   if (opts.keep_metadata) {
-    instance.keepMetadata();
+    sharpInstance.keepMetadata();
   }
 
-  onProgress?.('processing');
-  const compressedImageBuffer = await instance.gif(proc as any).toBuffer();
+  const compressedImageBuffer = await sharpInstance.gif(proc as any).toBuffer();
   const compressedSize = compressedImageBuffer.byteLength;
   const compressionRate = calCompressionRate(originalSize, compressedSize);
   const availableCompressRate = compressionRate >= (opts.limit_compress_rate || 0);
@@ -135,7 +126,6 @@ export async function handleGif(
 
   const tempFilePath = opts.temp_dir ? await copyFileToTemp(inputPath, opts.temp_dir) : '';
 
-  onProgress?.('writing');
   if (availableCompressRate) {
     await writeFile(newOutputPath, compressedImageBuffer);
   } else {
@@ -162,11 +152,14 @@ export async function handleGif(
   };
 
   if (isValidArray(opts.convert_types)) {
-    onProgress?.('converting');
-    const results = await bulkConvert(newOutputPath, opts.convert_types, opts.convert_alpha);
+    const results = await bulkConvert(
+      newOutputPath,
+      opts.convert_types,
+      opts.convert_alpha,
+      sharpInstance,
+    );
     (result as any).convert_results = results;
   }
 
-  onProgress?.('completed');
   return result;
 }

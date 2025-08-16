@@ -17,10 +17,8 @@ export async function startServer(options: StartServerOptions) {
   const config = loadConfig(options.port);
   const port = await findAvailablePort(config.port);
 
-  // 初始化 runtime: 队列 + worker 池 + 调度器
   const runtime = createRuntime<any, any>(config);
 
-  // 启动 worker 池（支持 cluster 开关）
   if (config.useCluster) {
     const childFile = path.join(
       __dirname,
@@ -46,21 +44,24 @@ export async function startServer(options: StartServerOptions) {
 
   const app = createApp(runtime.queue);
   // 增强健康检查：返回队列与 worker 池指标
-  app.get('/health', (c) =>
-    c.json({
-      status: 'ok',
-      uptime: process.uptime(),
-      queueLength: runtime.queue.length,
-      workers: runtime.pool ? runtime.pool.getSize() : 0,
-      workersIdle: runtime.pool ? runtime.pool.getIdleCount() : 0,
-      workersRunning: runtime.pool ? runtime.pool.getRunningCount() : 0,
-    }),
-  );
+  // app.get('/health', (c) =>
+  //   c.json({
+  //     status: 'ok',
+  //     uptime: process.uptime(),
+  //     queueLength: runtime.queue.length,
+  //     workers: runtime.pool ? runtime.pool.getSize() : 0,
+  //     workersIdle: runtime.pool ? runtime.pool.getIdleCount() : 0,
+  //     workersRunning: runtime.pool ? runtime.pool.getRunningCount() : 0,
+  //   }),
+  // );
 
   serve({ fetch: app.fetch, port }, (info) => {
     console.log(
       JSON.stringify({
         origin: `http://localhost:${info.port}`,
+        port: info.port,
+        pid: process.pid,
+        argv: process.argv,
       }),
     );
   });

@@ -1,5 +1,5 @@
 export interface CompressTaskPayload {
-  codec: 'svg' | 'jpeg' | 'png' | 'webp' | 'gif' | 'avif' | 'tiff' | 'tinify';
+  codec: 'svg' | 'jpeg' | 'jpg' | 'png' | 'webp' | 'gif' | 'avif' | 'tiff' | 'tinify';
   inputPath: string;
   options: Record<string, unknown>;
   processOptions: Record<string, unknown>;

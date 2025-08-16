@@ -26,28 +26,28 @@ process.on('message', async (message: ChildMessage) => {
 
     switch (payload.codec) {
       case 'avif':
-        result = await handleAvif(payload, onProgress);
+        result = await handleAvif(payload);
         break;
       case 'jpeg':
-        result = await handleJpeg(payload, onProgress);
+        result = await handleJpeg(payload);
         break;
       case 'png':
-        result = await handlePng(payload, onProgress);
+        result = await handlePng(payload);
         break;
       case 'webp':
-        result = await handleWebp(payload, onProgress);
+        result = await handleWebp(payload);
         break;
       case 'gif':
-        result = await handleGif(payload, onProgress);
+        result = await handleGif(payload);
         break;
       case 'svg':
-        result = await handleSvg(payload as any, onProgress as any);
+        result = await handleSvg(payload as any);
         break;
       case 'tinify':
-        result = await handleTinify(payload, onProgress);
+        result = await handleTinify(payload);
         break;
       case 'tiff':
-        result = await handleTiff(payload, onProgress);
+        result = await handleTiff(payload);
         break;
       default:
         throw new Error(`Unsupported codec: ${payload.codec}`);

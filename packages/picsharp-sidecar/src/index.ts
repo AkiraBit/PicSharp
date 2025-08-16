@@ -30,11 +30,11 @@ async function main() {
       }),
     );
     return;
+  } else {
+    await startServer({
+      port: argv.port,
+    });
   }
-
-  await startServer({
-    port: argv.port,
-  });
 }
 
 main();
