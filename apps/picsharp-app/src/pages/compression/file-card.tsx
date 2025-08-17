@@ -230,15 +230,8 @@ function FileCard(props: FileCardProps) {
             src={file.assetPath}
             path={file.path}
             ext={file.ext}
-            imgClassName='max-h-full object-contain transition-all duration-300 hover:scale-110'
+            imgClassName='max-h-full object-contain'
           />
-          {/* <img
-            src={file.assetPath}
-            alt={file.name}
-            className='max-h-full object-contain transition-all duration-300 hover:scale-110'
-            loading='lazy'
-            ref={imgRef}
-          /> */}
         </div>
       </div>
       <div className='px-2 pb-2'>

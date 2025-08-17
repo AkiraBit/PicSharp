@@ -13,7 +13,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 function FileManager() {
   const { files } = useCompressionStore(useSelector(['files']));
   const [pageIndex, setPageIndex] = useState(1);
-  const [pageSize, setPageSize] = useState(100);
+  const [pageSize, setPageSize] = useState(50);
   const navigate = useNavigate();
   const t = useI18n();
   const dataList = useMemo(() => {

@@ -12,6 +12,10 @@ export interface ImageViewerProps {
   canvasClassName?: string;
   lazy?: boolean;
   rootMargin?: string;
+  cache?: boolean;
+  cacheMaxSize?: number;
+  thumbWidth?: number;
+  thumbHeight?: number;
 }
 
 export interface ImageViewerRef {
@@ -19,6 +23,18 @@ export interface ImageViewerRef {
 }
 
 const canvasRenderTypes = ['tif', 'tiff', 'heic', 'heif', 'jxl'];
+
+interface ThumbnailCacheValue {
+  width: number;
+  height: number;
+  // RGBA normalized bytes
+  data: Uint8Array;
+}
+
+const thumbnailCache = new Map<string, ThumbnailCacheValue>();
+function getThumbCacheKey(path: string, width: number, height: number): string {
+  return `${path}|${width}x${height}`;
+}
 
 const ImageViewer = forwardRef<ImageViewerRef, ImageViewerProps>(function ImageViewer(
   props: ImageViewerProps,
@@ -33,8 +49,12 @@ const ImageViewer = forwardRef<ImageViewerRef, ImageViewerProps>(function ImageV
     canvasClassName,
     lazy = true,
     rootMargin = '100px',
+    cache = true,
+    cacheMaxSize = 100,
+    thumbWidth = 200,
+    thumbHeight = 150,
   } = props;
-  const isCanvasRender = canvasRenderTypes.includes((ext || '').toLowerCase());
+  const isCanvasRender = true;
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
@@ -102,16 +122,19 @@ const ImageViewer = forwardRef<ImageViewerRef, ImageViewerProps>(function ImageV
       try {
         setIsLoading(true);
         setErrorMessage(null);
-        const response = await fetch(`${sidecarOrigin}/api/codec/get-raw-pixels`, {
+        const response = await fetch(`${sidecarOrigin}/api/codec/thumbnail`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ input_path: path }),
+          body: JSON.stringify({ input_path: path, width: thumbWidth, height: thumbHeight }),
         });
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}`);
         }
-        const json: { width: number; height: number; data: number[] } = await response.json();
+        const json: { width: number; height: number; data: number[] | string } =
+          await response.json();
         if (aborted) return;
+
+        console.log('json', json);
 
         const width: number = json.width;
         const height: number = json.height;
@@ -166,10 +189,19 @@ const ImageViewer = forwardRef<ImageViewerRef, ImageViewerProps>(function ImageV
         if (!ctx || !canvasRef.current) {
           throw new Error('Canvas not ready');
         }
+        console.log('width', width, 'height', height);
         canvasRef.current.width = width;
         canvasRef.current.height = height;
         const imageData = new ImageData(rgba, width, height);
         ctx.putImageData(imageData, 0, 0);
+        if (cache) {
+          const cacheKey = getThumbCacheKey(path, width, height);
+          if (thumbnailCache.size >= cacheMaxSize) {
+            const firstKey = thumbnailCache.keys().next().value as string | undefined;
+            if (firstKey) thumbnailCache.delete(firstKey);
+          }
+          thumbnailCache.set(cacheKey, { width, height, data: new Uint8Array(rgba) });
+        }
         hasRenderedRef.current = true;
       } catch (err) {
         if (!aborted) setErrorMessage(err.message || String(err));
@@ -177,23 +209,60 @@ const ImageViewer = forwardRef<ImageViewerRef, ImageViewerProps>(function ImageV
         if (!aborted) setIsLoading(false);
       }
     };
+    // Try cache first
+    if (cache && canvasRef.current) {
+      const cacheKey = getThumbCacheKey(path, thumbWidth, thumbHeight);
+      const cached = thumbnailCache.get(cacheKey);
+      if (cached) {
+        try {
+          const ctx = canvasRef.current.getContext('2d');
+          if (!ctx) throw new Error('Canvas not ready');
+          canvasRef.current.width = cached.width;
+          canvasRef.current.height = cached.height;
+          const imageData = new ImageData(
+            new Uint8ClampedArray(cached.data),
+            cached.width,
+            cached.height,
+          );
+          ctx.putImageData(imageData, 0, 0);
+          hasRenderedRef.current = true;
+          setIsLoading(false);
+          setErrorMessage(null);
+        } catch (e) {
+          // fallback to fetch
+          run();
+        }
+        return () => {
+          aborted = true;
+          if (canvasRef.current) {
+            canvasRef.current.width = 0;
+            canvasRef.current.height = 0;
+            canvasRef.current
+              .getContext('2d')
+              ?.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+          }
+        };
+      }
+    }
     run();
     return () => {
       aborted = true;
+      if (canvasRef.current) {
+        canvasRef.current.width = 0;
+        canvasRef.current.height = 0;
+        canvasRef.current
+          .getContext('2d')
+          ?.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+      }
     };
-  }, [isCanvasRender, path, sidecarOrigin, isInView]);
+  }, [isCanvasRender, path, sidecarOrigin, isInView, cache, cacheMaxSize, thumbWidth, thumbHeight]);
 
   if (!isCanvasRender) {
     return (
       <div className={cn('relative flex items-center justify-center', className)}>
-        {!isInView && (
-          <div className='absolute inset-0 flex items-center justify-center text-xs text-neutral-500'>
-            Loading...
-          </div>
-        )}
         <img
           ref={imgRef}
-          src={isInView ? src || convertFileSrc(path) : undefined}
+          src={src || convertFileSrc(path)}
           alt={path}
           className={cn('max-h-full max-w-full object-contain', imgClassName)}
           loading='lazy'
@@ -205,7 +274,7 @@ const ImageViewer = forwardRef<ImageViewerRef, ImageViewerProps>(function ImageV
 
   return (
     <div className={cn('relative contain-layout', className)}>
-      <canvas ref={canvasRef} className={cn('max-h-full max-w-full', canvasClassName)} />
+      <canvas ref={canvasRef} className={cn('h-full w-full object-contain', canvasClassName)} />
       {isLoading && (
         <div className='absolute inset-0 flex items-center justify-center text-xs text-neutral-500'>
           Loading...
