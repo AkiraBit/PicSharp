@@ -19,6 +19,7 @@ import { AppContext } from '@/routes';
 import { CompressionContext } from '.';
 import { message as systemMessage } from '@tauri-apps/plugin-dialog';
 import { message } from '@/components/message';
+import useSelector from '@/hooks/useSelector';
 
 function CompressionWatch() {
   const { progressRef } = useContext(CompressionContext);
@@ -31,7 +32,7 @@ function CompressionWatch() {
 
   const handleCompress = async (files: FileInfo[]) => {
     try {
-      const { sidecar } = useAppStore.getState();
+      const { sidecar, imageTempDir } = useAppStore.getState();
       const { fileMap, eventEmitter } = useCompressionStore.getState();
 
       const {
@@ -53,7 +54,6 @@ function CompressionWatch() {
 
       let fulfilled = 0;
       let rejected = 0;
-      const tempDir = await join(await appCacheDir(), 'picsharp_temp');
       await new Compressor({
         compressionMode,
         compressionLevel,
@@ -65,7 +65,7 @@ function CompressionWatch() {
           newFileSuffix: saveAsFileSuffix,
           newFolderPath: saveToFolder,
         },
-        tempDir,
+        tempDir: imageTempDir,
         sidecarDomain: sidecar?.origin,
         convertTypes,
         convertAlpha,
@@ -132,7 +132,8 @@ function CompressionWatch() {
           total: files.length,
         }),
       );
-    } catch (_) {
+    } catch (error) {
+      console.error('err', error);
       messageApi?.error(t('common.compress_failed_msg'));
       sendTextNotification(
         `PicSharp - ${t('common.compress_failed')}`,
@@ -188,7 +189,9 @@ function CompressionWatch() {
     }
     async function handleWatch() {
       const { sidecar } = useAppStore.getState();
-      eventSource = new EventSource(`${sidecar?.origin}/watch/new-images?path=${watchingFolder}`);
+      eventSource = new EventSource(
+        `${sidecar?.origin}/stream/watch/new-images?path=${watchingFolder}`,
+      );
       eventSource.onopen = () => {
         console.log('[Sidecar] Watch EventSource opened');
         isFirstInit.current = false;

@@ -23,7 +23,7 @@ import { createWebviewWindow } from '@/utils/window';
 import { AppContext } from '@/routes';
 
 function ToolbarCompress() {
-  const { sidecar } = useAppStore();
+  const { sidecar, imageTempDir } = useAppStore(useSelector(['sidecar', 'imageTempDir']));
   const { selectedFiles, fileMap, files, setInCompressing, inCompressing, eventEmitter } =
     useCompressionStore(
       useSelector([
@@ -148,7 +148,6 @@ function ToolbarCompress() {
 
       let fulfilled = 0;
       let rejected = 0;
-      const tempDir = await join(await appCacheDir(), 'picsharp_temp');
       await new Compressor({
         compressionMode,
         compressionLevel,
@@ -160,7 +159,7 @@ function ToolbarCompress() {
           newFileSuffix: saveAsFileSuffix,
           newFolderPath: saveToFolder,
         },
-        tempDir,
+        tempDir: imageTempDir,
         sidecarDomain: sidecar?.origin,
         convertTypes,
         convertAlpha,

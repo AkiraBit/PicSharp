@@ -6,6 +6,15 @@ import { HTTPException } from 'hono/http-exception';
 import { InMemoryJobQueue } from './core/queue';
 import { createCodecRouter } from './router/api/codec';
 import { createImageViewerRouter } from './router/api/image-viewer';
+import png from './controllers/compress/png';
+import avif from './controllers/compress/avif';
+import gif from './controllers/compress/gif';
+import webp from './controllers/compress/webp';
+import jpg from './controllers/compress/jpeg';
+import tiff from './controllers/compress/tiff';
+import svg from './controllers/compress/svg';
+import tinify from './controllers/compress/tinify';
+import watch from './controllers/watch';
 
 export function createApp(queue?: InMemoryJobQueue<any, any>) {
   const app = new Hono()
@@ -25,6 +34,15 @@ export function createApp(queue?: InMemoryJobQueue<any, any>) {
     .get('/ping', (c) => c.text('pong'));
   app.route('/api/codec', createCodecRouter());
   app.route('/api/image-viewer', createImageViewerRouter());
+  app.route('/api/compress/png', png);
+  app.route('/api/compress/avif', avif);
+  app.route('/api/compress/gif', gif);
+  app.route('/api/compress/webp', webp);
+  app.route('/api/compress/jpg', jpg);
+  app.route('/api/compress/tiff', tiff);
+  app.route('/api/compress/svg', svg);
+  app.route('/api/compress/tinify', tinify);
+  app.route('/stream/watch', watch);
   // .get('/health', (c) =>
   //   c.json({
   //     status: 'ok',

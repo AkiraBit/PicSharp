@@ -30,7 +30,7 @@ function WatchFileManager(props: WatchFileManagerProps) {
     <div className='relative flex h-full flex-col items-center'>
       <Badge
         variant='secondary'
-        className='fixed left-[calc(50%+67px)] top-2 z-[10] -translate-x-[calc(50%+39px)] cursor-pointer text-nowrap bg-neutral-300/60 hover:underline'
+        className='absolute left-1/2 top-2 z-[10] -translate-x-1/2 cursor-pointer text-nowrap bg-neutral-300/60 hover:underline'
         onClick={() => {
           openPath(watchingFolder);
         }}

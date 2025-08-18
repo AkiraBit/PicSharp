@@ -155,7 +155,9 @@ function WatchCompressionGuide() {
       ref={dropzoneRef}
       className='group relative flex h-full flex-col items-center justify-center p-6'
     >
-      <Folder />
+      <div onClick={() => handleWatch()} className='cursor-pointer'>
+        <Folder />
+      </div>
       <div className='relative z-10 mt-5 text-center'>
         <p className='mx-auto max-w-2xl text-lg'>{t('page.compression.watch.guide.description')}</p>
       </div>

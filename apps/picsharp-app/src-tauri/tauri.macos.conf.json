@@ -9,6 +9,8 @@
         "title": "PicSharp",
         "width": 1024,
         "height": 670,
+        "minWidth": 1024,
+        "minHeight": 670,
         "center": true,
         "theme": "Dark"
       }

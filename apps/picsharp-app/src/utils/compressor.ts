@@ -562,7 +562,7 @@ export default class Compressor {
     payload: ICompressor.CompressPayloadMap[T],
   ) => {
     try {
-      const response = await fetch(`${this.options.sidecarDomain}/compress/${type}`, {
+      const response = await fetch(`${this.options.sidecarDomain}/api/compress/${type}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
