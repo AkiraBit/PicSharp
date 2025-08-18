@@ -200,7 +200,7 @@ export default function AppLayout() {
 
   return (
     <ErrorBoundary>
-      <div className='h-screen w-screen dark:bg-[#222222]'>
+      <div className='relative h-screen w-screen dark:bg-[#222222]'>
         <PageProgress ref={progressRef} />
         {getCurrentWebviewWindow().label === 'main' && <Header />}
         <div

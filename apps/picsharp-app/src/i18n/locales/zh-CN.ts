@@ -271,6 +271,7 @@ export default {
   'tips.file_path_copied': '文件路径已复制到剪贴板',
   'tips.markdown_code_copied': 'Markdown代码已复制到剪贴板',
   'tips.file_copied': '文件已复制到剪贴板',
+  'tips.file_copy_failed': '文件复制失败',
   'tips.invalid_paths': '无效的文件路径',
   'tips.file_not_exists': '文件不存在',
   'tips.path_not_exists': '文件路径不存在',

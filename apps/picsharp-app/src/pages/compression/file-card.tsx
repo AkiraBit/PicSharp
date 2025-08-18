@@ -23,6 +23,8 @@ import {
   ImperativeContextMenuItem,
 } from '@/components/context-menu';
 import ImageViewer, { ImageViewerRef } from '@/components/image-viewer';
+import useAppStore from '@/store/app';
+import { copyImage } from '@/utils/clipboard';
 
 export interface FileCardProps {
   path: FileInfo['path'];
@@ -36,6 +38,7 @@ function FileCard(props: FileCardProps) {
   const file = fileMap.get(path);
   const imgRef = useRef<ImageViewerRef>(null);
   const { messageApi } = useContext(AppContext);
+  const { sidecar } = useAppStore(useSelector(['sidecar']));
 
   const handleRevealFile = async (event: React.MouseEvent<HTMLDivElement>) => {
     const src = event.currentTarget.dataset.src;
@@ -63,7 +66,7 @@ function FileCard(props: FileCardProps) {
       onClick: async () => {
         try {
           if (imgRef.current) {
-            const dimensions = imgRef.current.getSize();
+            const dimensions = imgRef.current.getDimensions();
             if (!dimensions) return;
             const [width, height] = calImageWindowSize(dimensions.width, dimensions.height);
             const label = `PicSharp_Compare_${file.id}`;
@@ -130,9 +133,20 @@ function FileCard(props: FileCardProps) {
       type: 'item',
       name: t('compression.file_action.copy_file'),
       onClick: async () => {
-        let path = file.status === ICompressor.Status.Completed ? file.outputPath : file.path;
-        await invoke('ipc_copy_image', { path });
-        messageApi?.success(t('tips.file_copied'));
+        try {
+          if (!sidecar?.origin) {
+            throw new Error('Sidecar not ready');
+          }
+          let path = file.status === ICompressor.Status.Completed ? file.outputPath : file.path;
+          const { status, message } = await copyImage(path, sidecar?.origin);
+          if (status === 'success') {
+            messageApi?.success(t('tips.file_copied'));
+          } else {
+            throw new Error(message);
+          }
+        } catch (error) {
+          messageApi?.error(t('tips.file_copy_failed'));
+        }
       },
     };
     const copyAsMarkdownMenuItem: ImperativeContextMenuItem = {
@@ -228,6 +242,7 @@ function FileCard(props: FileCardProps) {
         <div className='text-0 flex aspect-[4/3] w-full items-center justify-center overflow-hidden rounded-md bg-neutral-200/30 dark:bg-neutral-700/70'>
           <ImageViewer
             src={file.assetPath}
+            size={file.bytesSize}
             path={file.path}
             ext={file.ext}
             imgClassName='max-h-full object-contain'

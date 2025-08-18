@@ -1,6 +1,5 @@
 use arboard::Clipboard;
 use filesize::PathExt;
-use image::ImageReader;
 use nanoid::nanoid;
 use rayon::prelude::*;
 use std::collections::HashSet;
@@ -231,25 +230,67 @@ pub async fn ipc_count_valid_files(paths: Vec<String>, valid_exts: Vec<String>) 
 pub async fn ipc_is_file_in_directory(file_path: String, dir_path: String) -> Response {
     match is_file_in_directory(&file_path, &dir_path) {
         Ok(result) => Response::new(result.to_string()),
-        Err(err) => Response::new(format!("错误: {}", err)),
+        Err(err) => Response::new(format!("Error: {}", err)),
     }
 }
 
-fn copy_image(path: String) -> Result<(), Box<dyn Error>> {
-    let img = ImageReader::open(path)?.decode()?.to_rgba8();
+async fn copy_image(path: String, sidecar_origin: String) -> Result<(), Box<dyn Error>> {
+    #[derive(serde::Deserialize)]
+    struct RawPixelsResponse {
+        width: usize,
+        height: usize,
+        data: Vec<u8>,
+    }
 
-    let width = img.width() as usize;
-    let height = img.height() as usize;
+    let origin = sidecar_origin.trim_end_matches('/');
+    let url = format!("{}/api/codec/get-raw-pixels", origin);
 
-    let image_data = img.into_raw();
+    let client = reqwest::Client::new();
+    let resp = client
+        .post(url)
+        .json(&serde_json::json!({ "input_path": path }))
+        .send()
+        .await?
+        .error_for_status()?;
+
+    let RawPixelsResponse {
+        width,
+        height,
+        mut data,
+    } = resp.json::<RawPixelsResponse>().await?;
+
+    let expected_rgba_len = width * height * 4;
+    if data.len() != expected_rgba_len {
+        // 尝试从常见通道数转换为 RGBA
+        let pixels_len = width * height;
+        if data.len() == pixels_len * 3 {
+            let mut rgba = Vec::with_capacity(expected_rgba_len);
+            for chunk in data.chunks_exact(3) {
+                rgba.extend_from_slice(&[chunk[0], chunk[1], chunk[2], 255]);
+            }
+            data = rgba;
+        } else if data.len() == pixels_len {
+            let mut rgba = Vec::with_capacity(expected_rgba_len);
+            for &v in &data {
+                rgba.extend_from_slice(&[v, v, v, 255]);
+            }
+            data = rgba;
+        } else {
+            return Err(format!(
+                "Unexpected raw pixel data length: {}, expected {} (RGBA)",
+                data.len(),
+                expected_rgba_len
+            )
+            .into());
+        }
+    }
 
     let mut clipboard = Clipboard::new()?;
-
     clipboard
         .set_image(arboard::ImageData {
             width,
             height,
-            bytes: image_data.into(),
+            bytes: data.into(),
         })
         .map_err(|e| e.to_string())?;
 
@@ -257,8 +298,8 @@ fn copy_image(path: String) -> Result<(), Box<dyn Error>> {
 }
 
 #[tauri::command]
-pub async fn ipc_copy_image(path: String) -> Response {
-    match copy_image(path) {
+pub async fn ipc_copy_image(path: String, sidecar_origin: String) -> Response {
+    match copy_image(path, sidecar_origin).await {
         Ok(_) => Response::new("{\"status\": \"success\"}".to_string()),
         Err(e) => Response::new(format!("{{\"status\": \"error\", \"message\": \"{}\"}}", e)),
     }

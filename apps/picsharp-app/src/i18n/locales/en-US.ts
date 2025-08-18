@@ -275,6 +275,7 @@ const enUS = {
   'tips.file_path_copied': 'File path copied to clipboard',
   'tips.markdown_code_copied': 'Markdown code copied to clipboard',
   'tips.file_copied': 'File copied to clipboard',
+  'tips.file_copy_failed': 'File copy failed',
   'tips.invalid_paths': 'Invalid file paths',
   'tips.file_not_exists': 'File not exists',
   'tips.path_not_exists': 'File path not exists',

@@ -12,7 +12,7 @@ export default function Compression() {
   const progressRef = useRef<PageProgressRef>(null);
   return (
     <CompressionContext.Provider value={{ progressRef }}>
-      <div className='h-full overflow-auto'>
+      <div className='relative h-full overflow-auto'>
         <PageProgress ref={progressRef} />
         <Outlet />
       </div>

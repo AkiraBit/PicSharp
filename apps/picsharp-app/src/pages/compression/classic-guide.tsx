@@ -14,7 +14,6 @@ import { useI18n } from '@/i18n';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import message from '@/components/message';
-import { Menu, MenuItem } from '@tauri-apps/api/menu';
 import { parseClipboardImages } from '@/utils/clipboard';
 import { downloadDir } from '@tauri-apps/api/path';
 import { AppContext } from '@/routes';
@@ -164,11 +163,9 @@ function ClassicCompressionGuide() {
   return (
     <div
       ref={dropzoneRef}
-      className='relative flex h-full flex-col items-center justify-center p-6 transition-all duration-300 [&.drag-active]:from-indigo-50/50 [&.drag-active]:to-indigo-100/50'
+      className='group relative flex h-full flex-col items-center justify-center p-6 transition-all duration-300 [&.drag-active]:from-indigo-50/50 [&.drag-active]:to-indigo-100/50'
     >
-      <div>
-        <UploadWidget />
-      </div>
+      <UploadWidget />
       <div className='relative mt-4 text-center'>
         {/* <h1 className='dark:text-foreground mb-6 text-3xl font-bold'>✨PicSharp✨</h1> */}
         <p className='mx-auto max-w-2xl text-lg'>

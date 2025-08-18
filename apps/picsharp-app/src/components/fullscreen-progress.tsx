@@ -76,7 +76,7 @@ const PageProgress = forwardRef<
 
   return (
     <div
-      className='absolute left-0 top-0 z-10 flex hidden h-full w-full items-center justify-center bg-background'
+      className='bg-background absolute left-0 top-0 z-[100] flex hidden h-full w-full items-center justify-center'
       ref={rootRef}
     >
       <div

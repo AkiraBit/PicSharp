@@ -20,7 +20,13 @@ export function createCodecRouter() {
     const width = metadata.width;
     const height = metadata.height;
     const rawPixels = await image.raw().toBuffer();
-    return c.json({ width, height, data: Array.from(rawPixels) });
+    return c.json({
+      width,
+      height,
+      size: metadata.size,
+      format: metadata.format,
+      data: Array.from(rawPixels),
+    });
   });
 
   return app;
