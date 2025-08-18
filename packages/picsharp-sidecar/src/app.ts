@@ -5,6 +5,7 @@ import { timeout } from 'hono/timeout';
 import { HTTPException } from 'hono/http-exception';
 import { InMemoryJobQueue } from './core/queue';
 import { createCodecRouter } from './router/api/codec';
+import { createImageViewerRouter } from './router/api/image-viewer';
 
 export function createApp(queue?: InMemoryJobQueue<any, any>) {
   const app = new Hono()
@@ -23,6 +24,7 @@ export function createApp(queue?: InMemoryJobQueue<any, any>) {
     })
     .get('/ping', (c) => c.text('pong'));
   app.route('/api/codec', createCodecRouter());
+  app.route('/api/image-viewer', createImageViewerRouter());
   // .get('/health', (c) =>
   //   c.json({
   //     status: 'ok',

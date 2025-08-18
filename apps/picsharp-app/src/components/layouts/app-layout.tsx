@@ -169,6 +169,7 @@ export default function AppLayout() {
         checkForUpdate();
       }
       handleNsInspect();
+      useAppStore.getState().initAppPath();
       useAppStore.getState().initSidecar();
       if (isProd) {
         timer = setInterval(() => {

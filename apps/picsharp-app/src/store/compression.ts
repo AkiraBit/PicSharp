@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import EventEmitter from 'eventemitter3';
 import useAppStore from './app';
+import { clearImageViewerCache } from '@/components/image-viewer/cache';
 
 interface CompressionState {
   // 是否正在工作区
@@ -64,6 +65,7 @@ const useCompressionStore = create<CompressionState & CompressionAction>((set, g
     }
   },
   reset: () => {
+    clearImageViewerCache();
     useAppStore.getState().clearImageCache();
     set({
       working: false,
