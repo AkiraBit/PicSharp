@@ -11,6 +11,9 @@ import { showAlertDialog } from '@/components/ui/alert-dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { AppContext } from '@/routes';
 import { useContext } from 'react';
+import WindowControl from '@/components/window-control';
+import { isMac } from '@/utils';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 export default function SettingsLayout() {
   const t = useI18n();
@@ -60,20 +63,29 @@ export default function SettingsLayout() {
   return (
     <div className='flex h-full flex-col'>
       <div
-        className='flex h-[48px] items-center justify-between px-5'
+        className={'flex h-[48px] items-center justify-end gap-1 px-2'}
         data-tauri-drag-region='true'
       >
-        <div></div>
-        <div className='flex items-center gap-2'>
-          <Button variant='default' size='sm' onClick={handleReload}>
-            <RefreshCw className='h-5 w-5' />
-            {t('settings.reload')}
-          </Button>
-          <Button variant='secondary' size='sm' onClick={handleReset}>
-            <FolderSync className='h-5 w-5' />
-            {t('settings.reset_all')}
-          </Button>
+        <div className='flex items-center gap-1'>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant='ghost' size='icon' onClick={handleReload}>
+                <RefreshCw className='h-5 w-5' />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>{t('settings.reload')}</TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant='ghost' size='icon' onClick={handleReset}>
+                <FolderSync className='h-5 w-5' />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>{t('settings.reset_all')}</TooltipContent>
+          </Tooltip>
         </div>
+        <Separator orientation='vertical' className='h-4 bg-neutral-200 dark:bg-neutral-700' />
+        <WindowControl showControls={!isMac} showFullscreen={!isMac} />
       </div>
       <Separator className='mb-4' />
       <div className='flex flex-1 flex-col space-y-4 overflow-auto lg:flex-row lg:space-y-0'>

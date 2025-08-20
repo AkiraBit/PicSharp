@@ -310,4 +310,6 @@ export default {
   'page.compression.watch.guide.attention': '注意事项',
   'page.compression.watch.guide.attention_description':
     '只识别新增（新建、复制、移入）的图片，对于目录中已存在的图片，不会进行压缩。如果图片被替换为目录中已存在且同名的图片，其会被认定为同一张图像，也不会进行压缩。',
+  'page.compression.tinify.error.unsupported_file_type':
+    'TinyPNG 仅支持 PNG、JPG、JPEG、WebP 和 AVIF 图像',
 };

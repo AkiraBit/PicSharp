@@ -7,41 +7,59 @@ export default function UploadWidget() {
   const [isHovered, setIsHovered] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFadingOut, setIsFadingOut] = useState(false);
-  const intervalRef = useRef<number | null>(null);
-  const timeoutRef = useRef<number | null>(null);
+  const rafRef = useRef<number | null>(null);
+  const phaseRef = useRef<'steady' | 'fading'>('steady');
+  const phaseStartRef = useRef<number>(0);
   const elRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    function clearTimers() {
-      if (intervalRef.current !== null) {
-        window.clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
-      if (timeoutRef.current !== null) {
-        window.clearTimeout(timeoutRef.current);
-        timeoutRef.current = null;
+    const CYCLE_MS = 1500; // 每轮触发间隔（包含开始淡出）
+    const FADE_MS = 200; // 淡出持续时间
+
+    function cancelLoop() {
+      if (rafRef.current !== null) {
+        window.cancelAnimationFrame(rafRef.current);
+        rafRef.current = null;
       }
     }
 
     if (isHovered) {
-      // 每轮 1200ms：先淡出，再切换文本并淡入
-      intervalRef.current = window.setInterval(() => {
-        setIsFadingOut(true);
-        timeoutRef.current = window.setTimeout(() => {
-          setCurrentIndex((idx) => (idx + 1) % formats.length);
-          setIsFadingOut(false);
-        }, 240);
-      }, 1500);
+      phaseRef.current = 'steady';
+      setIsFadingOut(false);
+      phaseStartRef.current = performance.now();
+
+      const step = (now: number) => {
+        const elapsed = now - phaseStartRef.current;
+
+        if (phaseRef.current === 'steady') {
+          if (elapsed >= CYCLE_MS) {
+            setIsFadingOut(true);
+            phaseRef.current = 'fading';
+            phaseStartRef.current = now;
+          }
+        } else {
+          if (elapsed >= FADE_MS) {
+            setCurrentIndex((idx) => (idx + 1) % formats.length);
+            setIsFadingOut(false);
+            phaseRef.current = 'steady';
+            phaseStartRef.current = now;
+          }
+        }
+
+        rafRef.current = window.requestAnimationFrame(step);
+      };
+
+      rafRef.current = window.requestAnimationFrame(step);
     } else {
-      clearTimers();
+      cancelLoop();
       setIsFadingOut(false);
       setCurrentIndex(0);
     }
 
     return () => {
-      clearTimers();
+      cancelLoop();
     };
-  }, [isHovered]);
+  }, [isHovered, formats.length]);
 
   useEffect(() => {
     if (elRef.current) {

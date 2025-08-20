@@ -37,6 +37,8 @@ export async function createTrayMenu() {
             title: t('nav.settings'),
             width: 796,
             height: 528,
+            minWidth: 796,
+            minHeight: 528,
             center: true,
             resizable: true,
             titleBarStyle: 'overlay',

@@ -317,6 +317,8 @@ const enUS = {
   'page.compression.watch.guide.attention': 'Attention',
   'page.compression.watch.guide.attention_description':
     'Only recognize new images (new, copy, move) added to the directory, and do not compress images that already exist in the directory. If an image is replaced with an image that already exists in the directory and has the same name, it will be considered the same image and will not be compressed.',
+  'page.compression.tinify.error.unsupported_file_type':
+    'TinyPNG only supports PNG, JPG, JPEG, WebP, and AVIF images',
 };
 
 export default enUS;

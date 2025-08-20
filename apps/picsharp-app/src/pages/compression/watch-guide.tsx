@@ -180,23 +180,14 @@ function WatchCompressionGuide() {
               </Button>
             </div>
             <ScrollArea className='h-[220px] rounded-md border border-neutral-200 dark:border-neutral-800'>
-              <ul
-                className='max-w-xl divide-y divide-neutral-200 dark:divide-neutral-800'
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  const path = (e.target as HTMLElement).dataset.path;
-                  if (path) {
-                    handleHistorySelect(path);
-                  }
-                }}
-              >
+              <ul className='max-w-xl divide-y divide-neutral-200 dark:divide-neutral-800'>
                 {history.map((item) => (
                   <li
                     key={item.path}
                     className='flex cursor-pointer items-center justify-between gap-4 px-4 py-2 text-sm hover:bg-neutral-50 dark:hover:bg-neutral-800/40'
                     data-path={item.path}
                     title={item.path}
+                    onClick={() => handleHistorySelect(item.path)}
                   >
                     <span className='max-w-[50%] truncate font-medium'>{item.name}</span>
                     <span className='max-w-[50%] truncate text-neutral-400'>{item.path}</span>

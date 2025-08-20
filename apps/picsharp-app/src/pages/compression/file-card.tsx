@@ -10,7 +10,7 @@ import { useUpdate } from 'ahooks';
 import { exists } from '@tauri-apps/plugin-fs';
 import { getOSPlatform, isValidArray } from '@/utils';
 import { convertFileSrc, invoke } from '@tauri-apps/api/core';
-import { RefreshCw } from 'lucide-react';
+import { RefreshCw, Ellipsis } from 'lucide-react';
 import { calImageWindowSize, spawnWindow } from '@/utils/window';
 import { getAllWebviewWindows } from '@tauri-apps/api/webviewWindow';
 import { ICompressor } from '@/utils/compressor';
@@ -25,6 +25,8 @@ import {
 import ImageViewer, { ImageViewerRef } from '@/components/image-viewer';
 import useAppStore from '@/store/app';
 import { copyImage } from '@/utils/clipboard';
+import ImgTag from '@/components/img-tag';
+import { Button } from '@/components/ui/button';
 
 export interface FileCardProps {
   path: FileInfo['path'];
@@ -49,7 +51,7 @@ function FileCard(props: FileCardProps) {
     }
   };
 
-  const fileContextMenuHandler = async (event: React.MouseEvent<HTMLDivElement>) => {
+  const fileContextMenuHandler = async (event: React.MouseEvent<HTMLElement>) => {
     event.preventDefault();
     const FILE_REVEAL_LABELS = {
       macos: t('compression.file_action.reveal_in_finder'),
@@ -235,10 +237,14 @@ function FileCard(props: FileCardProps) {
       onContextMenu={fileContextMenuHandler}
     >
       <div className='text-0 relative flex aspect-[4/3] items-center justify-center overflow-hidden p-1'>
-        <StatusBadge status={file.status} errorMessage={file.errorMessage} />
-        {/* <div className='absolute bottom-2 left-2'>
-          <ImgTag type={file.ext} />
-        </div> */}
+        <Button
+          variant='ghost'
+          size='icon'
+          className='absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-sm opacity-0 transition-all duration-300 group-hover:bg-neutral-200/30 group-hover:opacity-100 dark:group-hover:bg-neutral-600/70'
+          onClick={fileContextMenuHandler}
+        >
+          <Ellipsis className='h-4 w-4' />
+        </Button>
         <div className='text-0 flex aspect-[4/3] w-full items-center justify-center overflow-hidden rounded-md bg-neutral-200/30 dark:bg-neutral-700/70'>
           <ImageViewer
             src={file.assetPath}
@@ -249,10 +255,13 @@ function FileCard(props: FileCardProps) {
           />
         </div>
       </div>
-      <div className='px-2 pb-2'>
+      <div className='px-1 pb-2'>
         <Tooltip title={file.path} arrow={false}>
-          <div className='text-foreground text-md max-w-[100%] overflow-hidden text-ellipsis whitespace-nowrap font-normal'>
-            {file.name.replace(`.${file.ext}`, '')}
+          <div className='flex items-center gap-1'>
+            <ImgTag type={file.ext} />
+            <div className='text-foreground text-md max-w-[100%] overflow-hidden text-ellipsis whitespace-nowrap font-normal'>
+              {file.name}
+            </div>
           </div>
         </Tooltip>
         <div className='flex items-center justify-between'>
@@ -271,7 +280,7 @@ function FileCard(props: FileCardProps) {
               <span className='text-[12px] text-gray-500'>{file.formattedCompressedBytesSize}</span>
             )}
           </div>
-          {file.status === ICompressor.Status.Completed && file.compressRate && (
+          {file.status === ICompressor.Status.Completed && file.compressRate ? (
             <div className='flex items-center gap-1'>
               <span
                 className={cn(
@@ -284,6 +293,8 @@ function FileCard(props: FileCardProps) {
                   : `+${file.compressRate}`}
               </span>
             </div>
+          ) : (
+            <StatusBadge status={file.status} errorMessage={file.errorMessage} />
           )}
         </div>
         {isValidArray(file.convertResults) && file.status === ICompressor.Status.Completed && (
@@ -326,21 +337,32 @@ export default memo(FileCard);
 
 const StatusBadge = ({ status, errorMessage }: Pick<FileInfo, 'status' | 'errorMessage'>) => {
   const t = useI18n();
+  const className = 'h-[18px] rounded-sm px-[6px] py-[0px] text-[12px] border-none';
   return (
-    <div className='absolute right-2 top-1 z-10'>
+    <div>
       {status === ICompressor.Status.Processing && (
-        <Badge variant='processing'>
+        <Badge variant='processing' className={className}>
           <RefreshCw className='mr-1 h-3 w-3 animate-spin' />
           {t('processing')}
         </Badge>
       )}
       {status === ICompressor.Status.Failed && (
-        <Tooltip title={errorMessage} arrow={false}>
-          <Badge variant='error'>{t('failed')}</Badge>
+        <Tooltip title={errorMessage} arrow={false} placement='bottom'>
+          <Badge variant='error' className={`${className} cursor-help`}>
+            {t('failed')}
+          </Badge>
         </Tooltip>
       )}
-      {status === ICompressor.Status.Completed && <Badge variant='success'>{t('saved')}</Badge>}
-      {status === ICompressor.Status.Undone && <Badge variant='gray'>{t('undo.undone')}</Badge>}
+      {status === ICompressor.Status.Completed && (
+        <Badge variant='success' className={className}>
+          {t('saved')}
+        </Badge>
+      )}
+      {status === ICompressor.Status.Undone && (
+        <Badge variant='minor' className={className}>
+          {t('undo.undone')}
+        </Badge>
+      )}
     </div>
   );
 };
