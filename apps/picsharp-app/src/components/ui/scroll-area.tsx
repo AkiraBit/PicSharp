@@ -3,22 +3,45 @@ import * as ScrollAreaPrimitive from '@radix-ui/react-scroll-area';
 
 import { cn } from '@/lib/utils';
 
+export interface ScrollAreaRef {
+  scrollToTop: () => void;
+  scrollToBottom: () => void;
+}
+
 const ScrollArea = React.forwardRef<
-  React.ElementRef<typeof ScrollAreaPrimitive.Root>,
+  ScrollAreaRef,
   React.ComponentPropsWithoutRef<typeof ScrollAreaPrimitive.Root>
->(({ className, children, ...props }, ref) => (
-  <ScrollAreaPrimitive.Root
-    ref={ref}
-    className={cn('relative overflow-hidden', className)}
-    {...props}
-  >
-    <ScrollAreaPrimitive.Viewport className='h-full w-full rounded-[inherit]'>
-      {children}
-    </ScrollAreaPrimitive.Viewport>
-    <ScrollBar />
-    <ScrollAreaPrimitive.Corner />
-  </ScrollAreaPrimitive.Root>
-));
+>(({ className, children, ...props }, ref) => {
+  const scrollAreaRef = React.useRef<HTMLDivElement>(null);
+  React.useImperativeHandle(ref, () => ({
+    scrollToTop: () => {
+      if (scrollAreaRef.current) {
+        setTimeout(() => {
+          scrollAreaRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+        }, 100);
+      }
+    },
+    scrollToBottom: () => {
+      if (scrollAreaRef.current) {
+        setTimeout(() => {
+          scrollAreaRef.current.scrollTo({
+            top: scrollAreaRef.current.scrollHeight,
+            behavior: 'smooth',
+          });
+        }, 100);
+      }
+    },
+  }));
+  return (
+    <ScrollAreaPrimitive.Root className={cn('relative overflow-hidden', className)} {...props}>
+      <ScrollAreaPrimitive.Viewport ref={scrollAreaRef} className='h-full w-full rounded-[inherit]'>
+        {children}
+      </ScrollAreaPrimitive.Viewport>
+      <ScrollBar />
+      <ScrollAreaPrimitive.Corner />
+    </ScrollAreaPrimitive.Root>
+  );
+});
 ScrollArea.displayName = ScrollAreaPrimitive.Root.displayName;
 
 const ScrollBar = React.forwardRef<

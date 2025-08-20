@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
 import FileCard from './file-card';
 import useCompressionStore from '@/store/compression';
 import useSelector from '@/hooks/useSelector';
@@ -8,7 +8,8 @@ import { Empty } from 'antd';
 import { isValidArray, preventDefault } from '@/utils';
 import { useNavigate } from '@/hooks/useNavigate';
 import { useI18n } from '@/i18n';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { ScrollArea, ScrollAreaRef } from '@/components/ui/scroll-area';
+import { useUpdateEffect } from 'ahooks';
 
 function FileManager() {
   const { files } = useCompressionStore(useSelector(['files']));
@@ -16,6 +17,7 @@ function FileManager() {
   const [pageSize, setPageSize] = useState(50);
   const navigate = useNavigate();
   const t = useI18n();
+  const scrollAreaRef = useRef<ScrollAreaRef>(null);
   const dataList = useMemo(() => {
     let list = files.slice((pageIndex - 1) * pageSize, pageIndex * pageSize);
     if (list.length === 0 && pageIndex !== 1) {
@@ -33,8 +35,18 @@ function FileManager() {
     }
   }, []);
 
+  useUpdateEffect(() => {
+    if (scrollAreaRef.current) {
+      scrollAreaRef.current.scrollToTop();
+    }
+  }, [pageIndex]);
+
   return (
-    <ScrollArea className='relative h-full min-w-[350px] flex-col' onContextMenu={preventDefault}>
+    <ScrollArea
+      className='relative h-full min-w-[350px] flex-col'
+      onContextMenu={preventDefault}
+      ref={scrollAreaRef}
+    >
       {isValidArray(dataList) ? (
         <div className='w-full flex-1 px-3 pt-3'>
           <div

@@ -84,7 +84,7 @@ function FileCard(props: FileCardProps) {
                 },
                 {
                   label,
-                  title: `Compare ${file.name}`,
+                  title: t('compression.file_action.compare_file', { name: file.name }),
                   width,
                   height,
                   resizable: false,
@@ -240,22 +240,34 @@ function FileCard(props: FileCardProps) {
         <Button
           variant='ghost'
           size='icon'
-          className='absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-sm opacity-0 transition-all duration-300 group-hover:bg-neutral-200/30 group-hover:opacity-100 dark:group-hover:bg-neutral-600/70'
+          className='absolute right-2 top-2 z-10 flex h-6 w-6 items-center justify-center rounded-sm opacity-0 transition-all duration-300 group-hover:bg-neutral-200/30 group-hover:opacity-100 dark:group-hover:bg-neutral-600/70'
           onClick={fileContextMenuHandler}
         >
           <Ellipsis className='h-4 w-4' />
         </Button>
-        <div className='text-0 flex aspect-[4/3] w-full items-center justify-center overflow-hidden rounded-md bg-neutral-200/30 dark:bg-neutral-700/70'>
+        <div
+          className='text-0 flex aspect-[4/3] w-full items-center justify-center overflow-hidden rounded-md bg-neutral-200/30 dark:bg-neutral-800/80'
+          style={{
+            backgroundImage: `
+            linear-gradient(45deg, rgba(0,0,0,0.4) 25%, transparent 25%),
+            linear-gradient(-45deg, rgba(0,0,0,0.4) 25%, transparent 25%),
+            linear-gradient(45deg, transparent 75%, rgba(0,0,0,0.4) 75%),
+            linear-gradient(-45deg, transparent 75%, rgba(0,0,0,0.4) 75%)
+          `,
+            backgroundSize: '12px 12px',
+            backgroundPosition: '0 0, 0 6px, 6px -6px, -6px 0px',
+          }}
+        >
           <ImageViewer
             src={file.assetPath}
             size={file.bytesSize}
             path={file.path}
             ext={file.ext}
-            imgClassName='max-h-full object-contain'
+            imgClassName='overflow-hidden max-h-full object-contain'
           />
         </div>
       </div>
-      <div className='px-1 pb-2'>
+      <div className='px-1 pb-1'>
         <Tooltip title={file.path} arrow={false}>
           <div className='flex items-center gap-1'>
             <ImgTag type={file.ext} />
@@ -337,7 +349,7 @@ export default memo(FileCard);
 
 const StatusBadge = ({ status, errorMessage }: Pick<FileInfo, 'status' | 'errorMessage'>) => {
   const t = useI18n();
-  const className = 'h-[18px] rounded-sm px-[6px] py-[0px] text-[12px] border-none';
+  const className = 'h-[18px] rounded-sm px-[6px] py-[0px] text-[12px] border-none select-none';
   return (
     <div>
       {status === ICompressor.Status.Processing && (

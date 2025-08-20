@@ -4,6 +4,7 @@ import useAppStore from '@/store/app';
 import { cn } from '@/lib/utils';
 import { getImageViewerCacheKey, putCache, readCache, type ThumbnailCacheValue } from './cache';
 import useSelector from '@/hooks/useSelector';
+import { useI18n } from '@/i18n';
 
 export interface ImageViewerProps {
   src: string;
@@ -27,7 +28,7 @@ const ImageViewer = forwardRef<ImageViewerRef, ImageViewerProps>(function ImageV
 ) {
   const { src, path, ext, className, imgClassName } = props;
   const useThumbnail = !noThumbnailTypes.includes(ext);
-
+  const t = useI18n();
   const imgRef = useRef<HTMLImageElement>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -113,9 +114,13 @@ const ImageViewer = forwardRef<ImageViewerRef, ImageViewerProps>(function ImageV
 
   return (
     <div className={cn('relative flex items-center justify-center', className)}>
-      {isLoading && !errorMessage ? (
-        <div className='absolute inset-0 flex items-center justify-center text-xs text-neutral-500'>
-          Loading...
+      {isLoading ? (
+        <div className='absolute inset-0 flex items-center justify-center text-nowrap text-center text-xs text-neutral-500'>
+          {t('image_viewer.loading')}
+        </div>
+      ) : errorMessage ? (
+        <div className='absolute inset-0 flex w-full items-center justify-center text-nowrap text-center text-xs text-red-500'>
+          {errorMessage}
         </div>
       ) : (
         <img
@@ -126,11 +131,6 @@ const ImageViewer = forwardRef<ImageViewerRef, ImageViewerProps>(function ImageV
           loading='lazy'
           draggable={false}
         />
-      )}
-      {errorMessage && (
-        <div className='absolute inset-0 flex items-center justify-center text-xs text-red-500'>
-          {errorMessage}
-        </div>
       )}
     </div>
   );

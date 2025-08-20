@@ -74,19 +74,6 @@ function ClassicCompressionGuide() {
     }
   };
 
-  // const handleContextMenu = async (event: React.MouseEvent<HTMLDivElement>) => {
-  //   event.preventDefault();
-  //   const menu = await Menu.new();
-  //   const menuItem = await MenuItem.new({
-  //     text: 'Open',
-  //     action: () => {
-  //       console.log('open');
-  //     },
-  //   });
-  //   await menu.append(menuItem);
-  //   await menu.popup();
-  // };
-
   useEffect(() => {
     const setupDragDrop = async () => {
       dragDropController.current = await getCurrentWebview().onDragDropEvent(async (event) => {
@@ -167,7 +154,6 @@ function ClassicCompressionGuide() {
     >
       <UploadWidget />
       <div className='relative mt-4 text-center'>
-        {/* <h1 className='dark:text-foreground mb-6 text-3xl font-bold'>✨PicSharp✨</h1> */}
         <p className='mx-auto max-w-2xl text-lg'>
           {t('page.compression.classic.upload_description')}
         </p>
