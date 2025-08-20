@@ -5,7 +5,7 @@ import useSelector from '@/hooks/useSelector';
 import Toolbar from './toolbar';
 import ToolbarPagination from './toolbar-pagination';
 import { isValidArray } from '@/utils';
-import { Disc3 } from 'lucide-react';
+import { Disc3, Binoculars } from 'lucide-react';
 import { useI18n } from '../../i18n';
 import { Badge } from '@/components/ui/badge';
 import { openPath } from '@tauri-apps/plugin-opener';
@@ -16,6 +16,7 @@ function WatchFileManager(props: WatchFileManagerProps) {
 
   const [pageIndex, setPageIndex] = useState(1);
   const [pageSize, setPageSize] = useState(100);
+  const t = useI18n();
 
   const dataList = useMemo(() => {
     let list = files.slice((pageIndex - 1) * pageSize, pageIndex * pageSize);
@@ -28,15 +29,6 @@ function WatchFileManager(props: WatchFileManagerProps) {
 
   return (
     <div className='relative flex h-full flex-col items-center'>
-      <Badge
-        variant='secondary'
-        className='absolute left-1/2 top-2 z-[10] -translate-x-1/2 cursor-pointer text-nowrap bg-neutral-300/60 hover:underline'
-        onClick={() => {
-          openPath(watchingFolder);
-        }}
-      >
-        <span className='max-w-[60vw] truncate'>{watchingFolder}</span>
-      </Badge>
       {isValidArray(dataList) ? (
         <div className='w-full flex-1 px-3 pb-4 pt-9'>
           <div
@@ -52,7 +44,8 @@ function WatchFileManager(props: WatchFileManagerProps) {
         </div>
       ) : (
         <div className='text-muted-foreground flex flex-1 items-center justify-center'>
-          <Disc3 className='text-foreground h-16 w-16 dark:text-neutral-400' />
+          <Binoculars className='text-foreground h-5 w-5 dark:text-neutral-400' />
+          <span className='mx-2 text-sm text-neutral-400'>{t('tips.watching')}</span>
         </div>
       )}
       <div className='sticky bottom-2 z-[20] flex flex-col gap-1'>

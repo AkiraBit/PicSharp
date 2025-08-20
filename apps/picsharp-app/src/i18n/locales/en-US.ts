@@ -286,6 +286,7 @@ const enUS = {
   'tips.warning': 'Warning',
   'tips.watch_folder_deleted': 'The listening directory has been deleted',
   'tips.watch_folder_moved_or_renamed': 'The listening directory has been moved or renamed',
+  'tips.watching': 'Watching...',
   'tips.are_you_sure_to_exit': 'Are you sure to exit?',
   'tips.please_wait_for_compression_to_finish': 'Please wait for all tasks to finish',
   'tips.path_not_dir': '{{path}} is not a directory',

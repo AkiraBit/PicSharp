@@ -281,6 +281,7 @@ export default {
   'tips.warning': '警告',
   'tips.watch_folder_deleted': '监听目录已被删除',
   'tips.watch_folder_moved_or_renamed': '监听目录已被移动或重命名',
+  'tips.watching': '监听中...',
   'tips.are_you_sure_to_exit': '是否退出当前页面？',
   'tips.please_wait_for_compression_to_finish': '请等待当前所有任务完成',
   'tips.autostart.error': '开机自启动配置错误',

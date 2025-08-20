@@ -5,12 +5,6 @@ import { cn } from '@/lib/utils';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/components/ui/tooltip';
 import { useI18n } from '@/i18n';
 import Link from '@/components/link';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { useTheme, Theme } from '@/components/theme-provider';
 import useAppStore from '@/store/app';
 import useSelector from '@/hooks/useSelector';
@@ -21,7 +15,9 @@ import { SettingsGearIcon } from '@/components/animated-icon/setting';
 import { useNavigate } from '@/hooks/useNavigate';
 import { useEffect, useMemo, useState } from 'react';
 import WindowControl from '@/components/window-control';
-
+import useCompressionStore from '@/store/compression';
+import { Badge } from '@/components/ui/badge';
+import { openPath } from '@tauri-apps/plugin-opener';
 export interface NavLink {
   title: string;
   href: string;
@@ -41,6 +37,10 @@ function Header() {
   const navigate = useNavigate();
   const location = useLocation();
   const [activeTab, setActiveTab] = useState('compress');
+  const { working, watchingFolder } = useCompressionStore(
+    useSelector(['working', 'watchingFolder']),
+  );
+
   const navigation: NavigationProps = useMemo(
     () => ({
       primary: [
@@ -70,40 +70,81 @@ function Header() {
 
   return (
     <header
-      className='relative flex h-[48px] w-full flex-shrink-0 items-center justify-center dark:bg-[#222222]'
+      className={cn(
+        'relative flex h-[48px] w-full flex-shrink-0 items-center dark:bg-[#222222]',
+        isMac ? 'px-[73px]' : 'px-2',
+      )}
       data-tauri-drag-region={isMac}
     >
-      <Tabs value={activeTab}>
+      {working && watchingFolder && (
+        <Badge
+          variant='minor'
+          className='absolute left-1/2 z-[10] -translate-x-1/2 cursor-pointer text-nowrap bg-neutral-300/60 transition-all duration-300 hover:underline'
+          onClick={() => {
+            openPath(watchingFolder);
+          }}
+        >
+          <span className='max-w-[60vw] truncate'>{watchingFolder}</span>
+        </Badge>
+      )}
+      <Tabs
+        value={activeTab}
+        className={cn(
+          'absolute left-1/2 -translate-x-1/2 transition-all duration-300',
+          working && 'left-[73px] -translate-x-0',
+        )}
+      >
         <TabsList className='dark:bg-[#181818]'>
           {navigation.primary.map((item) => (
             <Link key={item.key} to={item.href}>
-              <TabsTrigger value={item.key} className='select-none'>
-                {item.title}
+              <TabsTrigger
+                value={item.key}
+                className={cn(
+                  'group flex select-none items-center justify-center',
+                  !working && 'gap-2',
+                )}
+              >
+                {item.icon}
+                <div
+                  className={cn(
+                    working &&
+                      'w-0 max-w-[max-content] overflow-hidden text-left transition-all duration-300 group-hover:ml-2 group-hover:w-[60px]',
+                  )}
+                >
+                  {item.title}
+                </div>
               </TabsTrigger>
             </Link>
           ))}
         </TabsList>
       </Tabs>
       <div className='absolute right-2 flex items-center gap-2'>
-        <Link to='/settings' title={t('nav.settings')} viewTransition>
-          <div className='relative flex items-center justify-center'>
-            <div
-              className={clsx(
-                'absolute right-1 top-1 h-[6px] w-[6px] rounded-full',
-                (isProd && sidecar?.process && sidecar?.origin && sidecar?.spawning) ||
-                  (isDev && sidecar?.origin)
-                  ? 'bg-green-400'
-                  : 'bg-red-400',
-              )}
-            ></div>
-            <Button
-              variant={location.pathname.startsWith('/settings') ? 'secondary' : 'ghost'}
-              className={cn('flex h-9 w-9 items-center justify-center')}
-            >
-              <SettingsGearIcon size={32} />
-            </Button>
-          </div>
-        </Link>
+        <Tooltip>
+          <TooltipTrigger>
+            <Link to='/settings' title={t('nav.settings')} viewTransition>
+              <div className='relative flex items-center justify-center'>
+                <div
+                  className={clsx(
+                    'absolute right-1 top-1 h-[6px] w-[6px] rounded-full',
+                    (isProd && sidecar?.process && sidecar?.origin && sidecar?.spawning) ||
+                      (isDev && sidecar?.origin)
+                      ? 'bg-green-400'
+                      : 'bg-red-400',
+                  )}
+                ></div>
+                <Button
+                  variant={location.pathname.startsWith('/settings') ? 'secondary' : 'ghost'}
+                  className={cn('flex h-9 w-9 items-center justify-center')}
+                >
+                  <SettingsGearIcon size={32} />
+                </Button>
+              </div>
+            </Link>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>{t('nav.settings')}</p>
+          </TooltipContent>
+        </Tooltip>
         <WindowControl showControls={!isMac} showFullscreen={!isMac} />
       </div>
     </header>
