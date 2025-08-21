@@ -12,7 +12,6 @@ import { isValidArray, isProd, isLinux, isMac } from '@/utils';
 import { parsePaths } from '@/utils/fs';
 import { VALID_IMAGE_EXTS, SettingsKey } from '@/constants';
 import { useNavigate } from '@/hooks/useNavigate';
-import { confirm } from '@tauri-apps/plugin-dialog';
 import { spawnWindow } from '@/utils/window';
 import { useI18n } from '@/i18n';
 import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow';
@@ -23,6 +22,9 @@ import { useAsyncEffect } from 'ahooks';
 import { AppContext } from '@/routes';
 import Header from './header';
 import { cn } from '@/lib/utils';
+import message from '@/components/message';
+import { PathTagsInput } from '../path-tags-input';
+import { TooltipProvider } from '../ui/tooltip';
 
 if (isProd) {
   window.oncontextmenu = (e) => {
@@ -83,11 +85,19 @@ export default function AppLayout() {
       };
       const { working } = useCompressionStore.getState();
       if (working) {
-        const result = await confirm(paths.join(','), {
+        const result = await message.confirm({
           title: titles[mode],
-          kind: 'info',
-          cancelLabel: t('current_window'),
-          okLabel: t('new_window'),
+          description: (
+            <TooltipProvider>
+              <PathTagsInput
+                value={paths}
+                disabled
+                className='h-[150px] border-neutral-200 dark:border-neutral-700/70'
+              />
+            </TooltipProvider>
+          ),
+          confirmText: t('new_window'),
+          cancelText: t('current_window'),
         });
         if (result) {
           spawnWindow({

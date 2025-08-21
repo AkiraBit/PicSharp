@@ -11,16 +11,13 @@ import { Maximize2 } from 'lucide-react';
 export interface PathTagsInputProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange'> {
   title?: string;
   value?: string[];
-  onChange: (next: string[]) => void;
+  onChange?: (next: string[]) => void;
   placeholder?: string;
   disabled?: boolean;
   /**
    * 是否对 onChange 做动画帧节流，减少快速删除时的外部重渲染压力（默认 true）
    */
   optimizeOnChange?: boolean;
-  /**
-   * 自定义输入框的 aria-label，便于无障碍
-   */
   inputAriaLabel?: string;
 }
 
@@ -126,20 +123,22 @@ const EditableTag = React.memo(function EditableTag({
           tabIndex={0}
         >
           <span className='truncate'>{text}</span>
-          <Button
-            type='button'
-            variant='ghost'
-            size='icon'
-            disabled={disabled}
-            onClick={(e) => {
-              e.stopPropagation();
-              onRemove(index);
-            }}
-            aria-label='Remove path'
-            className='h-5 w-5 text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100'
-          >
-            ×
-          </Button>
+          {!disabled && (
+            <Button
+              type='button'
+              variant='ghost'
+              size='icon'
+              disabled={disabled}
+              onClick={(e) => {
+                e.stopPropagation();
+                onRemove(index);
+              }}
+              aria-label='Remove path'
+              className='h-5 w-5 text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100'
+            >
+              ×
+            </Button>
+          )}
         </Badge>
       </TooltipTrigger>
       <TooltipContent>
@@ -197,14 +196,14 @@ export function PathTagsInput({
         });
       }
       if (!optimizeOnChange) {
-        onChange(next);
+        onChange?.(next);
         return;
       }
       scheduledNextRef.current = next;
       if (rafIdRef.current == null) {
         rafIdRef.current = requestAnimationFrame(() => {
           if (scheduledNextRef.current) {
-            onChange(scheduledNextRef.current);
+            onChange?.(scheduledNextRef.current);
             scheduledNextRef.current = null;
           }
           rafIdRef.current = null;
@@ -370,10 +369,10 @@ export function PathTagsInput({
 
         <Button
           type='button'
-          variant='link'
+          variant='ghost'
           size='icon'
           aria-label='Expand paths editor'
-          className='absolute right-0 top-0 opacity-0 transition-opacity group-hover:opacity-100'
+          className='absolute bottom-1 right-1 h-6 w-6 opacity-0 transition-all duration-300 group-hover:opacity-100 dark:bg-neutral-600/70'
           onClick={(e) => {
             e.stopPropagation();
             setIsDialogOpen(true);
@@ -384,15 +383,15 @@ export function PathTagsInput({
       </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className='w-[90vw] max-w-3xl dark:bg-neutral-900'>
+        <DialogContent className='w-[90vw] max-w-3xl p-4 dark:bg-neutral-900'>
           <DialogHeader>
             <DialogTitle>{title}</DialogTitle>
           </DialogHeader>
-          <div className='flex flex-col gap-2'>
+          <div className='mt-2 flex flex-col gap-2'>
             <div
               className={cn(
-                'flex min-h-[240px] w-full flex-wrap items-start gap-2 rounded-md border border-neutral-200 bg-transparent text-base shadow-sm focus-within:ring-1 focus-within:ring-neutral-950 md:text-sm dark:border-neutral-600 dark:focus-within:ring-neutral-300',
-                disabled && 'cursor-not-allowed opacity-60',
+                'flex min-h-[240px] w-full flex-wrap items-start gap-2 rounded-md border border-neutral-200 bg-transparent text-base shadow-sm focus-within:ring-1 focus-within:ring-neutral-950 md:text-sm dark:border-neutral-700/70 dark:focus-within:ring-neutral-300',
+                disabled && 'cursor-not-allowed opacity-60 focus-within:ring-0',
               )}
               onClick={() => {
                 if (!disabled) {

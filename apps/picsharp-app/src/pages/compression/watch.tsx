@@ -19,7 +19,6 @@ import { AppContext } from '@/routes';
 import { CompressionContext } from '.';
 import { message as systemMessage } from '@tauri-apps/plugin-dialog';
 import { message } from '@/components/message';
-import useSelector from '@/hooks/useSelector';
 
 function CompressionWatch() {
   const { progressRef } = useContext(CompressionContext);

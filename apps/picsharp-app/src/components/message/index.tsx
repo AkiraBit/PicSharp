@@ -33,11 +33,11 @@ const iconMap = {
 } as const;
 
 const iconColorMap = {
-  info: 'text-blue-500',
-  success: 'text-green-500',
-  error: 'text-red-500',
-  warning: 'text-yellow-500',
-  confirm: 'text-gray-500',
+  info: 'text-blue-300',
+  success: 'text-green-300',
+  error: 'text-red-300',
+  warning: 'text-yellow-300',
+  confirm: 'text-gray-300',
 } as const;
 
 const confirmButtonVariantMap = {
@@ -53,11 +53,11 @@ const MessageDialogContent = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof AlertDialogPrimitive.Content>
 >(({ className, ...props }, ref) => (
   <AlertDialogPrimitive.Portal>
-    <AlertDialogPrimitive.Overlay className='data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/50' />
+    <AlertDialogPrimitive.Overlay className='data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/50 backdrop-blur-sm backdrop-saturate-150' />
     <AlertDialogPrimitive.Content
       ref={ref}
       className={cn(
-        'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] fixed left-[50%] top-[50%] z-50 w-full max-w-md translate-x-[-50%] translate-y-[-50%] rounded-xl border border-neutral-200 bg-white/95 shadow-2xl backdrop-blur-md duration-200 dark:border-neutral-700 dark:bg-neutral-900/95',
+        'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] fixed left-[50%] top-[50%] z-50 w-full max-w-md translate-x-[-50%] translate-y-[-50%] rounded-xl border border-neutral-200 bg-white/95 shadow-2xl backdrop-blur-md duration-200 dark:border-none dark:bg-neutral-800/80',
         className,
       )}
       {...props}
@@ -240,14 +240,16 @@ function createDialog(config: MessageConfig): Promise<boolean> {
       return (
         <AlertDialogPrimitive.Root open={open} onOpenChange={handleOpenChange}>
           <MessageDialogContent>
-            <div className='flex items-start gap-4 p-6'>
-              <div className='flex-shrink-0'>
-                <IconComponent className={cn('h-6 w-6', iconColor)} />
-              </div>
-
+            <div className='flex items-start gap-4 p-4'>
               <div className='flex-1 space-y-3'>
-                <AlertDialogPrimitive.Title className='text-lg font-semibold text-neutral-900 dark:text-neutral-100'>
-                  {config.title}
+                <AlertDialogPrimitive.Title className='flex items-center gap-2'>
+                  <div className='flex-shrink-0'>
+                    <IconComponent className={cn('h-6 w-6', iconColor)} />
+                  </div>
+
+                  <div className='text-lg font-semibold text-neutral-900 dark:text-neutral-100'>
+                    {config.title}
+                  </div>
                 </AlertDialogPrimitive.Title>
 
                 {config.description && (
