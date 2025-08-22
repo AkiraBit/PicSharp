@@ -1,0 +1,20 @@
+import cluster from 'node:cluster';
+import { serve } from '@hono/node-server';
+import { createApp } from '../app';
+import { IpcMessage } from '../ipc/messages';
+import { AppConfig } from '../config';
+
+export async function startWorker(config: AppConfig) {
+  if (cluster.isPrimary) return;
+
+  const app = createApp();
+
+  serve({ fetch: app.fetch, port: config.port }, (info) => {
+    console.log(`[worker:${cluster.worker?.id}] Ready`);
+  });
+
+  if (process.send) {
+    const msg: IpcMessage = { type: 'worker:ready', payload: { pid: process.pid } } as any;
+    process.send(msg);
+  }
+}

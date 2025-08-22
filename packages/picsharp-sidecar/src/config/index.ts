@@ -1,19 +1,12 @@
 import os from 'node:os';
+import { findAvailablePort } from '../utils';
 
 export interface AppConfig {
   port: number;
   concurrency: number;
-  queueMax: number;
-  jobTimeoutMs: number;
-  useCluster: boolean;
-  tmpDir?: string;
-  logLevel: 'debug' | 'info' | 'warn' | 'error';
-  retry: {
-    enable: boolean;
-    maxAttempts: number;
-    backoffInitialMs: number;
-    backoffMaxMs: number;
-  };
+  cluster: boolean;
+  mode: 'server' | 'cli';
+  store: Record<string, unknown>;
 }
 
 function parseNumber(value: unknown, fallback: number): number {
@@ -40,34 +33,29 @@ function parseBoolean(value: unknown, fallback: boolean): boolean {
   return fallback;
 }
 
-export function loadConfig(cliPort?: number): AppConfig {
+export async function loadConfig(): Promise<AppConfig> {
   const cpuCount = Math.max(1, os.cpus().length - 1);
-
-  const concurrency = parseNumber(process.env.PICSHARP_CONCURRENCY, cpuCount);
-  const queueMax = parseNumber(process.env.PICSHARP_QUEUE_MAX, 1000);
-  const jobTimeoutMs = parseNumber(process.env.PICSHARP_JOB_TIMEOUT_MS, 180000);
-  const useCluster = parseBoolean(process.env.PICSHARP_USE_CLUSTER, false);
-  const tmpDir = process.env.PICSHARP_TMP_DIR || undefined;
-  const logLevelEnv = (process.env.PICSHARP_LOG_LEVEL || 'info').toLowerCase();
-  const logLevel: AppConfig['logLevel'] = ['debug', 'info', 'warn', 'error'].includes(logLevelEnv)
-    ? (logLevelEnv as AppConfig['logLevel'])
-    : 'info';
-
-  const port = parseNumber(cliPort, parseNumber(process.env.PORT, 3000));
+  const concurrency = parseNumber(process.env.PICSHARP_SIDECAR_CONCURRENCY, cpuCount);
+  const cluster = parseBoolean(process.env.PICSHARP_SIDECAR_CLUSTER, false);
+  const port = await findAvailablePort(parseNumber(process.env.PICSHARP_SIDECAR_PORT, 3000));
+  const mode =
+    (String(process.env.PICSHARP_SIDECAR_MODE || 'server').toLowerCase() as AppConfig['mode']) ||
+    'server';
+  let store: Record<string, unknown> = {};
+  if (process.env.PICSHARP_SIDECAR_STORE) {
+    try {
+      store = JSON.parse(String(process.env.PICSHARP_SIDECAR_STORE)) as Record<string, unknown>;
+    } catch (e) {
+      console.error('[shared-kv] invalid JSON');
+      process.exit(1);
+    }
+  }
 
   return {
     port,
     concurrency,
-    queueMax,
-    jobTimeoutMs,
-    useCluster,
-    tmpDir,
-    logLevel,
-    retry: {
-      enable: parseBoolean(process.env.PICSHARP_RETRY_ENABLE, true),
-      maxAttempts: parseNumber(process.env.PICSHARP_RETRY_MAX_ATTEMPTS, 3),
-      backoffInitialMs: parseNumber(process.env.PICSHARP_RETRY_BACKOFF_INITIAL_MS, 1000),
-      backoffMaxMs: parseNumber(process.env.PICSHARP_RETRY_BACKOFF_MAX_MS, 30000),
-    },
+    cluster,
+    mode,
+    store,
   };
 }

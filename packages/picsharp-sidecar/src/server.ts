@@ -1,19 +1,23 @@
+import cluster from 'node:cluster';
 import { serve } from '@hono/node-server';
-import { loadConfig } from './config';
-import { findAvailablePort } from './utils';
+import { AppConfig } from './config';
 import { createApp } from './app';
+import { startMaster } from './cluster/master';
+import { startWorker } from './cluster/worker';
 
-interface StartServerOptions {
-  port: number;
-}
-
-export async function startServer(options: StartServerOptions) {
-  const config = loadConfig(options.port);
-  const port = await findAvailablePort(config.port);
+export async function startServer(config: AppConfig) {
+  if (config.cluster) {
+    if (cluster.isPrimary) {
+      await startMaster(config);
+      return;
+    } else {
+      await startWorker(config);
+      return;
+    }
+  }
 
   const app = createApp();
-
-  serve({ fetch: app.fetch, port }, (info) => {
+  serve({ fetch: app.fetch, port: config.port }, (info) => {
     console.log(
       JSON.stringify({
         origin: `http://localhost:${info.port}`,

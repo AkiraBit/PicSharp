@@ -1,28 +1,9 @@
-import yargs from 'yargs';
-import { hideBin } from 'yargs/helpers';
 import { startServer } from './server';
+import { loadConfig } from './config';
 
 async function main() {
-  const argv = yargs(hideBin(process.argv))
-    .locale('en')
-    .option('port', {
-      alias: 'p',
-      description: 'Server port',
-      type: 'number',
-      default: 3000,
-    })
-    .option('mode', {
-      alias: 'm',
-      description: 'Start mode: server | cli',
-      type: 'string',
-      choices: ['server', 'cli'] as const,
-      default: 'server',
-    })
-    .help()
-    .alias('help', 'h')
-    .parseSync();
-
-  if (argv.mode === 'cli') {
+  const config = await loadConfig();
+  if (config.mode === 'cli') {
     console.log(
       JSON.stringify({
         mode: 'cli',
@@ -31,9 +12,7 @@ async function main() {
     );
     return;
   } else {
-    await startServer({
-      port: argv.port,
-    });
+    await startServer(config);
   }
 }
 
