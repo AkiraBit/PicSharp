@@ -1,6 +1,6 @@
 import { optimize } from 'svgo';
 import type { Config } from 'svgo';
-import { readFile } from 'node:fs/promises';
+import { readFile, writeFile, copyFile } from 'node:fs/promises';
 import { calCompressionRate, createOutputPath, copyFileToTemp, hashFile } from '../../utils';
 
 export interface SvgTaskPayload {
@@ -25,6 +25,11 @@ export async function processSvg(payload: SvgTaskPayload) {
     new_folder_path: options.save.new_folder_path,
   });
   const tempFilePath = options.temp_dir ? await copyFileToTemp(input_path, options.temp_dir) : '';
+  if (availableCompressRate) {
+    await writeFile(newOutputPath, optimizedContent.data, 'utf-8');
+  } else {
+    await copyFile(input_path, newOutputPath);
+  }
   return {
     input_path,
     input_size: originalContent.length,

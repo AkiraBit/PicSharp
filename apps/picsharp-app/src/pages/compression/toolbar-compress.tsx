@@ -17,8 +17,8 @@ import { ICompressor } from '@/utils/compressor';
 import { cn } from '@/lib/utils';
 import { convertFileSrc } from '@tauri-apps/api/core';
 import message from '@/components/message';
-import { createWebviewWindow } from '@/utils/window';
 import { AppContext } from '@/routes';
+import { openSettingsWindow } from '@/utils/window';
 
 function ToolbarCompress() {
   const { sidecar, imageTempDir } = useAppStore(useSelector(['sidecar', 'imageTempDir']));
@@ -85,21 +85,7 @@ function ToolbarCompress() {
           cancelText: t('cancel'),
         });
         if (result) {
-          createWebviewWindow('settings', {
-            url: '/settings/tinypng#tinypng-api-keys',
-            title: t('nav.settings'),
-            width: 796,
-            height: 528,
-            minWidth: 796,
-            minHeight: 528,
-            center: true,
-            resizable: true,
-            titleBarStyle: 'overlay',
-            hiddenTitle: true,
-            dragDropEnabled: true,
-            minimizable: true,
-            maximizable: true,
-          });
+          openSettingsWindow();
         }
         return;
       }
@@ -111,21 +97,7 @@ function ToolbarCompress() {
           cancelText: t('cancel'),
         });
         if (result) {
-          createWebviewWindow('settings', {
-            url: '/settings/compression#output',
-            title: t('nav.settings'),
-            width: 796,
-            height: 528,
-            minWidth: 796,
-            minHeight: 528,
-            center: true,
-            resizable: true,
-            titleBarStyle: 'overlay',
-            hiddenTitle: true,
-            dragDropEnabled: true,
-            minimizable: true,
-            maximizable: true,
-          });
+          openSettingsWindow();
         }
         return;
       }

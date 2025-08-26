@@ -1,5 +1,4 @@
 import { Hono } from 'hono';
-import { writeFile, copyFile } from 'node:fs/promises';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
 import { checkFile } from '../../utils';
@@ -33,16 +32,10 @@ app.post('/', zValidator('json', PayloadSchema), async (context) => {
   await checkFile(input_path);
   options = OptionsSchema.parse(options);
 
-  const pool = getThreadPool();
-  const result = await pool.run<any, any>({
+  const result = await getThreadPool().run<any, any>({
     type: 'svg',
     payload: { input_path, options },
   });
-  if (result.available_compress_rate) {
-    await writeFile(result.output_path, result.optimized);
-  } else if (result.input_path !== result.output_path) {
-    await copyFile(result.input_path, result.output_path);
-  }
   return context.json(result);
 });
 

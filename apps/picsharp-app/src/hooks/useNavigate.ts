@@ -8,7 +8,7 @@ import useCompressionStore from '@/store/compression';
 import { useCallback } from 'react';
 import { isString, isObject } from 'radash';
 import { useI18n } from '@/i18n';
-import { createWebviewWindow } from '@/utils/window';
+import { openSettingsWindow } from '@/utils/window';
 import message from '@/components/message';
 
 export const blockCompressionRoutes = [
@@ -38,21 +38,7 @@ export function useNavigate() {
       }
 
       if (url === '/settings') {
-        createWebviewWindow('settings', {
-          url,
-          title: t('nav.settings'),
-          width: 796,
-          height: 528,
-          minWidth: 796,
-          minHeight: 529,
-          center: true,
-          resizable: true,
-          titleBarStyle: 'overlay',
-          hiddenTitle: true,
-          dragDropEnabled: true,
-          minimizable: true,
-          maximizable: true,
-        });
+        openSettingsWindow();
         return;
       }
 

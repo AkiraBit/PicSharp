@@ -5,7 +5,7 @@ import { t } from '../i18n';
 import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow';
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import { isProd } from '.';
-import { createWebviewWindow } from './window';
+import { openSettingsWindow } from './window';
 import checkForUpdate from './updater';
 import { message } from '@tauri-apps/plugin-dialog';
 
@@ -32,21 +32,7 @@ export async function createTrayMenu() {
         id: 'settings',
         text: t('tray.settings'),
         action: () => {
-          createWebviewWindow('settings', {
-            url: '/settings',
-            title: t('nav.settings'),
-            width: 796,
-            height: 528,
-            minWidth: 796,
-            minHeight: 528,
-            center: true,
-            resizable: true,
-            titleBarStyle: 'overlay',
-            hiddenTitle: true,
-            dragDropEnabled: true,
-            minimizable: true,
-            maximizable: true,
-          });
+          openSettingsWindow();
         },
         accelerator: 'CmdOrCtrl+,',
       },

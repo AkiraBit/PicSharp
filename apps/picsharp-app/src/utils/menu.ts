@@ -1,7 +1,7 @@
 import { platform } from '@tauri-apps/plugin-os';
 import { Menu, Submenu, PredefinedMenuItem, MenuItem } from '@tauri-apps/api/menu';
 import { t } from '@/i18n';
-import { createWebviewWindow } from './window';
+import { openSettingsWindow } from './window';
 import checkForUpdate from './updater';
 import { message } from '@tauri-apps/plugin-dialog';
 import { open } from '@tauri-apps/plugin-shell';
@@ -25,21 +25,7 @@ export async function initAppMenu() {
       await MenuItem.new({
         text: t('menu.settings'),
         action: () => {
-          createWebviewWindow('settings', {
-            url: '/settings',
-            title: t('nav.settings'),
-            width: 796,
-            height: 528,
-            minWidth: 796,
-            minHeight: 528,
-            center: true,
-            resizable: true,
-            titleBarStyle: 'overlay',
-            hiddenTitle: true,
-            dragDropEnabled: true,
-            minimizable: true,
-            maximizable: true,
-          });
+          openSettingsWindow();
         },
         accelerator: 'CmdOrCtrl+,',
       }),

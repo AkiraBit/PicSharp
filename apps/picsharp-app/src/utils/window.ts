@@ -1,5 +1,7 @@
 import { invoke } from '@tauri-apps/api/core';
 import { WebviewWindow, getAllWebviewWindows } from '@tauri-apps/api/webviewWindow';
+import { t } from '../i18n';
+import { isMac } from '.';
 
 export function calImageWindowSize(imgWidth: number, imgHeight: number): [number, number] {
   const maxWidth = 1000.0;
@@ -47,10 +49,40 @@ export async function createWebviewWindow(
 ) {
   const windows = await getAllWebviewWindows();
   const target = windows.find((w) => w.label === label);
+  console.log(`[createWebviewWindow] ${label}`, target);
   if (target) {
     target.show();
     return target;
   } else {
     return new WebviewWindow(label, options);
   }
+}
+
+const commonWindowConfig = {
+  resizable: true,
+  width: 796,
+  height: 528,
+  minWidth: 796,
+  minHeight: 529,
+  center: true,
+};
+
+const macosWindowConfig = {
+  titleBarStyle: 'overlay',
+  hiddenTitle: true,
+  theme: 'dark',
+};
+
+const unmacosWindowConfig = {
+  decorations: false,
+};
+
+export async function openSettingsWindow() {
+  const platformConfig = isMac ? macosWindowConfig : unmacosWindowConfig;
+  return createWebviewWindow('settings', {
+    url: '/settings',
+    title: t('nav.settings'),
+    ...commonWindowConfig,
+    ...(platformConfig as any),
+  });
 }

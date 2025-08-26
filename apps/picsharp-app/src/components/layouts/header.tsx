@@ -74,7 +74,7 @@ function Header() {
         'relative flex h-[48px] w-full flex-shrink-0 items-center',
         isMac ? 'px-[73px]' : 'px-2',
       )}
-      data-tauri-drag-region={isMac}
+      data-tauri-drag-region
     >
       {working && watchingFolder && (
         <Badge
@@ -91,7 +91,7 @@ function Header() {
         value={activeTab}
         className={cn(
           'absolute left-1/2 -translate-x-1/2 transition-all duration-300',
-          working && 'left-[73px] -translate-x-0',
+          working && cn(isMac ? 'left-[73px] -translate-x-0' : 'left-2 -translate-x-0'),
         )}
       >
         <TabsList className='dark:border-white/10 dark:bg-black/30'>

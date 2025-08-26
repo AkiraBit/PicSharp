@@ -7,7 +7,7 @@ const SettingsSection = forwardRef<HTMLDivElement, SettingsSectionProps>(
   ({ children, className, ...props }, ref) => {
     return (
       <section
-        className={cn('h-full space-y-6 overflow-auto px-5 pb-5', className)}
+        className={cn('h-full space-y-6 overflow-auto px-3 pb-5', className)}
         ref={ref}
         {...props}
       >
