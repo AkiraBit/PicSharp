@@ -71,7 +71,7 @@ function Header() {
   return (
     <header
       className={cn(
-        'relative flex h-[48px] w-full flex-shrink-0 items-center dark:bg-[#222222]',
+        'relative flex h-[48px] w-full flex-shrink-0 items-center',
         isMac ? 'px-[73px]' : 'px-2',
       )}
       data-tauri-drag-region={isMac}
@@ -94,7 +94,7 @@ function Header() {
           working && 'left-[73px] -translate-x-0',
         )}
       >
-        <TabsList className='dark:bg-[#181818]'>
+        <TabsList className='dark:border-white/10 dark:bg-black/30'>
           {navigation.primary.map((item) => (
             <Link key={item.key} to={item.href}>
               <TabsTrigger

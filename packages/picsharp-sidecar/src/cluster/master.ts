@@ -80,7 +80,6 @@ export async function startMaster(config: AppConfig) {
   cluster.on('exit', (worker, code, signal) => {
     console.error(
       JSON.stringify({
-        level: 'warn',
         msg: 'worker exit',
         id: worker.id,
         pid: worker.process.pid,
@@ -95,4 +94,12 @@ export async function startMaster(config: AppConfig) {
   // cluster.on('message', (worker, msg: IpcMessage) => {
   //   console.log(`[cluster:${worker.id}] message: ${msg}`);
   // });
+  console.log(
+    JSON.stringify({
+      origin: `http://localhost:${config.port}`,
+      // port: config.port,
+      // pid: process.pid,
+      // argv: process.argv,
+    }),
+  );
 }

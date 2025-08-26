@@ -1,20 +1,11 @@
 import { Hono } from 'hono';
-import { writeFile, copyFile } from 'node:fs/promises';
 import sharp from 'sharp';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
-import {
-  calCompressionRate,
-  checkFile,
-  getFileSize,
-  createOutputPath,
-  copyFileToTemp,
-  isWindows,
-  isValidArray,
-  hashFile,
-} from '../../utils';
+import { checkFile, isWindows, isValidArray } from '../../utils';
 import { SaveMode, ConvertFormat } from '../../constants';
 import { bulkConvert } from '../../services/convert';
+import { getThreadPool } from '../../workers/thread-pool';
 
 const app = new Hono();
 
@@ -71,59 +62,21 @@ app.post('/', zValidator('json', PayloadSchema), async (context) => {
   await checkFile(input_path);
   options = OptionsSchema.parse(options);
   process_options = ProcessOptionsSchema.parse(process_options);
-  const originalSize = await getFileSize(input_path);
-
   if (isWindows && options.save.mode === SaveMode.Overwrite) {
     sharp.cache(false);
   }
-  const instance = sharp(input_path, {
-    limitInputPixels: false,
+  const pool = getThreadPool();
+  const result = await pool.run<any, any>({
+    type: 'avif',
+    payload: { input_path, options, process_options },
   });
-
-  if (options.keep_metadata) {
-    instance.keepMetadata();
-  }
-
-  const compressedImageBuffer = await instance.avif(process_options).toBuffer();
-  const compressedSize = compressedImageBuffer.byteLength;
-  const compressionRate = calCompressionRate(originalSize, compressedSize);
-  const availableCompressRate = compressionRate >= (options.limit_compress_rate || 0);
-
-  const newOutputPath = await createOutputPath(input_path, {
-    mode: options.save.mode,
-    new_file_suffix: options.save.new_file_suffix,
-    new_folder_path: options.save.new_folder_path,
-  });
-
-  const tempFilePath = options.temp_dir ? await copyFileToTemp(input_path, options.temp_dir) : '';
-
-  if (availableCompressRate) {
-    await writeFile(newOutputPath, compressedImageBuffer);
-  } else {
-    if (input_path !== newOutputPath) {
-      await copyFile(input_path, newOutputPath);
-    }
-  }
-
-  const result: Record<string, any> = {
-    input_path,
-    input_size: originalSize,
-    output_path: newOutputPath,
-    output_size: availableCompressRate ? compressedSize : originalSize,
-    compression_rate: availableCompressRate ? compressionRate : 0,
-    original_temp_path: tempFilePath,
-    available_compress_rate: availableCompressRate,
-    hash: await hashFile(newOutputPath),
-    debug: {
-      compressedSize,
-      compressionRate,
-      options,
-      process_options,
-    },
-  };
 
   if (isValidArray(options.convert_types)) {
-    const results = await bulkConvert(newOutputPath, options.convert_types, options.convert_alpha);
+    const results = await bulkConvert(
+      result.output_path,
+      options.convert_types,
+      options.convert_alpha,
+    );
     result.convert_results = results;
   }
 

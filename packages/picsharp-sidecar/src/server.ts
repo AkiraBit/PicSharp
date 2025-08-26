@@ -9,22 +9,20 @@ export async function startServer(config: AppConfig) {
   if (config.cluster) {
     if (cluster.isPrimary) {
       await startMaster(config);
-      return;
     } else {
       await startWorker(config);
-      return;
     }
+  } else {
+    const app = createApp();
+    serve({ fetch: app.fetch, port: config.port }, (info) => {
+      console.log(
+        JSON.stringify({
+          origin: `http://localhost:${info.port}`,
+          port: info.port,
+          pid: process.pid,
+          argv: process.argv,
+        }),
+      );
+    });
   }
-
-  const app = createApp();
-  serve({ fetch: app.fetch, port: config.port }, (info) => {
-    console.log(
-      JSON.stringify({
-        origin: `http://localhost:${info.port}`,
-        port: info.port,
-        pid: process.pid,
-        argv: process.argv,
-      }),
-    );
-  });
 }

@@ -66,32 +66,32 @@ export const getOSPlatform = () => {
   return '';
 };
 
-export async function uint8ArrayToRGBA(
-  uint8Array: Uint8Array,
-  mimeType: string,
-): Promise<{
-  rgba: Uint8ClampedArray;
-  width: number;
-  height: number;
-}> {
-  const blob = new Blob([uint8Array.buffer], { type: mimeType });
-  const imageBitmap = await createImageBitmap(blob);
+// export async function uint8ArrayToRGBA(
+//   uint8Array: Uint8Array,
+//   mimeType: string,
+// ): Promise<{
+//   rgba: Uint8ClampedArray;
+//   width: number;
+//   height: number;
+// }> {
+//   const blob = new Blob([uint8Array.buffer], { type: mimeType });
+//   const imageBitmap = await createImageBitmap(blob);
 
-  const canvas = document.createElement('canvas');
-  canvas.width = imageBitmap.width;
-  canvas.height = imageBitmap.height;
+//   const canvas = document.createElement('canvas');
+//   canvas.width = imageBitmap.width;
+//   canvas.height = imageBitmap.height;
 
-  const ctx = canvas.getContext('2d')!;
-  ctx.drawImage(imageBitmap, 0, 0);
+//   const ctx = canvas.getContext('2d')!;
+//   ctx.drawImage(imageBitmap, 0, 0);
 
-  const { data } = ctx.getImageData(0, 0, canvas.width, canvas.height);
+//   const { data } = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
-  return {
-    rgba: data,
-    width: canvas.width,
-    height: canvas.height,
-  };
-}
+//   return {
+//     rgba: data,
+//     width: canvas.width,
+//     height: canvas.height,
+//   };
+// }
 
 export function correctFloat(value: number, precision = 12) {
   return parseFloat(value.toPrecision(precision));

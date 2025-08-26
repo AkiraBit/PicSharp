@@ -48,7 +48,7 @@ function FileManager() {
       ref={scrollAreaRef}
     >
       {isValidArray(dataList) ? (
-        <div className='w-full flex-1 px-3 pt-3'>
+        <div className='w-full flex-1 px-3 pt-1'>
           <div
             className='grid grid-cols-2 gap-3 pb-[65px] contain-layout sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7'
             style={{

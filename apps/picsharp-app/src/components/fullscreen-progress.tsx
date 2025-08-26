@@ -76,14 +76,11 @@ const PageProgress = forwardRef<
 
   return (
     <div
-      className='bg-background absolute left-0 top-0 z-[100] flex hidden h-full w-full items-center justify-center'
+      className='absolute left-0 top-0 z-[100] flex hidden h-full w-full items-center justify-center'
       ref={rootRef}
     >
       <div
-        className={cn(
-          'relative h-2 w-[50%] overflow-hidden rounded-full bg-neutral-900/20 dark:bg-neutral-50/20',
-          className,
-        )}
+        className={cn('relative h-2 w-[50%] overflow-hidden rounded-full', className)}
         {...props}
       >
         <div

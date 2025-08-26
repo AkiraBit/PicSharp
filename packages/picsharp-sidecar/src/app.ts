@@ -39,6 +39,7 @@ export function createApp() {
   app.route('/api/compress/gif', gif);
   app.route('/api/compress/webp', webp);
   app.route('/api/compress/jpg', jpg);
+  app.route('/api/compress/jpeg', jpg);
   app.route('/api/compress/tiff', tiff);
   app.route('/api/compress/svg', svg);
   app.route('/api/compress/tinify', tinify);

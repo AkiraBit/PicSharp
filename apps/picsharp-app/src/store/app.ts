@@ -47,7 +47,13 @@ const useAppStore = create(
           get().destroySidecar();
           if (getCurrentWebviewWindow().label === 'main') {
             if (isProd) {
-              const command = Command.sidecar('binaries/picsharp-sidecar');
+              const command = Command.sidecar('binaries/picsharp-sidecar', '', {
+                env: {
+                  PICSHARP_SIDECAR_CLUSTER: 'true',
+                  PICSHARP_SIDECAR_MODE: 'server',
+                  PICSHARP_SIDECAR_STORE: '{}',
+                },
+              });
               command.stdout.once('data', (data) => {
                 info(`[Start Sidecar Output]: ${data}`);
                 const response = JSON.parse(data);

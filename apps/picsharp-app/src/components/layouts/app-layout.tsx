@@ -211,6 +211,13 @@ export default function AppLayout() {
   return (
     <ErrorBoundary>
       <div className='relative h-screen w-screen dark:bg-[#222222]'>
+        <div
+          className='absolute inset-0 z-0'
+          style={{
+            background:
+              'radial-gradient(ellipse 80% 60% at 50% 0%, rgba(120, 180, 255, 0.25), transparent 70%), #000000',
+          }}
+        />
         <PageProgress ref={progressRef} />
         {getCurrentWebviewWindow().label === 'main' && <Header />}
         <div

@@ -1,6 +1,6 @@
 import { open } from '@tauri-apps/plugin-dialog';
 import useSelector from '@/hooks/useSelector';
-import { FolderClock, Plus } from 'lucide-react';
+import { FolderClock, Plus, X } from 'lucide-react';
 import useCompressionStore from '../../store/compression';
 import { useNavigate } from '@/hooks/useNavigate';
 import { useI18n } from '../../i18n';
@@ -190,7 +190,9 @@ function WatchCompressionGuide() {
                     onClick={() => handleHistorySelect(item.path)}
                   >
                     <span className='max-w-[50%] truncate font-medium'>{item.name}</span>
-                    <span className='max-w-[50%] truncate text-neutral-400'>{item.path}</span>
+                    <div className='flex max-w-[50%] items-center gap-1'>
+                      <span className='flex-1 truncate text-neutral-400'>{item.path}</span>
+                    </div>
                   </li>
                 ))}
               </ul>
