@@ -12,6 +12,7 @@
   "private": true,
   "scripts": {
     "dev": "tsx watch src/index.ts",
+    "start": "tsc && node dist/index.js",
     "build": "tsc",
     "build-sea:macos-arm64": "tsc && pkg --targets node20-macos-arm64 --compress gzip --output ./bin/picsharp-sidecar-aarch64-apple-darwin .",
     "build-sea:macos-x64": "tsc && pkg --targets node20-macos-x64 --compress gzip --output ./bin/picsharp-sidecar-x86_64-apple-darwin .",
@@ -44,13 +45,18 @@
     "@types/fs-extra": "^11.0.4",
     "@types/yargs": "^17.0.33",
     "@yao-pkg/pkg": "^6.4.0",
+    "esbuild-register": "^3.6.0",
+    "pino-pretty": "^11.3.0",
     "tsx": "^4.7.1",
     "typescript": "^5"
   },
   "bin": "dist/index.js",
   "pkg": {
     "assets": [
-      "node_modules/@img/**/*"
+      "node_modules/@img/**/*",
+      "./dist/cluster/**/*",
+      "./dist/workers/**/*",
+      "./dist/services/**/*"
     ]
   },
   "engines": {

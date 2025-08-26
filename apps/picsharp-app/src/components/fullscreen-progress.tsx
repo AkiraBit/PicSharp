@@ -15,8 +15,10 @@ function easeOutCirc(x: number): number {
 
 const PageProgress = forwardRef<
   PageProgressRef,
-  React.ComponentPropsWithoutRef<typeof ProgressPrimitive.Root>
->(({ className, value, ...props }, ref) => {
+  React.ComponentPropsWithoutRef<typeof ProgressPrimitive.Root> & {
+    description?: string;
+  }
+>(({ className, value, description = 'Loading...', ...props }, ref) => {
   const rootRef = useRef<HTMLDivElement>(null);
   const indicatorRef = useRef<HTMLDivElement>(null);
   const timerRef = useRef<number>(null);
@@ -76,19 +78,31 @@ const PageProgress = forwardRef<
 
   return (
     <div
-      className='absolute left-0 top-0 z-10 flex hidden h-full w-full items-center justify-center bg-background'
+      className='fixed left-0 top-0 z-[100] flex hidden h-full w-full flex-col items-center justify-center'
       ref={rootRef}
     >
       <div
+        className='absolute inset-0'
+        style={{
+          background:
+            'radial-gradient(ellipse 80% 60% at 50% 0%, rgba(120, 180, 255, 0.25), transparent 70%), #000000',
+        }}
+      />
+      {description && (
+        <div className='relative z-10 mb-2 text-center text-sm text-neutral-100 dark:text-neutral-400'>
+          {description}
+        </div>
+      )}
+      <div
         className={cn(
-          'relative h-2 w-[50%] overflow-hidden rounded-full bg-neutral-900/20 dark:bg-neutral-50/20',
+          'relative h-2 w-[50%] overflow-hidden rounded-full border-[1px] border-solid border-neutral-100 dark:border-neutral-800',
           className,
         )}
         {...props}
       >
         <div
           ref={indicatorRef}
-          className='h-full w-full flex-1 bg-neutral-900 dark:bg-neutral-50'
+          className='h-full w-full flex-1 bg-neutral-900 dark:bg-neutral-400'
           style={{ transform: `translateX(-100%)` }}
         />
       </div>

@@ -216,6 +216,7 @@ const enUS = {
   'page.compression.process.actions.compress': 'Compress',
   'compression.file_action.open_file': 'View',
   'compression.file_action.compare_file': 'Compare',
+  'compression.file_action.compare_file_title': 'Compare: {{name}}',
   'compression.file_action.reveal_in_finder': 'Show in Finder',
   'compression.file_action.reveal_in_exploer': 'Show in File Explorer',
   'compression.file_action.copy': 'Copy',
@@ -275,6 +276,7 @@ const enUS = {
   'tips.file_path_copied': 'File path copied to clipboard',
   'tips.markdown_code_copied': 'Markdown code copied to clipboard',
   'tips.file_copied': 'File copied to clipboard',
+  'tips.file_copy_failed': 'File copy failed',
   'tips.invalid_paths': 'Invalid file paths',
   'tips.file_not_exists': 'File not exists',
   'tips.path_not_exists': 'File path not exists',
@@ -284,6 +286,7 @@ const enUS = {
   'tips.warning': 'Warning',
   'tips.watch_folder_deleted': 'The listening directory has been deleted',
   'tips.watch_folder_moved_or_renamed': 'The listening directory has been moved or renamed',
+  'tips.watching': 'Watching...',
   'tips.are_you_sure_to_exit': 'Are you sure to exit?',
   'tips.please_wait_for_compression_to_finish': 'Please wait for all tasks to finish',
   'tips.path_not_dir': '{{path}} is not a directory',
@@ -305,6 +308,7 @@ const enUS = {
     'File watch service failed to start, please try again or restart the application',
   'tips.file_watch_abort': 'File watch service has been terminated',
   'tips.file_watch_target_changed': 'The listening directory has been modified or moved',
+  'tips.import_files': 'Importing files...',
 
   // Watch Compression Guide
   'page.compression.watch.guide.title': 'Listen And Auto-Compress',
@@ -316,6 +320,10 @@ const enUS = {
   'page.compression.watch.guide.attention': 'Attention',
   'page.compression.watch.guide.attention_description':
     'Only recognize new images (new, copy, move) added to the directory, and do not compress images that already exist in the directory. If an image is replaced with an image that already exists in the directory and has the same name, it will be considered the same image and will not be compressed.',
+  'page.compression.tinify.error.unsupported_file_type':
+    'TinyPNG only supports PNG, JPG, JPEG, WebP, and AVIF images',
+  // Image Viewer
+  'image_viewer.loading': 'Loading...',
 };
 
 export default enUS;

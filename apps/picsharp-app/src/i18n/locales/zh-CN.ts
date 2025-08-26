@@ -212,6 +212,7 @@ export default {
   'page.compression.process.actions.compress': '压缩',
   'compression.file_action.open_file': '查看',
   'compression.file_action.compare_file': '对比原图',
+  'compression.file_action.compare_file_title': '图像对比 {{name}}',
   'compression.file_action.reveal_in_finder': '在Finder中显示',
   'compression.file_action.reveal_in_exploer': '在文件资源管理器中显示',
   'compression.file_action.copy': '复制',
@@ -271,6 +272,7 @@ export default {
   'tips.file_path_copied': '文件路径已复制到剪贴板',
   'tips.markdown_code_copied': 'Markdown代码已复制到剪贴板',
   'tips.file_copied': '文件已复制到剪贴板',
+  'tips.file_copy_failed': '文件复制失败',
   'tips.invalid_paths': '无效的文件路径',
   'tips.file_not_exists': '文件不存在',
   'tips.path_not_exists': '文件路径不存在',
@@ -279,6 +281,7 @@ export default {
   'tips.warning': '警告',
   'tips.watch_folder_deleted': '监听目录已被删除',
   'tips.watch_folder_moved_or_renamed': '监听目录已被移动或重命名',
+  'tips.watching': '监听中...',
   'tips.are_you_sure_to_exit': '是否退出当前页面？',
   'tips.please_wait_for_compression_to_finish': '请等待当前所有任务完成',
   'tips.autostart.error': '开机自启动配置错误',
@@ -288,6 +291,7 @@ export default {
   'tips.file_watch_abort': '文件监听服务已终止',
   'tips.file_watch_target_changed': '监听目录被修改或移动',
   'tips.path_not_dir': '{{path}} 不是目录',
+  'tips.import_files': '正在导入文件...',
   // 经典模式压缩引导页
   'page.compression.classic.app_title': 'PicSharp',
   'page.compression.classic.app_description': '简单高效的图片压缩工具',
@@ -309,4 +313,8 @@ export default {
   'page.compression.watch.guide.attention': '注意事项',
   'page.compression.watch.guide.attention_description':
     '只识别新增（新建、复制、移入）的图片，对于目录中已存在的图片，不会进行压缩。如果图片被替换为目录中已存在且同名的图片，其会被认定为同一张图像，也不会进行压缩。',
+  'page.compression.tinify.error.unsupported_file_type':
+    'TinyPNG 仅支持 PNG、JPG、JPEG、WebP 和 AVIF 图像',
+  // Image Viewer
+  'image_viewer.loading': '加载中...',
 };

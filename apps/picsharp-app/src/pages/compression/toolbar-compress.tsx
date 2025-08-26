@@ -12,10 +12,8 @@ import { isString } from 'radash';
 import { useI18n } from '@/i18n';
 import useSettingsStore from '@/store/settings';
 import { sendTextNotification } from '@/utils/notification';
-import { ask } from '@tauri-apps/plugin-dialog';
 import { useNavigate } from '@/hooks/useNavigate';
 import { ICompressor } from '@/utils/compressor';
-import { appCacheDir, join } from '@tauri-apps/api/path';
 import { cn } from '@/lib/utils';
 import { convertFileSrc } from '@tauri-apps/api/core';
 import message from '@/components/message';
@@ -23,7 +21,7 @@ import { createWebviewWindow } from '@/utils/window';
 import { AppContext } from '@/routes';
 
 function ToolbarCompress() {
-  const { sidecar } = useAppStore();
+  const { sidecar, imageTempDir } = useAppStore(useSelector(['sidecar', 'imageTempDir']));
   const { selectedFiles, fileMap, files, setInCompressing, inCompressing, eventEmitter } =
     useCompressionStore(
       useSelector([
@@ -92,6 +90,8 @@ function ToolbarCompress() {
             title: t('nav.settings'),
             width: 796,
             height: 528,
+            minWidth: 796,
+            minHeight: 528,
             center: true,
             resizable: true,
             titleBarStyle: 'overlay',
@@ -116,6 +116,8 @@ function ToolbarCompress() {
             title: t('nav.settings'),
             width: 796,
             height: 528,
+            minWidth: 796,
+            minHeight: 528,
             center: true,
             resizable: true,
             titleBarStyle: 'overlay',
@@ -148,7 +150,6 @@ function ToolbarCompress() {
 
       let fulfilled = 0;
       let rejected = 0;
-      const tempDir = await join(await appCacheDir(), 'picsharp_temp');
       await new Compressor({
         compressionMode,
         compressionLevel,
@@ -160,7 +161,7 @@ function ToolbarCompress() {
           newFileSuffix: saveAsFileSuffix,
           newFolderPath: saveToFolder,
         },
-        tempDir,
+        tempDir: imageTempDir,
         sidecarDomain: sidecar?.origin,
         convertTypes,
         convertAlpha,

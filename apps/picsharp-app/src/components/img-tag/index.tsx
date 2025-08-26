@@ -7,20 +7,11 @@ export interface ImgTagProps {
 
 function ImgTag(props: ImgTagProps) {
   const { type } = props;
-  switch (type) {
-    case 'png':
-      return <Badge variant='blue'>PNG</Badge>;
-    case 'jpg':
-      return <Badge variant='green'>JPG</Badge>;
-    case 'jpeg':
-      return <Badge variant='green'>JPEG</Badge>;
-    case 'webp':
-      return <Badge variant='cyan'>WEBP</Badge>;
-    case 'avif':
-      return <Badge variant='purple'>AVIF</Badge>;
-    default:
-      return null;
-  }
+  return (
+    <Badge variant='blue' className='h-[18px] rounded-sm border-none px-[6px] py-[0px] text-[12px]'>
+      {type.toUpperCase()}
+    </Badge>
+  );
 }
 
 export default memo(ImgTag);

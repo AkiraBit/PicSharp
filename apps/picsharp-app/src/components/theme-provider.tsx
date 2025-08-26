@@ -32,9 +32,10 @@ export function ThemeProvider({
   storageKey = 'app-theme',
   ...props
 }: ThemeProviderProps) {
-  const [theme, setTheme] = useState<Theme>(
-    () => (localStorage.getItem(storageKey) as Theme) || defaultTheme,
-  );
+  // const [theme, setTheme] = useState<Theme>(
+  //   () => (localStorage.getItem(storageKey) as Theme) || defaultTheme,
+  // );
+  const [theme, setTheme] = useState<Theme>(Theme.Dark);
   const themeRef = useRef<Theme>(theme);
 
   const algorithm = {
@@ -61,33 +62,33 @@ export function ThemeProvider({
     themeRef.current = newTheme;
   }
 
-  useEffect(() => {
-    function handleThemeChange(event: MediaQueryListEvent) {
-      if (themeRef.current !== Theme.System) return;
-      if (event.matches) {
-        setThemeStyle(Theme.Dark);
-      } else {
-        setThemeStyle(Theme.Light);
-      }
-    }
-    const handleStorageChange = (event: StorageEvent) => {
-      if (event.key === storageKey) {
-        toggleTheme(event.newValue as Theme);
-      }
-    };
-    window.addEventListener('storage', handleStorageChange);
-    mediaQuery.addEventListener('change', handleThemeChange);
-    const currentTheme = Theme.Dark;
-    if (currentTheme === Theme.System) {
-      setThemeStyle(mediaQuery.matches ? Theme.Dark : Theme.Light);
-    } else {
-      setThemeStyle(currentTheme);
-    }
-    return () => {
-      mediaQuery.removeEventListener('change', handleThemeChange);
-      window.removeEventListener('storage', handleStorageChange);
-    };
-  }, []);
+  // useEffect(() => {
+  //   function handleThemeChange(event: MediaQueryListEvent) {
+  //     if (themeRef.current !== Theme.System) return;
+  //     if (event.matches) {
+  //       setThemeStyle(Theme.Dark);
+  //     } else {
+  //       setThemeStyle(Theme.Light);
+  //     }
+  //   }
+  //   const handleStorageChange = (event: StorageEvent) => {
+  //     if (event.key === storageKey) {
+  //       toggleTheme(event.newValue as Theme);
+  //     }
+  //   };
+  //   window.addEventListener('storage', handleStorageChange);
+  //   mediaQuery.addEventListener('change', handleThemeChange);
+  //   const currentTheme = Theme.Dark;
+  //   if (currentTheme === Theme.System) {
+  //     setThemeStyle(mediaQuery.matches ? Theme.Dark : Theme.Light);
+  //   } else {
+  //     setThemeStyle(currentTheme);
+  //   }
+  //   return () => {
+  //     mediaQuery.removeEventListener('change', handleThemeChange);
+  //     window.removeEventListener('storage', handleStorageChange);
+  //   };
+  // }, []);
 
   return (
     <ThemeProviderContext.Provider

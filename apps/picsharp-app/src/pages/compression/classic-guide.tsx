@@ -14,7 +14,6 @@ import { useI18n } from '@/i18n';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import message from '@/components/message';
-import { Menu, MenuItem } from '@tauri-apps/api/menu';
 import { parseClipboardImages } from '@/utils/clipboard';
 import { downloadDir } from '@tauri-apps/api/path';
 import { AppContext } from '@/routes';
@@ -74,19 +73,6 @@ function ClassicCompressionGuide() {
       handleFiles(Array.isArray(directory) ? directory : [directory]);
     }
   };
-
-  // const handleContextMenu = async (event: React.MouseEvent<HTMLDivElement>) => {
-  //   event.preventDefault();
-  //   const menu = await Menu.new();
-  //   const menuItem = await MenuItem.new({
-  //     text: 'Open',
-  //     action: () => {
-  //       console.log('open');
-  //     },
-  //   });
-  //   await menu.append(menuItem);
-  //   await menu.popup();
-  // };
 
   useEffect(() => {
     const setupDragDrop = async () => {
@@ -164,13 +150,10 @@ function ClassicCompressionGuide() {
   return (
     <div
       ref={dropzoneRef}
-      className='relative flex h-full flex-col items-center justify-center p-6 transition-all duration-300 [&.drag-active]:from-indigo-50/50 [&.drag-active]:to-indigo-100/50'
+      className='group relative flex h-full flex-col items-center justify-center p-6 transition-all duration-300 [&.drag-active]:from-indigo-50/50 [&.drag-active]:to-indigo-100/50'
     >
-      <div>
-        <UploadWidget />
-      </div>
+      <UploadWidget />
       <div className='relative mt-4 text-center'>
-        {/* <h1 className='dark:text-foreground mb-6 text-3xl font-bold'>✨PicSharp✨</h1> */}
         <p className='mx-auto max-w-2xl text-lg'>
           {t('page.compression.classic.upload_description')}
         </p>
@@ -204,7 +187,7 @@ function ClassicCompressionGuide() {
             </Button>
           </PopoverTrigger>
           <PopoverContent
-            className='w-80 dark:bg-neutral-800'
+            className='w-80 backdrop-blur-sm backdrop-saturate-150 dark:bg-neutral-900/80'
             sideOffset={10}
             align='end'
             alignOffset={0}
@@ -215,7 +198,7 @@ function ClassicCompressionGuide() {
               </p>
               <div className='flex flex-wrap justify-center gap-2'>
                 {['PNG/Animated PNG', 'JPEG', 'WebP', 'AVIF'].map((format) => (
-                  <Badge key={format} variant='minor' className='font-normal'>
+                  <Badge key={format} variant='midnight' className='font-normal'>
                     {format}
                   </Badge>
                 ))}
@@ -228,7 +211,7 @@ function ClassicCompressionGuide() {
               <div className='flex flex-wrap justify-center gap-2'>
                 {['PNG', 'JPEG', 'WebP/Animated WebP', 'AVIF', 'TIFF', 'GIF', 'SVG'].map(
                   (format) => (
-                    <Badge key={format} variant='minor' className='font-normal'>
+                    <Badge key={format} variant='midnight' className='font-normal'>
                       {format}
                     </Badge>
                   ),

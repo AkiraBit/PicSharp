@@ -8,6 +8,7 @@ import { exists, remove, mkdir, BaseDirectory } from '@tauri-apps/plugin-fs';
 import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow';
 import { withStorageDOMEvents } from './withStorageDOMEvents';
 import { isFunction } from 'radash';
+import { appCacheDir, appDataDir, appLogDir, join } from '@tauri-apps/api/path';
 
 interface AppState {
   eventEmitter: EventEmitter;
@@ -16,12 +17,17 @@ interface AppState {
     process?: Child;
     origin: string;
   } | null;
+  imageTempDir: string;
+  cacheDir: string;
+  logDir: string;
+  dataDir: string;
 }
 
 interface AppAction {
   initSidecar: () => Promise<void>;
   pingSidecar: () => Promise<void>;
   destroySidecar: () => Promise<boolean>;
+  initAppPath: () => Promise<void>;
   clearImageCache: () => Promise<boolean>;
 }
 
@@ -32,12 +38,22 @@ const useAppStore = create(
     (set, get) => ({
       eventEmitter: new EventEmitter(),
       sidecar: null,
+      imageTempDir: '',
+      cacheDir: '',
+      logDir: '',
+      dataDir: '',
       initSidecar: async () => {
         try {
           get().destroySidecar();
           if (getCurrentWebviewWindow().label === 'main') {
             if (isProd) {
-              const command = Command.sidecar('binaries/picsharp-sidecar');
+              const command = Command.sidecar('binaries/picsharp-sidecar', '', {
+                env: {
+                  PICSHARP_SIDECAR_CLUSTER: 'true',
+                  PICSHARP_SIDECAR_MODE: 'server',
+                  PICSHARP_SIDECAR_STORE: '{}',
+                },
+              });
               command.stdout.once('data', (data) => {
                 info(`[Start Sidecar Output]: ${data}`);
                 const response = JSON.parse(data);
@@ -103,12 +119,19 @@ const useAppStore = create(
           return false;
         }
       },
+      initAppPath: async () => {
+        const cacheDir = await appCacheDir();
+        const imageTempDir = await join(cacheDir, 'picsharp_temp');
+        const logDir = await appLogDir();
+        const dataDir = await appDataDir();
+        set({ imageTempDir, cacheDir, logDir, dataDir });
+      },
       clearImageCache: async () => {
         try {
-          if (await exists('picsharp_temp', { baseDir: BaseDirectory.AppCache })) {
-            await remove('picsharp_temp', { baseDir: BaseDirectory.AppCache, recursive: true });
+          if (await exists(get().imageTempDir)) {
+            await remove(get().imageTempDir, { recursive: true });
           }
-          await mkdir('picsharp_temp', { baseDir: BaseDirectory.AppCache, recursive: true });
+          await mkdir(get().imageTempDir, { recursive: true });
           info('[Clear Image Cache]: Success');
           return true;
         } catch (err) {

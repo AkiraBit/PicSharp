@@ -1,8 +1,6 @@
 import { platform } from '@tauri-apps/plugin-os';
 import { Menu, Submenu, PredefinedMenuItem, MenuItem } from '@tauri-apps/api/menu';
 import { t } from '@/i18n';
-import { relaunch } from '@tauri-apps/plugin-process';
-import useAppStore from '@/store/app';
 import { createWebviewWindow } from './window';
 import checkForUpdate from './updater';
 import { message } from '@tauri-apps/plugin-dialog';
@@ -32,6 +30,8 @@ export async function initAppMenu() {
             title: t('nav.settings'),
             width: 796,
             height: 528,
+            minWidth: 796,
+            minHeight: 528,
             center: true,
             resizable: true,
             titleBarStyle: 'overlay',

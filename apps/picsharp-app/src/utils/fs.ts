@@ -52,6 +52,7 @@ export async function parsePaths(paths: string[], validExts: string[]) {
       outputPath: '',
       status: ICompressor.Status.Pending,
       originalTempPath: '',
+      ssim: 0,
     }));
   }
   return [];

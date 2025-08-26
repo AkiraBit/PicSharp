@@ -2,9 +2,9 @@ use log::info;
 use merge::Merge;
 use serde::{Deserialize, Serialize};
 use std::sync::atomic::{AtomicUsize, Ordering};
-#[cfg(target_os = "macos")]
-use tauri::TitleBarStyle;
 use tauri::{AppHandle, WebviewUrl, WebviewWindow};
+#[cfg(target_os = "macos")]
+use tauri::{Theme, TitleBarStyle};
 
 static ID: AtomicUsize = AtomicUsize::new(0);
 
@@ -33,6 +33,9 @@ pub struct WindowConfig {
     #[cfg(target_os = "macos")]
     #[merge(strategy = merge::option::overwrite_none)]
     title_bar_style: Option<TitleBarStyle>,
+    #[cfg(target_os = "macos")]
+    #[merge(strategy = merge::option::overwrite_none)]
+    theme: Option<Theme>,
     #[merge(strategy = merge::option::overwrite_none)]
     center: Option<bool>,
 }
@@ -55,6 +58,8 @@ impl Default for WindowConfig {
             minimizable: Some(true),
             #[cfg(target_os = "macos")]
             title_bar_style: Some(TitleBarStyle::Overlay),
+            #[cfg(target_os = "macos")]
+            theme: Some(Theme::Dark),
             center: Some(true),
         }
     }
@@ -95,6 +100,9 @@ pub fn spawn_window(
         }
         if let Some(title_bar_style) = window_config.title_bar_style {
             window = window.title_bar_style(title_bar_style);
+        }
+        if let Some(theme) = window_config.theme {
+            window = window.theme(Some(theme));
         }
     }
     if window_config.center.unwrap_or_default() {

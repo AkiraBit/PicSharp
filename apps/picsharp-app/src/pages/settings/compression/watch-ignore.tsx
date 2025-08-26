@@ -6,6 +6,7 @@ import { SettingsKey } from '@/constants';
 import SettingItem from '../setting-item';
 import { Textarea } from '@/components/ui/textarea';
 import { debounce } from 'radash';
+import { PathTagsInput } from '@/components/path-tags-input';
 
 function SettingsCompressionConvert() {
   const t = useI18n();
@@ -32,7 +33,14 @@ function SettingsCompressionConvert() {
       titleClassName='flex flex-row items-center gap-x-2'
       description={t('settings.compression.file_ignore.description')}
     >
-      <Textarea defaultValue={ignores.join('\n')} className='w-[250px]' onChange={handleChange} />
+      <PathTagsInput
+        title={t('settings.compression.file_ignore.title')}
+        value={ignores}
+        onChange={(next) => {
+          set(SettingsKey.CompressionWatchFileIgnore, next);
+        }}
+        className='max-h-[100px] w-[350px] overflow-y-auto'
+      />
     </SettingItem>
   );
 }

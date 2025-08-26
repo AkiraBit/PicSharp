@@ -1,6 +1,6 @@
 import { open } from '@tauri-apps/plugin-dialog';
 import useSelector from '@/hooks/useSelector';
-import { FolderClock, Plus } from 'lucide-react';
+import { FolderClock, Plus, X } from 'lucide-react';
 import useCompressionStore from '../../store/compression';
 import { useNavigate } from '@/hooks/useNavigate';
 import { useI18n } from '../../i18n';
@@ -155,7 +155,9 @@ function WatchCompressionGuide() {
       ref={dropzoneRef}
       className='group relative flex h-full flex-col items-center justify-center p-6'
     >
-      <Folder />
+      <div onClick={() => handleWatch()} className='cursor-pointer'>
+        <Folder />
+      </div>
       <div className='relative z-10 mt-5 text-center'>
         <p className='mx-auto max-w-2xl text-lg'>{t('page.compression.watch.guide.description')}</p>
       </div>
@@ -178,26 +180,19 @@ function WatchCompressionGuide() {
               </Button>
             </div>
             <ScrollArea className='h-[220px] rounded-md border border-neutral-200 dark:border-neutral-800'>
-              <ul
-                className='max-w-xl divide-y divide-neutral-200 dark:divide-neutral-800'
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  const path = (e.target as HTMLElement).dataset.path;
-                  if (path) {
-                    handleHistorySelect(path);
-                  }
-                }}
-              >
+              <ul className='max-w-xl divide-y divide-neutral-200 dark:divide-neutral-800'>
                 {history.map((item) => (
                   <li
                     key={item.path}
                     className='flex cursor-pointer items-center justify-between gap-4 px-4 py-2 text-sm hover:bg-neutral-50 dark:hover:bg-neutral-800/40'
                     data-path={item.path}
                     title={item.path}
+                    onClick={() => handleHistorySelect(item.path)}
                   >
                     <span className='max-w-[50%] truncate font-medium'>{item.name}</span>
-                    <span className='max-w-[50%] truncate text-neutral-400'>{item.path}</span>
+                    <div className='flex max-w-[50%] items-center gap-1'>
+                      <span className='flex-1 truncate text-neutral-400'>{item.path}</span>
+                    </div>
                   </li>
                 ))}
               </ul>
@@ -225,7 +220,7 @@ function WatchCompressionGuide() {
             </Button>
           </PopoverTrigger>
           <PopoverContent
-            className='w-80 dark:bg-neutral-800'
+            className='w-80 backdrop-blur-sm backdrop-saturate-150 dark:bg-neutral-900/80'
             sideOffset={10}
             align='end'
             alignOffset={0}
@@ -236,7 +231,7 @@ function WatchCompressionGuide() {
               </p>
               <div className='flex flex-wrap justify-center gap-2'>
                 {['PNG/Animated PNG', 'JPEG', 'WebP', 'AVIF'].map((format) => (
-                  <Badge key={format} variant='minor' className='font-normal'>
+                  <Badge key={format} variant='midnight' className='font-normal'>
                     {format}
                   </Badge>
                 ))}
@@ -249,7 +244,7 @@ function WatchCompressionGuide() {
               <div className='flex flex-wrap justify-center gap-2'>
                 {['PNG', 'JPEG', 'WebP/Animated WebP', 'AVIF', 'TIFF', 'GIF', 'SVG'].map(
                   (format) => (
-                    <Badge key={format} variant='minor' className='font-normal'>
+                    <Badge key={format} variant='midnight' className='font-normal'>
                       {format}
                     </Badge>
                   ),

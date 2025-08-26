@@ -10,3 +10,10 @@ export async function parseClipboardImages(candidateFormat: string = 'png', temp
     tempDir,
   });
 }
+
+export async function copyImage(path: string, sidecarOrigin: string) {
+  return invoke<{ status: string; message: string }>('ipc_copy_image', {
+    path,
+    sidecarOrigin,
+  });
+}

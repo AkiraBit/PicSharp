@@ -28,6 +28,7 @@ export interface WindowConfig {
   minHeight?: number;
   maximizable?: boolean;
   minimizable?: boolean;
+  theme?: string;
 }
 
 export async function spawnWindow(

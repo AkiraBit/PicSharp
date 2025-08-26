@@ -199,3 +199,6 @@ export async function calculateSSIM(original: string, compressed: string) {
   );
   return mssim;
 }
+
+export const isBuilt = __dirname.includes('/dist');
+export const isDev = process.env.NODE_ENV !== 'production' && !isBuilt;
