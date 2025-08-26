@@ -98,7 +98,7 @@ const EditableTag = React.memo(function EditableTag({
     <Tooltip>
       <TooltipTrigger>
         <Badge
-          variant='minor'
+          variant='midnight'
           className={cn(
             'group inline-flex max-w-[300px] cursor-text items-center gap-1',
             disabled && 'cursor-not-allowed opacity-60',

@@ -7,7 +7,10 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        mono: ['IBM Plex Mono', ...fontFamily.mono],
+        mono: [
+          '-apple-system,BlinkMacSystemFont,PingFang SC,Hiragino Sans GB,Microsoft YaHei,sans-serif',
+          ...fontFamily.mono,
+        ],
       },
       borderRadius: {
         lg: 'var(--radius)',

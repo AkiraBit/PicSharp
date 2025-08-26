@@ -1,14 +1,13 @@
-import { memo, useEffect, useState, useMemo, useReducer } from 'react';
+import { memo, useState, useMemo } from 'react';
 import FileCard from './file-card';
 import useCompressionStore from '@/store/compression';
 import useSelector from '@/hooks/useSelector';
 import Toolbar from './toolbar';
 import ToolbarPagination from './toolbar-pagination';
 import { isValidArray } from '@/utils';
-import { Disc3, Binoculars } from 'lucide-react';
 import { useI18n } from '../../i18n';
-import { Badge } from '@/components/ui/badge';
-import { openPath } from '@tauri-apps/plugin-opener';
+import { Empty } from 'antd';
+
 export interface WatchFileManagerProps {}
 
 function WatchFileManager(props: WatchFileManagerProps) {
@@ -43,9 +42,8 @@ function WatchFileManager(props: WatchFileManagerProps) {
           </div>
         </div>
       ) : (
-        <div className='text-muted-foreground flex flex-1 items-center justify-center'>
-          <Binoculars className='text-foreground h-5 w-5 dark:text-neutral-400' />
-          <span className='mx-2 text-sm text-neutral-400'>{t('tips.watching')}</span>
+        <div className='flex flex-1 items-center justify-center'>
+          <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={t('tips.watching')} />
         </div>
       )}
       <div className='sticky bottom-2 z-[20] flex flex-col gap-1'>

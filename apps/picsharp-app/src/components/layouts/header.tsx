@@ -78,8 +78,8 @@ function Header() {
     >
       {working && watchingFolder && (
         <Badge
-          variant='minor'
-          className='absolute left-1/2 z-[10] -translate-x-1/2 cursor-pointer text-nowrap bg-neutral-300/60 transition-all duration-300 hover:underline'
+          variant='midnight'
+          className='absolute left-1/2 z-[10] -translate-x-1/2 cursor-pointer text-nowrap transition-all duration-300 hover:underline'
           onClick={() => {
             openPath(watchingFolder);
           }}

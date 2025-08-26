@@ -308,6 +308,7 @@ const enUS = {
     'File watch service failed to start, please try again or restart the application',
   'tips.file_watch_abort': 'File watch service has been terminated',
   'tips.file_watch_target_changed': 'The listening directory has been modified or moved',
+  'tips.import_files': 'Importing files...',
 
   // Watch Compression Guide
   'page.compression.watch.guide.title': 'Listen And Auto-Compress',

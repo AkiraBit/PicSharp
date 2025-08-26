@@ -187,7 +187,7 @@ function ClassicCompressionGuide() {
             </Button>
           </PopoverTrigger>
           <PopoverContent
-            className='w-80 dark:bg-neutral-800'
+            className='w-80 backdrop-blur-sm backdrop-saturate-150 dark:bg-neutral-900/80'
             sideOffset={10}
             align='end'
             alignOffset={0}
@@ -198,7 +198,7 @@ function ClassicCompressionGuide() {
               </p>
               <div className='flex flex-wrap justify-center gap-2'>
                 {['PNG/Animated PNG', 'JPEG', 'WebP', 'AVIF'].map((format) => (
-                  <Badge key={format} variant='minor' className='font-normal'>
+                  <Badge key={format} variant='midnight' className='font-normal'>
                     {format}
                   </Badge>
                 ))}
@@ -211,7 +211,7 @@ function ClassicCompressionGuide() {
               <div className='flex flex-wrap justify-center gap-2'>
                 {['PNG', 'JPEG', 'WebP/Animated WebP', 'AVIF', 'TIFF', 'GIF', 'SVG'].map(
                   (format) => (
-                    <Badge key={format} variant='minor' className='font-normal'>
+                    <Badge key={format} variant='midnight' className='font-normal'>
                       {format}
                     </Badge>
                   ),

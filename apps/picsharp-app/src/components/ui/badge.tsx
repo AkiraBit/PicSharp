@@ -37,6 +37,8 @@ const badgeVariants = cva(
         minor:
           'border-transparent bg-neutral-100 text-neutral-900 hover:bg-neutral-100/80 dark:bg-neutral-700 dark:text-neutral-200',
         mini: 'border-transparent bg-neutral-900 text-neutral-50 shadow dark:bg-neutral-50 dark:text-neutral-900 py-[1px] px-1',
+        midnight:
+          'border-transparent bg-neutral-900 text-neutral-50 shadow dark:bg-black/30 dark:text-neutral-400 py-[3px] px-2',
       },
     },
     defaultVariants: {
