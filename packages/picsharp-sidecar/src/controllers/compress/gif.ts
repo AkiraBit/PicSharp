@@ -76,24 +76,10 @@ app.post('/', zValidator('json', PayloadSchema), async (context) => {
   await checkFile(input_path);
   options = OptionsSchema.parse(options);
   process_options = ProcessOptionsSchema.parse(process_options);
-  if (isWindows && options.save.mode === SaveMode.Overwrite) {
-    sharp.cache(false);
-  }
-  const pool = getThreadPool();
-  const result = await pool.run<any, any>({
+  const result = await getThreadPool().run<any, any>({
     type: 'gif',
     payload: { input_path, options, process_options },
   });
-
-  if (isValidArray(options.convert_types)) {
-    const results = await bulkConvert(
-      result.output_path,
-      options.convert_types,
-      options.convert_alpha,
-    );
-    result.convert_results = results;
-  }
-
   return context.json(result);
 });
 

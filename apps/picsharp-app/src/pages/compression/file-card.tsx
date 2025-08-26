@@ -264,6 +264,7 @@ function FileCard(props: FileCardProps) {
             path={file.path}
             ext={file.ext}
             imgClassName='overflow-hidden max-h-full object-contain'
+            ref={imgRef}
           />
         </div>
       </div>

@@ -87,9 +87,9 @@ export default function SettingsLayout() {
         <Separator orientation='vertical' className='h-4 bg-neutral-200 dark:bg-neutral-700' />
         <WindowControl showControls={!isMac} showFullscreen={!isMac} />
       </div>
-      <Separator className='mb-4' />
+      {/* <Separator className='mb-4' /> */}
       <div className='flex flex-1 flex-col space-y-4 overflow-auto lg:flex-row lg:space-y-0'>
-        <aside className='px-6 lg:w-1/6'>
+        <aside className='px-4 lg:w-1/6'>
           <SidebarNav items={sidebarNavItems} />
         </aside>
         <ScrollArea className='mx-0 w-full flex-1'>

@@ -6,6 +6,10 @@ import {
   getFileSize,
   hashFile,
 } from '../../utils';
+import { copyFile, writeFile } from 'node:fs/promises';
+import { isValidArray, isWindows } from '../../utils';
+import { bulkConvert } from '../convert';
+import { SaveMode } from '../../constants';
 
 export interface ImageTaskPayload {
   input_path: string;
@@ -16,10 +20,14 @@ export interface ImageTaskPayload {
 export async function processGif(payload: ImageTaskPayload) {
   const { input_path, options, process_options } = payload;
   const originalSize = await getFileSize(input_path);
+  if (isWindows && options.save.mode === SaveMode.Overwrite) {
+    sharp.cache(false);
+  }
   const instance = sharp(input_path, { animated: true, limitInputPixels: false });
   if (options.keep_metadata) instance.keepMetadata();
-  const compressedImageBuffer = await instance.gif(process_options).toBuffer();
-  const compressedSize = compressedImageBuffer.byteLength;
+  const optimizedInstance = instance.gif(process_options);
+  const optimizedImageBuffer = await optimizedInstance.toBuffer();
+  const compressedSize = optimizedImageBuffer.byteLength;
   const compressionRate = calCompressionRate(originalSize, compressedSize);
   const availableCompressRate = compressionRate >= (options.limit_compress_rate || 0);
   const newOutputPath = await createOutputPath(input_path, {
@@ -29,12 +37,16 @@ export async function processGif(payload: ImageTaskPayload) {
   });
   const tempFilePath = options.temp_dir ? await copyFileToTemp(input_path, options.temp_dir) : '';
   if (availableCompressRate) {
-    await sharp(compressedImageBuffer).toFile(newOutputPath);
+    await writeFile(newOutputPath, optimizedImageBuffer);
   } else {
     if (input_path !== newOutputPath) {
-      const fs = await import('node:fs/promises');
-      await fs.copyFile(input_path, newOutputPath);
+      await copyFile(input_path, newOutputPath);
     }
+  }
+  let convert_results: any[] = [];
+  if (isValidArray(options.convert_types)) {
+    const results = await bulkConvert(newOutputPath, options.convert_types, options.convert_alpha);
+    convert_results = results;
   }
   return {
     input_path,
@@ -45,5 +57,6 @@ export async function processGif(payload: ImageTaskPayload) {
     original_temp_path: tempFilePath,
     available_compress_rate: availableCompressRate,
     hash: await hashFile(newOutputPath),
+    convert_results,
   };
 }
