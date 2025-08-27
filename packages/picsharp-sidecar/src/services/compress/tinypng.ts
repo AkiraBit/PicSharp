@@ -1,8 +1,8 @@
-import { Hono } from 'hono';
-import { createReadStream, createWriteStream } from 'node:fs';
+import { request } from 'undici';
+import { pipeline } from 'node:stream/promises';
 import { copyFile } from 'node:fs/promises';
-import { zValidator } from '@hono/zod-validator';
-import { z } from 'zod';
+import { bulkConvert } from '../../services/convert';
+import { createReadStream, createWriteStream } from 'node:fs';
 import {
   calCompressionRate,
   checkFile,
@@ -11,49 +11,12 @@ import {
   isValidArray,
   hashFile,
 } from '../../utils';
-import { SaveMode, ConvertFormat } from '../../constants';
-import { request } from 'undici';
-import { pipeline } from 'node:stream/promises';
-import { bulkConvert } from '../../services/convert';
-const app = new Hono();
 
-const OptionsSchema = z
-  .object({
-    limit_compress_rate: z.number().min(0).max(1).optional(),
-    save: z
-      .object({
-        mode: z.nativeEnum(SaveMode).optional().default(SaveMode.Overwrite),
-        new_file_suffix: z.string().optional().default('_compressed'),
-        new_folder_path: z.string().optional(),
-      })
-      .optional()
-      .default({}),
-    temp_dir: z.string().optional(),
-    convert_types: z.array(z.nativeEnum(ConvertFormat)).optional().default([]),
-    convert_alpha: z.string().optional().default('#FFFFFF'),
-  })
-  .optional()
-  .default({});
-
-const ProcessOptionsSchema = z
-  .object({
-    api_key: z.string(),
-    mime_type: z.string(),
-    preserveMetadata: z.array(z.string()).optional(),
-  })
-  .optional()
-  .default({
-    api_key: '',
-    mime_type: '',
-  });
-
-const PayloadSchema = z.object({
-  input_path: z.string(),
-  options: OptionsSchema,
-  process_options: ProcessOptionsSchema,
-});
-
-const API_ENDPOINT = 'https://api.tinify.com';
+export interface ImageTaskPayload {
+  input_path: string;
+  options: any;
+  process_options: any;
+}
 
 interface TinifyResult {
   input: {
@@ -70,13 +33,10 @@ interface TinifyResult {
   };
 }
 
-app.post('/', zValidator('json', PayloadSchema), async (context) => {
-  let { input_path, options, process_options } =
-    await context.req.json<z.infer<typeof PayloadSchema>>();
-  await checkFile(input_path);
-  options = OptionsSchema.parse(options);
-  process_options = ProcessOptionsSchema.parse(process_options);
+const API_ENDPOINT = 'https://api.tinify.com';
 
+export async function processTinyPng(payload: ImageTaskPayload) {
+  const { input_path, options, process_options } = payload;
   const response = await request<TinifyResult>(`${API_ENDPOINT}/shrink`, {
     method: 'POST',
     headers: {
@@ -139,8 +99,5 @@ app.post('/', zValidator('json', PayloadSchema), async (context) => {
     const results = await bulkConvert(newOutputPath, options.convert_types, options.convert_alpha);
     result.convert_results = results;
   }
-
-  return context.json(result);
-});
-
-export default app;
+  return result;
+}
