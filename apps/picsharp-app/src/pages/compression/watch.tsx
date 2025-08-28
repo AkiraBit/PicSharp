@@ -12,7 +12,6 @@ import { useI18n } from '@/i18n';
 import useSettingsStore from '@/store/settings';
 import { useNavigate } from '../../hooks/useNavigate';
 import { sendTextNotification } from '@/utils/notification';
-import { appCacheDir, join } from '@tauri-apps/api/path';
 import useAppStore from '@/store/app';
 import { convertFileSrc } from '@tauri-apps/api/core';
 import { AppContext } from '@/routes';

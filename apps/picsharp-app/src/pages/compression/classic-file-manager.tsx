@@ -10,6 +10,7 @@ import { useNavigate } from '@/hooks/useNavigate';
 import { useI18n } from '@/i18n';
 import { ScrollArea, ScrollAreaRef } from '@/components/ui/scroll-area';
 import { useUpdateEffect } from 'ahooks';
+import { cn } from '@/lib/utils';
 
 function FileManager() {
   const { files } = useCompressionStore(useSelector(['files']));
@@ -41,16 +42,18 @@ function FileManager() {
     }
   }, [pageIndex]);
 
+  const hasPagination = files.length > pageSize;
+
   return (
     <ScrollArea
-      className='relative h-full min-w-[350px] flex-col'
+      className='relative h-full min-w-[350px]'
       onContextMenu={preventDefault}
       ref={scrollAreaRef}
     >
       {isValidArray(dataList) ? (
-        <div className='w-full flex-1 px-3 pt-1'>
+        <div className={cn('w-full px-3 pt-1', hasPagination ? 'pb-[110px]' : 'pb-[65px]')}>
           <div
-            className='grid grid-cols-2 gap-3 pb-[65px] contain-layout sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7'
+            className='grid grid-cols-2 gap-3 contain-layout sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7'
             style={{
               contentVisibility: 'auto',
             }}
@@ -61,12 +64,12 @@ function FileManager() {
           </div>
         </div>
       ) : (
-        <div className='flex flex-1 items-center justify-center'>
+        <div className='flex h-full items-center justify-center'>
           <Empty description={t('no_data')} />
         </div>
       )}
       <div className='absolute bottom-2 left-[50%] flex translate-x-[-50%] flex-col gap-1'>
-        {files.length > pageSize && (
+        {hasPagination && (
           <ToolbarPagination
             total={files.length}
             current={pageIndex}

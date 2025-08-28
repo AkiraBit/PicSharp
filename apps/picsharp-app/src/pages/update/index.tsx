@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { check, Update as IUpdate } from '@tauri-apps/plugin-updater';
 import { relaunch } from '@tauri-apps/plugin-process';
 import { useState, memo, useEffect, useContext } from 'react';
-import { isProd, isWindows } from '@/utils';
+import { isMac, isProd, isWindows } from '@/utils';
 import { Progress } from '@/components/ui/progress';
 import { Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -14,6 +14,7 @@ import { marked } from 'marked';
 import useAppStore from '@/store/app';
 import { invoke } from '@tauri-apps/api/core';
 import { AppContext } from '@/routes';
+import WindowControl from '@/components/window-control';
 
 enum UpdateStatus {
   Ready = 'ready',
@@ -114,8 +115,12 @@ export default function Update() {
   };
 
   return (
-    <div className='bg-background flex min-h-screen w-screen flex-col items-center justify-center px-4 pb-5 pt-7'>
-      <div className='flex w-full flex-1 flex-col rounded-lg bg-white p-5 shadow-xl dark:bg-neutral-800'>
+    <div className='flex min-h-screen w-screen flex-col items-center justify-center'>
+      <div className='flex h-[48px] w-full items-center justify-between' data-tauri-drag-region>
+        <div></div>
+        <WindowControl showControls={!isMac} showFullscreen={false} showAlwaysOnTop={false} />
+      </div>
+      <div className='flex w-full flex-1 flex-col rounded-lg px-3 pb-4 pt-0'>
         <h1 className='text-foreground mb-3 text-center text-3xl font-bold'>{t('update.title')}</h1>
 
         <div className='mb-3'>
@@ -126,7 +131,7 @@ export default function Update() {
 
         <div className='mb-3 flex flex-1 flex-col'>
           <h2 className='text-foreground mb-3 text-lg font-semibold'>{t('update.changelog')}</h2>
-          <div className='text-foreground h-[220px] w-full flex-grow-0 list-inside list-disc space-y-2 overflow-y-auto rounded-md p-4 py-3 dark:bg-neutral-700'>
+          <div className='text-foreground h-[220px] w-full flex-grow-0 list-inside list-disc space-y-2 overflow-y-auto rounded-md p-4 py-3 dark:bg-neutral-900'>
             {releaseContent.split('\n').map((line, index) => (
               <div key={index} className='w-full break-all'>
                 {line}

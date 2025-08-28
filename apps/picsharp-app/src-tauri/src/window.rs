@@ -43,7 +43,7 @@ pub struct WindowConfig {
 impl Default for WindowConfig {
     fn default() -> Self {
         Self {
-            label: Some(format!("PicSharp-{}", ID.fetch_add(1, Ordering::Relaxed))),
+            label: Some(format!("picsharp_{}", ID.fetch_add(1, Ordering::Relaxed))),
             title: Some("PicSharp".to_string()),
             width: Some(700.0),
             height: Some(500.0),

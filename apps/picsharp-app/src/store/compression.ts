@@ -4,17 +4,12 @@ import useAppStore from './app';
 import { clearImageViewerCache } from '@/components/image-viewer/cache';
 
 interface CompressionState {
-  // 是否正在工作区
   working: boolean;
-  // 是否正在压缩
   inCompressing: boolean;
-  // 是否正在监控文件夹
   watchingFolder: string;
   eventEmitter: EventEmitter;
-  // 文件列表
   files: FileInfo[];
   fileMap: Map<string, FileInfo>;
-  // 选中的文件
   selectedFiles: string[];
 }
 

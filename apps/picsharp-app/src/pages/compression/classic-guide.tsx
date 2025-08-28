@@ -12,14 +12,11 @@ import { useNavigate } from '@/hooks/useNavigate';
 import { VALID_IMAGE_EXTS } from '@/constants';
 import { useI18n } from '@/i18n';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import message from '@/components/message';
 import { parseClipboardImages } from '@/utils/clipboard';
 import { downloadDir } from '@tauri-apps/api/path';
 import { AppContext } from '@/routes';
 import UploadWidget from '@/components/animated-icon/upload-widget';
-import { CircleHelpIcon } from '@/components/animated-icon/quetion';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import FormatsTips from './formats-tips';
 
 function ClassicCompressionGuide() {

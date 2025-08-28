@@ -12,7 +12,7 @@ export default {
   'nav.compression': '批量压缩',
   'nav.watch': '监听文件',
   'nav.settings': '设置',
-  'nav.update': '有新版本 PicSharp 可更新！',
+  'nav.update': '发现新版本',
   // Update
   'update.title': '发现新版本',
   'update.version': '版本号 {{version}}',
@@ -292,6 +292,7 @@ export default {
   'tips.file_watch_target_changed': '监听目录被修改或移动',
   'tips.path_not_dir': '{{path}} 不是目录',
   'tips.import_files': '正在导入文件...',
+  'tips.load_image_failed': '加载失败',
   // 经典模式压缩引导页
   'page.compression.classic.app_title': 'PicSharp',
   'page.compression.classic.app_description': '简单高效的图片压缩工具',
