@@ -90,7 +90,7 @@ const ImageViewer = forwardRef<ImageViewerRef, ImageViewerProps>(function ImageV
         putCache(record);
         hasRenderedRef.current = true;
       } catch (err) {
-        if (!aborted) setErrorMessage('Failed to load');
+        if (!aborted) setErrorMessage(t('tips.load_image_failed'));
       } finally {
         if (!aborted) setIsLoading(false);
       }

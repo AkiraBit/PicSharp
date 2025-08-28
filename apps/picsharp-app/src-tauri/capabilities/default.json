@@ -4,9 +4,7 @@
   "description": "Capability for the main window",
   "windows": [
     "main",
-    "PicSharp-*",
-    "update-detail",
-    "settings"
+    "picsharp_*"
   ],
   "remote": {
     "urls": ["https://*"]

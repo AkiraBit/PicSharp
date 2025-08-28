@@ -1,23 +1,24 @@
 import { useLocation } from 'react-router';
 import { Button } from '@/components/ui/button';
-import { Settings, FolderArchive, FolderSearch, Moon, Sun, MonitorCog } from 'lucide-react';
+import { FolderArchive, FolderSearch } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/components/ui/tooltip';
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
 import { useI18n } from '@/i18n';
 import Link from '@/components/link';
-import { useTheme, Theme } from '@/components/theme-provider';
+import { useTheme } from '@/components/theme-provider';
 import useAppStore from '@/store/app';
 import useSelector from '@/hooks/useSelector';
 import clsx from 'clsx';
-import { isProd, isDev, isLinux, isMac } from '@/utils';
+import { isProd, isDev, isMac } from '@/utils';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { SettingsGearIcon } from '@/components/animated-icon/setting';
-import { useNavigate } from '@/hooks/useNavigate';
 import { useEffect, useMemo, useState } from 'react';
 import WindowControl from '@/components/window-control';
 import useCompressionStore from '@/store/compression';
 import { Badge } from '@/components/ui/badge';
 import { openPath } from '@tauri-apps/plugin-opener';
+import { useTrafficLightStore } from '@/store/trafficLight';
+
 export interface NavLink {
   title: string;
   href: string;
@@ -34,13 +35,12 @@ function Header() {
   const t = useI18n();
   const { theme, setTheme } = useTheme();
   const { sidecar } = useAppStore(useSelector(['sidecar']));
-  const navigate = useNavigate();
   const location = useLocation();
   const [activeTab, setActiveTab] = useState('compress');
   const { working, watchingFolder } = useCompressionStore(
     useSelector(['working', 'watchingFolder']),
   );
-
+  const { isTrafficLightVisible } = useTrafficLightStore(useSelector(['isTrafficLightVisible']));
   const navigation: NavigationProps = useMemo(
     () => ({
       primary: [
@@ -72,7 +72,7 @@ function Header() {
     <header
       className={cn(
         'relative flex h-[48px] w-full flex-shrink-0 items-center',
-        isMac ? 'px-[73px]' : 'px-2',
+        isMac && isTrafficLightVisible ? 'px-[73px]' : 'px-2',
       )}
       data-tauri-drag-region
     >
@@ -91,7 +91,12 @@ function Header() {
         value={activeTab}
         className={cn(
           'absolute left-1/2 -translate-x-1/2 transition-all duration-300',
-          working && cn(isMac ? 'left-[73px] -translate-x-0' : 'left-2 -translate-x-0'),
+          working &&
+            cn(
+              isMac && isTrafficLightVisible
+                ? 'left-[73px] -translate-x-0'
+                : 'left-2 -translate-x-0',
+            ),
         )}
       >
         <TabsList className='dark:border-white/10 dark:bg-black/30'>

@@ -12,7 +12,7 @@ const enUS = {
   'nav.compression': 'Compress',
   'nav.watch': 'Watch',
   'nav.settings': 'Settings',
-  'nav.update': 'New Version PicSharp Available!',
+  'nav.update': 'Found New Version',
   // Update
   'update.title': 'Found New Version',
   'update.version': 'Version {{version}}',
@@ -290,6 +290,7 @@ const enUS = {
   'tips.are_you_sure_to_exit': 'Are you sure to exit?',
   'tips.please_wait_for_compression_to_finish': 'Please wait for all tasks to finish',
   'tips.path_not_dir': '{{path}} is not a directory',
+  'tips.load_image_failed': 'Failed to load',
   // Classic Compression Guide
   'page.compression.classic.app_title': 'PicSharp',
   'page.compression.classic.app_description': 'Simple and efficient image compression tool',

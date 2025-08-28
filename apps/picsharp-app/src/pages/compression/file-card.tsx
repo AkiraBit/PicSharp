@@ -11,8 +11,9 @@ import { exists } from '@tauri-apps/plugin-fs';
 import { getOSPlatform, isValidArray } from '@/utils';
 import { convertFileSrc, invoke } from '@tauri-apps/api/core';
 import { RefreshCw, Ellipsis } from 'lucide-react';
-import { calImageWindowSize, spawnWindow } from '@/utils/window';
-import { getAllWebviewWindows } from '@tauri-apps/api/webviewWindow';
+import { calImageWindowSize, spawnWindow, createWebviewWindow } from '@/utils/window';
+import { WebviewWindow, getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow';
+import { getCurrentWebview } from '@tauri-apps/api/webview';
 import { ICompressor } from '@/utils/compressor';
 import { undoSave } from '@/utils/fs';
 import { Divider, Tooltip } from 'antd';
@@ -27,7 +28,7 @@ import useAppStore from '@/store/app';
 import { copyImage } from '@/utils/clipboard';
 import ImgTag from '@/components/img-tag';
 import { Button } from '@/components/ui/button';
-
+import { TauriEvent } from '@tauri-apps/api/event';
 export interface FileCardProps {
   path: FileInfo['path'];
 }
@@ -71,26 +72,39 @@ function FileCard(props: FileCardProps) {
             const dimensions = imgRef.current.getDimensions();
             if (!dimensions) return;
             const [width, height] = calImageWindowSize(dimensions.width, dimensions.height);
-            const label = `PicSharp_Compare_${file.id}`;
-            const windows = await getAllWebviewWindows();
-            const targetWindow = windows.find((w) => w.label === label);
+            const label = `picsharp_compare_${file.id}`;
+
+            const targetWindow = await WebviewWindow.getByLabel(label);
             if (targetWindow) {
               targetWindow.show();
             } else {
-              spawnWindow(
-                {
-                  mode: 'compress:compare',
+              const window = await createWebviewWindow(label, {
+                url: '/image-compare',
+                title: file.name,
+                width,
+                height,
+                minWidth: 460,
+                minHeight: 460,
+              });
+              window.once('loaded', () => {
+                window.emitTo(label, 'compare_file', {
                   file,
-                },
-                {
-                  label,
-                  title: t('compression.file_action.compare_file', { name: file.name }),
-                  width,
-                  height,
-                  resizable: false,
-                  hiddenTitle: true,
-                },
-              );
+                });
+              });
+              // spawnWindow(
+              //   {
+              //     mode: 'compress:compare',
+              //     file,
+              //   },
+              //   {
+              //     label,
+              //     title: t('compression.file_action.compare_file', { name: file.name }),
+              //     width,
+              //     height,
+              //     resizable: false,
+              //     hiddenTitle: true,
+              //   },
+              // );
             }
           }
         } catch (err) {

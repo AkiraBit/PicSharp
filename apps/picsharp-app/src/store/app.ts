@@ -4,12 +4,11 @@ import EventEmitter from 'eventemitter3';
 import { isProd } from '@/utils';
 import { Command, Child } from '@tauri-apps/plugin-shell';
 import { info, error } from '@tauri-apps/plugin-log';
-import { exists, remove, mkdir, BaseDirectory } from '@tauri-apps/plugin-fs';
+import { exists, remove, mkdir } from '@tauri-apps/plugin-fs';
 import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow';
 import { withStorageDOMEvents } from './withStorageDOMEvents';
 import { isFunction } from 'radash';
 import { appCacheDir, appDataDir, appLogDir, join } from '@tauri-apps/api/path';
-
 interface AppState {
   eventEmitter: EventEmitter;
   sidecar: {

@@ -1,4 +1,4 @@
-import { memo, useState, useMemo } from 'react';
+import { memo, useState, useMemo, useRef } from 'react';
 import FileCard from './file-card';
 import useCompressionStore from '@/store/compression';
 import useSelector from '@/hooks/useSelector';
@@ -7,15 +7,18 @@ import ToolbarPagination from './toolbar-pagination';
 import { isValidArray } from '@/utils';
 import { useI18n } from '../../i18n';
 import { Empty } from 'antd';
+import { useUpdateEffect } from 'ahooks';
+import { ScrollArea, ScrollAreaRef } from '@/components/ui/scroll-area';
+import { preventDefault } from '@/utils';
+import { cn } from '@/lib/utils';
 
-export interface WatchFileManagerProps {}
-
-function WatchFileManager(props: WatchFileManagerProps) {
-  const { files, watchingFolder } = useCompressionStore(useSelector(['files', 'watchingFolder']));
+function WatchFileManager() {
+  const { files } = useCompressionStore(useSelector(['files']));
 
   const [pageIndex, setPageIndex] = useState(1);
   const [pageSize, setPageSize] = useState(100);
   const t = useI18n();
+  const scrollAreaRef = useRef<ScrollAreaRef>(null);
 
   const dataList = useMemo(() => {
     let list = files.slice((pageIndex - 1) * pageSize, pageIndex * pageSize);
@@ -26,12 +29,24 @@ function WatchFileManager(props: WatchFileManagerProps) {
     return list;
   }, [files, pageIndex, pageSize]);
 
+  useUpdateEffect(() => {
+    if (scrollAreaRef.current) {
+      scrollAreaRef.current.scrollToTop();
+    }
+  }, [pageIndex]);
+
+  const hasPagination = files.length > pageSize;
+
   return (
-    <div className='relative flex h-full flex-col items-center'>
+    <ScrollArea
+      className='relative h-full min-w-[350px]'
+      onContextMenu={preventDefault}
+      ref={scrollAreaRef}
+    >
       {isValidArray(dataList) ? (
-        <div className='w-full flex-1 px-3 pb-4 pt-9'>
+        <div className={cn('w-full px-3 pt-1', hasPagination ? 'pb-[110px]' : 'pb-[65px]')}>
           <div
-            className='grid grid-cols-1 gap-3 contain-layout sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8'
+            className='grid grid-cols-2 gap-3 contain-layout sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7'
             style={{
               contentVisibility: 'auto',
             }}
@@ -42,12 +57,12 @@ function WatchFileManager(props: WatchFileManagerProps) {
           </div>
         </div>
       ) : (
-        <div className='flex flex-1 items-center justify-center'>
-          <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={t('tips.watching')} />
+        <div className='flex h-full items-center justify-center'>
+          <Empty description={t('no_data')} />
         </div>
       )}
-      <div className='sticky bottom-2 z-[20] flex flex-col gap-1'>
-        {files.length > pageSize && (
+      <div className='absolute bottom-2 left-[50%] flex translate-x-[-50%] flex-col gap-1'>
+        {hasPagination && (
           <ToolbarPagination
             total={files.length}
             current={pageIndex}
@@ -64,7 +79,7 @@ function WatchFileManager(props: WatchFileManagerProps) {
         )}
         <Toolbar mode='watch' />
       </div>
-    </div>
+    </ScrollArea>
   );
 }
 

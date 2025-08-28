@@ -1,7 +1,7 @@
 import ErrorBoundary from '../error-boundary';
 import { Outlet } from 'react-router';
 import { useEffect, useRef, useLayoutEffect, useContext } from 'react';
-import { emit, listen, UnlistenFn } from '@tauri-apps/api/event';
+import { emit, UnlistenFn } from '@tauri-apps/api/event';
 import { PageProgress, PageProgressRef } from '../fullscreen-progress';
 import { isFunction } from 'radash';
 import { parseOpenWithFiles } from '@/utils/launch';
@@ -14,7 +14,7 @@ import { VALID_IMAGE_EXTS, SettingsKey } from '@/constants';
 import { useNavigate } from '@/hooks/useNavigate';
 import { spawnWindow } from '@/utils/window';
 import { useI18n } from '@/i18n';
-import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow';
+import { WebviewWindow } from '@tauri-apps/api/webviewWindow';
 import { updateWatchHistory } from '@/pages/compression/watch-guide';
 import { onOpenUrl } from '@tauri-apps/plugin-deep-link';
 import checkForUpdate from '@/utils/updater';
@@ -25,6 +25,7 @@ import { cn } from '@/lib/utils';
 import message from '@/components/message';
 import { PathTagsInput } from '../path-tags-input';
 import { TooltipProvider } from '../ui/tooltip';
+import { useTrafficLightStore } from '@/store/trafficLight';
 
 if (isProd) {
   window.oncontextmenu = (e) => {
@@ -69,7 +70,7 @@ export default function AppLayout() {
       if (payload) {
         switch (payload.mode) {
           case 'compress:compare':
-            navigate('/image-compare');
+            // navigate('/image-compare');
             break;
           default:
             process(payload.mode, payload.paths);
@@ -111,25 +112,29 @@ export default function AppLayout() {
     }
 
     async function handleNsInspect() {
-      unlistenNsCompress = await listen('ns_compress', async (event) => {
-        if (getCurrentWebviewWindow().label !== 'main') return;
+      const currentWindow = WebviewWindow.getCurrent();
+      unlistenNsCompress = await currentWindow.listen('ns_compress', async (event) => {
+        if (currentWindow.label !== 'main') return;
         const paths = event.payload as string[];
         const hasSpawned = await spawnNewWindow('ns_compress', paths);
         if (!hasSpawned) {
-          getCurrentWebviewWindow().show();
+          currentWindow.show();
           process('ns_compress', paths);
         }
       });
-      unlistenNsWatchAndCompress = await listen('ns_watch_and_compress', async (event) => {
-        if (getCurrentWebviewWindow().label !== 'main') return;
-        const paths = event.payload as string[];
-        const hasSpawned = await spawnNewWindow('ns_watch_and_compress', paths);
-        if (!hasSpawned) {
-          getCurrentWebviewWindow().show();
-          process('ns_watch_and_compress', paths);
-        }
-      });
-      emit('ready', getCurrentWebviewWindow().label);
+      unlistenNsWatchAndCompress = await currentWindow.listen(
+        'ns_watch_and_compress',
+        async (event) => {
+          if (currentWindow.label !== 'main') return;
+          const paths = event.payload as string[];
+          const hasSpawned = await spawnNewWindow('ns_watch_and_compress', paths);
+          if (!hasSpawned) {
+            currentWindow.show();
+            process('ns_watch_and_compress', paths);
+          }
+        },
+      );
+      emit('ready', currentWindow.label);
     }
 
     const handleDeepLink = async () => {
@@ -174,7 +179,7 @@ export default function AppLayout() {
     };
 
     let timer;
-    if (getCurrentWebviewWindow().label === 'main') {
+    if (WebviewWindow.getCurrent().label === 'main') {
       if (isProd && useSettingsStore.getState()?.[SettingsKey.AutoCheckUpdate]) {
         checkForUpdate();
       }
@@ -201,11 +206,26 @@ export default function AppLayout() {
   useAsyncEffect(async () => {
     const version = window.localStorage.getItem('updated_relaunch');
     if (version) {
-      await getCurrentWebviewWindow().show();
-      await getCurrentWebviewWindow().setFocus();
+      await WebviewWindow.getCurrent().show();
+      await WebviewWindow.getCurrent().setFocus();
       window.localStorage.removeItem('updated_relaunch');
       messageApi?.success(t('update.successful', { version }));
     }
+  }, []);
+
+  useEffect(() => {
+    if (!isMac) return;
+    const {
+      initializeTrafficLightListeners,
+      setTrafficLightVisibility,
+      cleanupTrafficLightListeners,
+    } = useTrafficLightStore.getState();
+
+    initializeTrafficLightListeners();
+    setTrafficLightVisibility(true);
+    return () => {
+      cleanupTrafficLightListeners();
+    };
   }, []);
 
   return (
@@ -215,15 +235,15 @@ export default function AppLayout() {
           className='absolute inset-0 z-0'
           style={{
             background:
-              'radial-gradient(ellipse 80% 60% at 50% 0%, rgba(120, 180, 255, 0.25), transparent 70%), #000000',
+              'radial-gradient(ellipse 80% 60% at 50% 0%, rgba(226, 232, 240, 0.15), transparent 70%), #000000',
           }}
         />
         <PageProgress ref={progressRef} />
-        {getCurrentWebviewWindow().label === 'main' && <Header />}
+        {WebviewWindow.getCurrent().label === 'main' && <Header />}
         <div
           className={cn(
             'select-none overflow-hidden rounded-t-xl dark:bg-[#181818]',
-            getCurrentWebviewWindow().label === 'main' ? 'h-[calc(100%-48px)]' : 'h-full',
+            WebviewWindow.getCurrent().label === 'main' ? 'h-[calc(100%-48px)]' : 'h-full',
           )}
         >
           <main className='relative h-full overflow-hidden'>

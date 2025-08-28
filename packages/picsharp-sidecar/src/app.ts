@@ -12,7 +12,7 @@ import webp from './controllers/compress/webp';
 import jpg from './controllers/compress/jpeg';
 import tiff from './controllers/compress/tiff';
 import svg from './controllers/compress/svg';
-import tinify from './controllers/compress/tinify';
+import tinify from './controllers/compress/tinypng';
 import watch from './controllers/watch';
 import createKvAdminRouter from './controllers/admin/kv';
 
@@ -41,6 +41,7 @@ export function createApp() {
   app.route('/api/compress/jpg', jpg);
   app.route('/api/compress/jpeg', jpg);
   app.route('/api/compress/tiff', tiff);
+  app.route('/api/compress/tif', tiff);
   app.route('/api/compress/svg', svg);
   app.route('/api/compress/tinify', tinify);
   app.route('/stream/watch', watch);
