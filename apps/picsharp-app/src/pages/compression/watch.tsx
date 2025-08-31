@@ -1,10 +1,10 @@
-import { useEffect, useRef, useContext, useLayoutEffect } from 'react';
-import { isFunction, debounce } from 'radash';
+import { useEffect, useRef, useContext } from 'react';
+import { debounce } from 'radash';
 import useCompressionStore from '@/store/compression';
 import WatchFileManager from './watch-file-manager';
 import { parsePaths, humanSize } from '@/utils/fs';
-import { CompressionOutputMode, VALID_IMAGE_EXTS } from '@/constants';
-import { isValidArray, correctFloat, sleep, isMac } from '@/utils';
+import { VALID_IMAGE_EXTS } from '@/constants';
+import { isValidArray, correctFloat } from '@/utils';
 import Compressor, { ICompressor } from '@/utils/compressor';
 import { SettingsKey } from '@/constants';
 import { isString } from 'radash';
@@ -16,8 +16,8 @@ import useAppStore from '@/store/app';
 import { convertFileSrc } from '@tauri-apps/api/core';
 import { AppContext } from '@/routes';
 import { CompressionContext } from '.';
-import { message as systemMessage } from '@tauri-apps/plugin-dialog';
 import { message } from '@/components/message';
+import { fetchEventSource } from '@microsoft/fetch-event-source';
 
 function CompressionWatch() {
   const { progressRef } = useContext(CompressionContext);
@@ -123,7 +123,7 @@ function CompressionWatch() {
         }),
       );
       sendTextNotification(
-        `PicSharp - ${t('common.compress_completed')}`,
+        t('common.compress_completed'),
         t('tips.compress_completed', {
           fulfilled,
           rejected,
@@ -133,10 +133,7 @@ function CompressionWatch() {
     } catch (error) {
       console.error('err', error);
       messageApi?.error(t('common.compress_failed_msg'));
-      sendTextNotification(
-        `PicSharp - ${t('common.compress_failed')}`,
-        t('common.compress_failed_msg'),
-      );
+      sendTextNotification(t('common.compress_failed'), t('common.compress_failed_msg'));
     }
   };
 
@@ -164,91 +161,80 @@ function CompressionWatch() {
   });
 
   const alert = async (title: string, content: string = '') => {
-    if (isMac) {
-      await systemMessage(content, {
-        kind: 'error',
-        title,
-      });
-    } else {
-      await message?.error({
-        title,
-        description: content,
-      });
-    }
+    sendTextNotification(title, content);
+    message?.error({
+      title,
+      description: content,
+    });
   };
 
   useEffect(() => {
-    let eventSource: EventSource = null;
     const { watchingFolder, reset } = useCompressionStore.getState();
+    const ctrl = new AbortController();
     function regain() {
+      ctrl.abort();
       reset();
       navigate('/compression/watch/guide');
       progressRef.current?.done();
     }
     async function handleWatch() {
       const { sidecar } = useAppStore.getState();
-      eventSource = new EventSource(
-        `${sidecar?.origin}/stream/watch/new-images?path=${watchingFolder}`,
-      );
-      eventSource.onopen = () => {
-        console.log('[Sidecar] Watch EventSource opened');
-        isFirstInit.current = false;
-      };
-      eventSource.addEventListener('ready', (event) => {
-        console.log('[Sidecar] Watch EventSource ready');
-        progressRef.current?.done();
-      });
-      eventSource.addEventListener('add', (event) => {
-        const payload = JSON.parse(event.data);
-        const path = payload.fullPath;
-        const hash = payload.content_hash;
-        console.log('hash', hash);
-
-        if (!historys.current.has(hash)) {
-          queueRef.current.push(path);
-        }
-
-        // const settingsState = useSettingsStore.getState();
-        // const compressionState = useCompressionStore.getState();
-        // if (settingsState.compression_output === CompressionOutputMode.SaveAsNewFile) {
-        //   const filename = payload.name;
-        //   if (
-        //     !compressionState.fileMap.has(path) &&
-        //     !filename.endsWith(settingsState.compression_output_save_as_file_suffix)
-        //   ) {
-        //     queueRef.current.push(path);
-        //   }
-        // } else {
-        //   if (!compressionState.fileMap.has(path)) {
-        //     queueRef.current.push(path);
-        //   }
-        // }
-        throttledProcessData();
-      });
-      eventSource.addEventListener('self-enoent', async () => {
-        console.log('[Sidecar] Watch EventSource self-enoent');
-        eventSource?.close();
-        regain();
-        alert(t('tips.file_watch_target_changed'));
-      });
-      eventSource.addEventListener('fault', async (event) => {
-        console.log('[Sidecar] Watch EventSource fault', event);
-      });
-      eventSource.addEventListener('error', async (event) => {
-        console.log('[Sidecar] Watch EventSource error', event);
-        await sleep(1000);
-        regain();
-        if (isFirstInit.current) {
+      fetchEventSource(`${sidecar?.origin}/stream/watch/new-images`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          path: watchingFolder,
+          ignores: [],
+        }),
+        signal: ctrl.signal,
+        openWhenHidden: false,
+        onopen: async () => {
+          console.log('[Sidecar] Watch EventSource opened');
           isFirstInit.current = false;
-          messageApi?.error(t('tips.file_watch_not_running'));
-        } else {
-          alert(t('tips.file_watch_abort'));
-        }
+        },
+        async onmessage(msg) {
+          if (msg.event === 'ready') {
+            console.log('[Sidecar] Watch EventSource ready');
+            progressRef.current?.done();
+          } else if (msg.event === 'add') {
+            const payload = JSON.parse(msg.data);
+            const path = payload.fullPath;
+            const hash = payload.content_hash;
+
+            if (!historys.current.has(hash)) {
+              queueRef.current.push(path);
+            }
+            throttledProcessData();
+          } else if (msg.event === 'self-enoent') {
+            console.log('[Sidecar] Watch EventSource self-enoent');
+            ctrl.abort();
+            regain();
+            alert(t('tips.file_watch_target_changed'));
+          } else if (msg.event === 'fault') {
+            console.log('[Sidecar] Watch EventSource fault', msg);
+          } else if (msg.event === 'error') {
+            console.log('[Sidecar] Watch EventSource error', msg);
+            regain();
+            alert(t('tips.file_watch_abort'));
+          }
+        },
+        onerror(error) {
+          console.log('[Sidecar] Watch EventSource error', error);
+          setTimeout(async () => {
+            regain();
+            alert(t('tips.file_watch_abort'), error.toString());
+          }, 1000);
+        },
+        onclose() {
+          regain();
+        },
       });
     }
     function handlePageVisible() {
       if (document.visibilityState === 'visible') {
-        if (eventSource.readyState === EventSource.CLOSED && !isFirstInit.current) {
+        if (ctrl.signal.aborted && !isFirstInit.current) {
           regain();
           alert(t('tips.file_watch_abort'));
         }
@@ -261,7 +247,7 @@ function CompressionWatch() {
     handleWatch();
     window.addEventListener('visibilitychange', handlePageVisible);
     return () => {
-      eventSource?.close();
+      ctrl.abort();
       window.removeEventListener('visibilitychange', handlePageVisible);
     };
   }, []);

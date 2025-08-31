@@ -46,7 +46,7 @@ const useAppStore = create(
         try {
           get().destroySidecar();
           if (getCurrentWebviewWindow().label === 'main') {
-            if (!isProd) {
+            if (isProd) {
               const command = Command.sidecar('binaries/picsharp-sidecar', '', {
                 env: {
                   // PICSHARP_SIDECAR_ENABLE: 'true',
