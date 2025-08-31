@@ -8,25 +8,6 @@ import { watch, Event } from 'dirspy';
 const app = new Hono();
 let id = BigInt(0);
 
-// const ignores = [
-//   '.pnpm',
-//   '.git',
-//   '.DS_Store',
-//   '.idea',
-//   '.vscode',
-//   '.gitignore',
-//   '.gitignore',
-//   'node_modules',
-//   'target',
-//   'maven',
-//   'gradle',
-//   'build',
-//   'out',
-//   'bin',
-//   'obj',
-//   'lib',
-// ];
-
 app.post('/new-images', (c) => {
   return streamSSE(c, async (stream) => {
     try {

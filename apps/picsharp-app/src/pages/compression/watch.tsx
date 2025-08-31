@@ -178,21 +178,27 @@ function CompressionWatch() {
       progressRef.current?.done();
     }
     async function handleWatch() {
+      const { compression_watch_file_ignore: ignores = [] } = useSettingsStore.getState();
       const { sidecar } = useAppStore.getState();
       fetchEventSource(`${sidecar?.origin}/stream/watch/new-images`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer picsharp_sidecar`,
         },
         body: JSON.stringify({
           path: watchingFolder,
-          ignores: [],
+          ignores,
         }),
         signal: ctrl.signal,
         openWhenHidden: false,
-        onopen: async () => {
-          console.log('[Sidecar] Watch EventSource opened');
-          isFirstInit.current = false;
+        onopen: async (response) => {
+          if (response.ok && response.headers.get('content-type') === 'text/event-stream') {
+            console.log('[Sidecar] Watch EventSource opened');
+            isFirstInit.current = false;
+          } else {
+            alert(t('tips.watch_service_startup_failed'));
+          }
         },
         async onmessage(msg) {
           if (msg.event === 'ready') {
@@ -214,17 +220,19 @@ function CompressionWatch() {
             alert(t('tips.file_watch_target_changed'));
           } else if (msg.event === 'fault') {
             console.log('[Sidecar] Watch EventSource fault', msg);
-          } else if (msg.event === 'error') {
-            console.log('[Sidecar] Watch EventSource error', msg);
-            regain();
-            alert(t('tips.file_watch_abort'));
           }
         },
         onerror(error) {
           console.log('[Sidecar] Watch EventSource error', error);
-          setTimeout(async () => {
-            regain();
-            alert(t('tips.file_watch_abort'), error.toString());
+          setTimeout(() => {
+            if (!ctrl.signal.aborted) {
+              regain();
+              if (isFirstInit.current) {
+                alert(t('tips.watch_service_startup_failed'));
+              } else {
+                alert(t('tips.file_watch_abort'));
+              }
+            }
           }, 1000);
         },
         onclose() {

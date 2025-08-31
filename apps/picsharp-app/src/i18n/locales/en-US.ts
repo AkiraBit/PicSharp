@@ -292,6 +292,7 @@ const enUS = {
   'tips.path_not_dir': '{{path}} is not a directory',
   'tips.load_image_failed': 'Failed to load',
   'tips.service_startup_failed': 'Service Startup Failed',
+  'tips.watch_service_startup_failed': 'Watch service startup failed',
   // Classic Compression Guide
   'page.compression.classic.app_title': 'PicSharp',
   'page.compression.classic.app_description': 'Simple and efficient image compression tool',
