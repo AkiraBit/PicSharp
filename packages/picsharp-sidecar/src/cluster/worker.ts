@@ -9,7 +9,7 @@ export async function startWorker(config: AppConfig) {
 
   const app = createApp();
 
-  serve({ fetch: app.fetch, port: config.port }, (info) => {
+  serve({ fetch: app.fetch, port: config.port, hostname: '::' }, (info) => {
     console.log(`[worker]: worker_id:${cluster.worker?.id}  pid:${process.pid}`);
   });
 

@@ -14,7 +14,7 @@ export async function startServer(config: AppConfig) {
     }
   } else {
     const app = createApp();
-    serve({ fetch: app.fetch, port: config.port }, (info) => {
+    serve({ fetch: app.fetch, port: config.port, hostname: '::' }, (info) => {
       console.log(
         JSON.stringify({
           origin: `http://localhost:${info.port}`,
