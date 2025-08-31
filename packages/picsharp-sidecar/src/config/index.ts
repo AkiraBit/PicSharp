@@ -2,6 +2,7 @@ import os from 'node:os';
 import { findAvailablePort } from '../utils';
 
 export interface AppConfig {
+  enable: boolean;
   port: number;
   concurrency: number;
   cluster: boolean;
@@ -34,6 +35,7 @@ function parseBoolean(value: unknown, fallback: boolean): boolean {
 }
 
 export async function loadConfig(): Promise<AppConfig> {
+  const enable = parseBoolean(process.env.PICSHARP_SIDECAR_ENABLE, false);
   const cpuCount = Math.max(1, Math.floor(os.cpus().length / 2));
   const concurrency = parseNumber(process.env.PICSHARP_SIDECAR_CONCURRENCY, cpuCount);
   const cluster = parseBoolean(process.env.PICSHARP_SIDECAR_CLUSTER, false);
@@ -52,6 +54,7 @@ export async function loadConfig(): Promise<AppConfig> {
   }
 
   return {
+    enable,
     port,
     concurrency,
     cluster,

@@ -46,21 +46,21 @@ function SettingsAboutVersion() {
           {t('settings.about.version.title', { version: packageJson.version })}
         </span>
       }
-      description={
-        <Trans
-          // @ts-ignore
-          i18nKey='settings.about.version.description'
-          components={{
-            license: (
-              <a
-                target='_blank'
-                href='https://github.com/AkiraBit/PicSharp?tab=AGPL-3.0-1-ov-file#readme'
-                className='text-blue-500 underline'
-              />
-            ),
-          }}
-        ></Trans>
-      }
+      // description={
+      //   <Trans
+      //     // @ts-ignore
+      //     i18nKey='settings.about.version.description'
+      //     components={{
+      //       license: (
+      //         <a
+      //           target='_blank'
+      //           href='https://github.com/AkiraBit/PicSharp?tab=AGPL-3.0-1-ov-file#readme'
+      //           className='text-blue-500 underline'
+      //         />
+      //       ),
+      //     }}
+      //   ></Trans>
+      // }
     >
       <Button size='sm' onClick={handleCheckUpdate} disabled={isChecking}>
         {isChecking && <Loader2 className='h-4 w-4 animate-spin' />}

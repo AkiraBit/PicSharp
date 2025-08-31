@@ -23,7 +23,22 @@
 
   </style>
   <script>
+    function getOSByUA() {
+      const ua = navigator.userAgent.toLowerCase()
+      if (ua.includes("mac os x")) {
+        return "mac"
+      } else if (ua.includes("linux")) {
+        return "linux"
+      } else if (ua.includes("windows")) {
+        return "windows"
+      }
+      return "unknown"
+    }
     const root = window.document.documentElement;
+    root.classList.add('dark');
+    if(getOSByUA() === 'linux'){
+      root.style.border = '2px solid #333333';
+    }
     // const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     // const currentTheme = localStorage.getItem('app-theme') || 'system';
     // if(currentTheme === 'system') {
@@ -31,11 +46,9 @@
     // }else{
     //   root.classList.add(currentTheme);
     // }
-    root.classList.add('dark');
   </script>
 </head>
 
-<!-- <body class="font-mono"> -->
 <body class="font-mono">
   <div id="root"></div>
   <script type="module" src="/src/main.tsx"></script>

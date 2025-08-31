@@ -13,7 +13,7 @@
     "url": "https://github.com/AkiraBit/PicSharp/issues"
   },
   "scripts": {
-    "dev-sidecar:server": "PICSHARP_SIDECAR_CLUSTER=true pnpm --filter @picsharp/picsharp-sidecar dev",
+    "dev-sidecar:server": "PICSHARP_SIDECAR_ENABLE=true PICSHARP_SIDECAR_CLUSTER=true pnpm --filter @picsharp/picsharp-sidecar dev",
     "dev-sidecar:cli": "PICSHARP_SIDECAR_MODE=cli pnpm --filter @picsharp/picsharp-sidecar dev",
     "dev-app": "pnpm --filter @picsharp/picsharp-app tauri dev"
   },

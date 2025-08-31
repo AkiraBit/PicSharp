@@ -57,8 +57,8 @@ function WatchFileManager() {
           </div>
         </div>
       ) : (
-        <div className='flex h-full items-center justify-center'>
-          <Empty description={t('no_data')} />
+        <div className='flex h-[calc(100vh-48px)] items-center justify-center'>
+          <Empty description={t('tips.watching')} />
         </div>
       )}
       <div className='absolute bottom-2 left-[50%] flex translate-x-[-50%] flex-col gap-1'>

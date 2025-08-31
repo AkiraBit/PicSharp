@@ -41,9 +41,9 @@ export default function AppRoutes() {
             position='top-center'
             theme={theme}
             offset={{
-              top: '24px',
+              top: '48px',
               right: '16px',
-              bottom: '24px',
+              bottom: '48px',
               left: '16px',
             }}
           />
