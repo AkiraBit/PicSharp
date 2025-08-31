@@ -2,6 +2,7 @@ import cluster from 'node:cluster';
 import type { Worker as ClusterWorker } from 'node:cluster';
 import { IpcEnvelope, IpcMessage } from '../ipc/messages';
 import { AppConfig } from '../config';
+import os from 'node:os';
 
 interface KvEntry {
   value: unknown;
@@ -61,7 +62,9 @@ function handleMessage(worker: ClusterWorker, message: IpcMessage) {
 export async function startMaster(config: AppConfig) {
   if (!cluster.isPrimary) return;
 
-  cluster.schedulingPolicy = cluster.SCHED_RR;
+  if (os.platform() !== 'win32') {
+    cluster.schedulingPolicy = cluster.SCHED_RR;
+  }
   cluster.setupPrimary({
     execArgv: process.execArgv,
   });
