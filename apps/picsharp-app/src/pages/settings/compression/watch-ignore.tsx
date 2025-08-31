@@ -14,15 +14,6 @@ function SettingsCompressionConvert() {
     useSelector([SettingsKey.CompressionWatchFileIgnore, 'set']),
   );
 
-  const handleChange = debounce({ delay: 500 }, (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const items = e.target.value
-      .trim()
-      .split('\n')
-      .filter((item) => item.trim() !== '')
-      .map((item) => item.trim());
-    set(SettingsKey.CompressionWatchFileIgnore, items);
-  });
-
   return (
     <SettingItem
       title={
@@ -36,8 +27,8 @@ function SettingsCompressionConvert() {
       <PathTagsInput
         title={t('settings.compression.file_ignore.title')}
         value={ignores}
-        onChange={(next) => {
-          set(SettingsKey.CompressionWatchFileIgnore, next);
+        onChange={(value) => {
+          set(SettingsKey.CompressionWatchFileIgnore, value);
         }}
         className='max-h-[100px] w-[350px] overflow-y-auto'
       />
