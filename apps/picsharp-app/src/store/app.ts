@@ -9,6 +9,7 @@ import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow';
 import { withStorageDOMEvents } from './withStorageDOMEvents';
 import { isFunction } from 'radash';
 import { appCacheDir, appDataDir, appLogDir, join } from '@tauri-apps/api/path';
+import { toast } from '@/components/sidecar-error-toast';
 interface AppState {
   eventEmitter: EventEmitter;
   sidecar: {
@@ -45,9 +46,10 @@ const useAppStore = create(
         try {
           get().destroySidecar();
           if (getCurrentWebviewWindow().label === 'main') {
-            if (isProd) {
+            if (!isProd) {
               const command = Command.sidecar('binaries/picsharp-sidecar', '', {
                 env: {
+                  // PICSHARP_SIDECAR_ENABLE: 'true',
                   PICSHARP_SIDECAR_CLUSTER: 'true',
                   PICSHARP_SIDECAR_MODE: 'server',
                   PICSHARP_SIDECAR_STORE: '{}',
@@ -64,6 +66,13 @@ const useAppStore = create(
                 });
                 console.log(`[Init Sidecar Success]: Server: ${response.origin}`);
                 info(`[Init Sidecar Success]: Server: ${response.origin}`);
+              });
+              command.stderr.once('data', (data) => {
+                toast({
+                  description: data,
+                });
+                console.error(`[Start Sidecar Error]: ${data}`);
+                error(`[Start Sidecar Error]: ${data}`);
               });
               const process = await command.spawn();
               set({

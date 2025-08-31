@@ -291,6 +291,7 @@ const enUS = {
   'tips.please_wait_for_compression_to_finish': 'Please wait for all tasks to finish',
   'tips.path_not_dir': '{{path}} is not a directory',
   'tips.load_image_failed': 'Failed to load',
+  'tips.service_startup_failed': 'Service Startup Failed',
   // Classic Compression Guide
   'page.compression.classic.app_title': 'PicSharp',
   'page.compression.classic.app_description': 'Simple and efficient image compression tool',

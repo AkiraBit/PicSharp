@@ -293,6 +293,7 @@ export default {
   'tips.path_not_dir': '{{path}} 不是目录',
   'tips.import_files': '正在导入文件...',
   'tips.load_image_failed': '加载失败',
+  'tips.service_startup_failed': '服务启动失败',
   // 经典模式压缩引导页
   'page.compression.classic.app_title': 'PicSharp',
   'page.compression.classic.app_description': '简单高效的图片压缩工具',

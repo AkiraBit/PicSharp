@@ -2,17 +2,25 @@ import { startServer } from './server';
 import { loadConfig } from './config';
 
 async function main() {
-  const config = await loadConfig();
-  if (config.mode === 'cli') {
-    console.log(
-      JSON.stringify({
-        mode: 'cli',
-        message: 'PicSharp Sidecar CLI is under construction.',
-      }),
-    );
-    return;
-  } else {
-    await startServer(config);
+  try {
+    const config = await loadConfig();
+    if (!config.enable) {
+      process.exit(0);
+    }
+    if (config.mode === 'cli') {
+      console.log(
+        JSON.stringify({
+          mode: 'cli',
+          message: 'PicSharp Sidecar CLI is under construction.',
+        }),
+      );
+      return;
+    } else {
+      await startServer(config);
+    }
+  } catch (error: any) {
+    console.error(`[Sidecar Error]: ${error.message || error.toString()}`);
+    process.exit(1);
   }
 }
 

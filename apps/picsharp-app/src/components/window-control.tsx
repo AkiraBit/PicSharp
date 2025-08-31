@@ -142,11 +142,6 @@ export default function WindowControl({
                   ? t('window.controls.exit_fullscreen')
                   : t('window.controls.fullscreen')
               }
-              title={
-                isFullscreen
-                  ? t('window.controls.exit_fullscreen')
-                  : t('window.controls.fullscreen')
-              }
               onClick={handleToggleFullscreen}
             >
               {isFullscreen ? <Minimize2 className='size-4' /> : <Maximize2 className='size-4' />}
@@ -165,11 +160,6 @@ export default function WindowControl({
               size='icon'
               variant='ghost'
               aria-label={
-                isAlwaysOnTop
-                  ? t('window.controls.cancel_always_on_top')
-                  : t('window.controls.always_on_top')
-              }
-              title={
                 isAlwaysOnTop
                   ? t('window.controls.cancel_always_on_top')
                   : t('window.controls.always_on_top')
@@ -199,7 +189,6 @@ export default function WindowControl({
                 size='icon'
                 variant='ghost'
                 aria-label={t('window.controls.minimize')}
-                title={t('window.controls.minimize')}
                 onClick={handleMinimize}
               >
                 <Minus className='size-4' />
@@ -216,7 +205,6 @@ export default function WindowControl({
                 aria-label={
                   isMaximized ? t('window.controls.restore') : t('window.controls.maximize')
                 }
-                title={isMaximized ? t('window.controls.restore') : t('window.controls.maximize')}
                 onClick={handleToggleMaximize}
               >
                 {isMaximized ? <Copy className='size-4' /> : <Square className='size-4' />}
@@ -233,7 +221,6 @@ export default function WindowControl({
                 size='icon'
                 variant='ghost'
                 aria-label={t('window.controls.close')}
-                title={t('window.controls.close')}
                 onClick={handleClose}
                 className='hover:bg-red-500 hover:text-white dark:hover:bg-red-600'
               >

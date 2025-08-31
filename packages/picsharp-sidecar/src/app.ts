@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
 import { timeout } from 'hono/timeout';
+import { bearerAuth } from 'hono/bearer-auth';
 import { HTTPException } from 'hono/http-exception';
 import { createCodecRouter } from './controllers/codec';
 import { createImageViewerRouter } from './controllers/image-viewer';
@@ -22,13 +23,31 @@ export function createApp() {
     .use('*', cors())
     .use(
       '*',
-      timeout(
-        30000,
-        () => new HTTPException(500, { message: 'Process timeout. Please try again.' }),
-      ),
+      timeout(30000, () => new HTTPException(500, { message: 'Process timeout' })),
     )
+    // .use(
+    //   '/api/*',
+    //   bearerAuth({
+    //     token: 'picsharp_sidecar',
+    //     invalidTokenMessage: 'Permission denied',
+    //     invalidAuthenticationHeaderMessage: 'Permission denied',
+    //     noAuthenticationHeaderMessage: 'Permission denied',
+    //   }),
+    // )
+    // .use(
+    //   '/stream/*',
+    //   bearerAuth({
+    //     token: 'picsharp_sidecar',
+    //     invalidTokenMessage: 'Permission denied',
+    //     invalidAuthenticationHeaderMessage: 'Permission denied',
+    //     noAuthenticationHeaderMessage: 'Permission denied',
+    //   }),
+    // )
     .onError((err, c) => {
       console.error('[ERROR Catch]', err);
+      // if (err instanceof HTTPException) {
+      //   return err.getResponse();
+      // }
       return c.json({ status: 500, message: err.message || 'Internal Server Error' }, 500);
     })
     .get('/ping', (c) => c.text('pong'));
@@ -45,7 +64,7 @@ export function createApp() {
   app.route('/api/compress/svg', svg);
   app.route('/api/compress/tinify', tinify);
   app.route('/stream/watch', watch);
-  app.route('/admin/kv', createKvAdminRouter());
+  // app.route('/admin/kv', createKvAdminRouter());
 
   return app;
 }
