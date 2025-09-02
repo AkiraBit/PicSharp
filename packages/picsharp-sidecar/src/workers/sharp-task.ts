@@ -1,5 +1,5 @@
 import { parentPort } from 'node:worker_threads';
-import { processPng } from '../services/compress/png';
+import { processPngLossy, processPngLossless } from '../services/compress/png';
 import { processJpeg } from '../services/compress/jpeg';
 import { processWebp } from '../services/compress/webp';
 import { processAvif } from '../services/compress/avif';
@@ -19,7 +19,10 @@ parentPort.on('message', async (msg: { requestId: string; type: string; payload:
   if (!requestId) return;
   try {
     if (type === 'png') {
-      const result = await processPng(payload);
+      const result = await processPngLossy(payload);
+      parentPort!.postMessage({ requestId, type: 'result', data: result });
+    } else if (type === 'png-lossless') {
+      const result = await processPngLossless(payload);
       parentPort!.postMessage({ requestId, type: 'result', data: result });
     } else if (type === 'jpeg') {
       const result = await processJpeg(payload);

@@ -57,18 +57,19 @@ export default {
   // Settings.Compression.Mode
   'settings.compression.mode.title': '压缩模式',
   'settings.compression.mode.description.auto':
-    '默认使用TinyPNG，当Tinypng压缩失败时，使用本地压缩重试。',
-  'settings.compression.mode.description.remote': '仅使用TinyPNG',
-  'settings.compression.mode.description.local': '仅使用本地压缩',
+    '优先使用TinyPNG，当TinyPNG服务不可用时，切换为本地压缩重试',
+  'settings.compression.mode.description.remote':
+    '仅使用TinyPNG压缩，需联网，当TinyPNG服务不可用时压缩失败，适用于非隐私图片',
+  'settings.compression.mode.description.local': '仅使用本地压缩，无需联网，适用于隐私图片',
   'settings.compression.mode.option.auto': '自动选择',
   'settings.compression.mode.option.remote': 'TinyPNG',
   'settings.compression.mode.option.local': '本地压缩',
   // Settings.Compression.Type
   'settings.compression.type.title': '压缩类型',
   'settings.compression.type.description.lossless':
-    '无损压缩可保留完整图像细节但压缩率低，文件体积较大，仅支持WebP、AVIF格式，当无损压缩无效时，使用有损压缩。',
+    '保留完整图像细节但压缩率较低，仅支持PNG、WebP、AVIF、TIFF/TIF格式',
   'settings.compression.type.description.lossy':
-    '有损压缩通过牺牲部分图像细节来显著减小文件体积，所有格式均支持。',
+    '调整部分图像细节来显著减小文件体积，所有格式均支持。',
   'settings.compression.type.option.lossless': '无损压缩',
   'settings.compression.type.option.lossy': '有损压缩',
   // Settings.Compression.Level

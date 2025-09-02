@@ -10,14 +10,18 @@ import { useI18n } from '@/i18n';
 import { memo } from 'react';
 import useSettingsStore from '@/store/settings';
 import useSelector from '@/hooks/useSelector';
-import { SettingsKey, CompressionType } from '@/constants';
+import { SettingsKey, CompressionType, CompressionMode } from '@/constants';
 import SettingItem from '../setting-item';
 import { Badge } from '@/components/ui/badge';
 
 export default memo(function SettingsCompressionType() {
   const t = useI18n();
-  const { compression_type: type, set } = useSettingsStore(
-    useSelector([SettingsKey.CompressionType, 'set']),
+  const {
+    compression_type: type,
+    compression_mode: mode,
+    set,
+  } = useSettingsStore(
+    useSelector([SettingsKey.CompressionType, SettingsKey.CompressionMode, 'set']),
   );
 
   const options = [
@@ -46,7 +50,7 @@ export default memo(function SettingsCompressionType() {
       titleClassName='flex flex-row items-center gap-x-2'
       description={t(`settings.compression.type.description.${type}`)}
     >
-      <Select value={type} onValueChange={handleChange}>
+      <Select value={type} onValueChange={handleChange} disabled={mode === CompressionMode.Remote}>
         <SelectTrigger>
           <SelectValue placeholder={t('settings.compression.type.title')} />
         </SelectTrigger>

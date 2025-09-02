@@ -1,10 +1,10 @@
 import { Hono } from 'hono';
-import sharp from 'sharp';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
 import { checkFile } from '../../utils';
 import { SaveMode, ConvertFormat } from '../../constants';
 import { getThreadPool } from '../../workers/thread-pool';
+import { PngRowFilter } from '@napi-rs/image';
 
 const app = new Hono();
 
@@ -27,7 +27,7 @@ const OptionsSchema = z
   .optional()
   .default({});
 
-const ProcessOptionsSchema = z
+const LossyProcessOptionsSchema = z
   .object({
     // 是否使用渐进式（交错）扫描
     progressive: z.boolean().optional().default(false),
@@ -53,20 +53,55 @@ const ProcessOptionsSchema = z
   .optional()
   .default({});
 
-const PayloadSchema = z.object({
+const LosslessProcessOptionsSchema = z
+  .object({
+    fixErrors: z.boolean().optional().default(false),
+    force: z.boolean().optional().default(false),
+    filter: z.array(z.nativeEnum(PngRowFilter)).optional().default([PngRowFilter.Average]),
+    bitDepthReduction: z.boolean().optional().default(true),
+    colorTypeReduction: z.boolean().optional().default(true),
+    paletteReduction: z.boolean().optional().default(true),
+    grayscaleReduction: z.boolean().optional().default(true),
+    idatRecoding: z.boolean().optional().default(true),
+    strip: z.boolean().optional().default(true),
+  })
+  .optional()
+  .default({});
+
+const LossyPayloadSchema = z.object({
   input_path: z.string(),
   options: OptionsSchema,
-  process_options: ProcessOptionsSchema,
+  process_options: LossyProcessOptionsSchema,
 });
 
-app.post('/', zValidator('json', PayloadSchema), async (context) => {
+const LosslessPayloadSchema = z.object({
+  input_path: z.string(),
+  options: OptionsSchema,
+  process_options: LosslessProcessOptionsSchema,
+});
+
+app.post('/', zValidator('json', LossyPayloadSchema), async (context) => {
   let { input_path, options, process_options } =
-    await context.req.json<z.infer<typeof PayloadSchema>>();
+    await context.req.json<z.infer<typeof LossyPayloadSchema>>();
   await checkFile(input_path);
   options = OptionsSchema.parse(options);
-  process_options = ProcessOptionsSchema.parse(process_options);
+  process_options = LossyProcessOptionsSchema.parse(process_options);
   const result = await getThreadPool().run<any, any>({
     type: 'png',
+    payload: { input_path, options, process_options },
+  });
+
+  return context.json(result);
+});
+
+app.post('/lossless', zValidator('json', LosslessPayloadSchema), async (context) => {
+  let { input_path, options, process_options } =
+    await context.req.json<z.infer<typeof LosslessPayloadSchema>>();
+  await checkFile(input_path);
+  options = OptionsSchema.parse(options);
+  process_options = LosslessProcessOptionsSchema.parse(process_options);
+  const result = await getThreadPool().run<any, any>({
+    type: 'png-lossless',
     payload: { input_path, options, process_options },
   });
 
