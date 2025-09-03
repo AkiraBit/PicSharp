@@ -57,18 +57,20 @@ const enUS = {
   // Settings.Compression.Mode
   'settings.compression.mode.title': 'Compression Mode',
   'settings.compression.mode.description.auto':
-    'Default use Tinypng, if Tinypng compression fails, switch to local compression for retry.',
-  'settings.compression.mode.description.remote': 'Use Tinypng compression only',
-  'settings.compression.mode.description.local': 'Use local compression only',
+    'Use TinyPNG first, if TinyPNG is unavailable, switch to local compression for retry',
+  'settings.compression.mode.description.remote':
+    'Use TinyPNG compression service only, need to be online, if TinyPNG is unavailable, compression will fail, suitable for non-private images',
+  'settings.compression.mode.description.local':
+    'Use local compression only, no need to be online, suitable for private images',
   'settings.compression.mode.option.auto': 'Auto',
-  'settings.compression.mode.option.remote': 'Tinypng',
+  'settings.compression.mode.option.remote': 'TinyPNG',
   'settings.compression.mode.option.local': 'Local',
   // Settings.Compression.Type
   'settings.compression.type.title': 'Compression Type',
   'settings.compression.type.description.lossless':
-    'Lossless compression can maintain the original image quality but has a lower compression rate; lossy compression can significantly reduce file size but may lose some image quality.',
+    'Preserve complete image details but with a lower compression rate, supported formats: PNG, WebP, AVIF, TIFF/TIF',
   'settings.compression.type.description.lossy':
-    'Lossy compression significantly reduces file size by sacrificing some image quality, all formats are supported.',
+    'Reduce some image details to significantly reduce file size, all formats are supported.',
   'settings.compression.type.option.lossless': 'Lossless',
   'settings.compression.type.option.lossy': 'Lossy',
   // Settings.Compression.Level

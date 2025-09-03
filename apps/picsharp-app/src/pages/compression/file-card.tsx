@@ -343,7 +343,7 @@ function FileCard(props: FileCardProps) {
                   arrow={false}
                 >
                   <Badge
-                    variant={item.success ? 'third-mini' : 'destructive'}
+                    variant={item.success ? 'midnight' : 'destructive'}
                     className='cursor-pointer'
                     data-src={item.output_path}
                     onClick={handleRevealFile}

@@ -3,7 +3,16 @@ import { Worker } from 'node:worker_threads';
 import path from 'node:path';
 import { isDev } from '../utils';
 
-export type TaskType = 'png' | 'jpeg' | 'webp' | 'avif' | 'gif' | 'tiff' | 'svg' | 'tinypng';
+export type TaskType =
+  | 'png'
+  | 'png-lossless'
+  | 'jpeg'
+  | 'webp'
+  | 'avif'
+  | 'gif'
+  | 'tiff'
+  | 'svg'
+  | 'tinypng';
 
 export interface PoolTask<TPayload = any> {
   type: TaskType;

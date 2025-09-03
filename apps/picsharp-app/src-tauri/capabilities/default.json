@@ -33,6 +33,8 @@
     "fs:allow-appcache-read",
     "fs:allow-appcache-read-recursive",
     "fs:allow-lstat",
+    "fs:allow-document-read",
+    "fs:allow-document-read-recursive",
     "log:default",
     "http:default",
     "upload:default",

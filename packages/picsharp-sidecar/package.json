@@ -24,6 +24,7 @@
   "dependencies": {
     "@hono/node-server": "^1.14.1",
     "@hono/zod-validator": "^0.4.3",
+    "@napi-rs/image": "^1.11.2",
     "dirspy": "^1.0.3",
     "fs-extra": "^11.3.0",
     "hono": "^4.7.7",
@@ -54,6 +55,7 @@
   "pkg": {
     "assets": [
       "node_modules/@img/**/*",
+      "node_modules/@napi-rs/**/*",
       "./dist/cluster/**/*",
       "./dist/workers/**/*",
       "./dist/services/**/*"

@@ -92,21 +92,47 @@ export namespace ICompressor {
     }>;
   }
 
+  export enum OxiPngRowFilter {
+    None = 0,
+    Sub = 1,
+    Up = 2,
+    Average = 3,
+    Paeth = 4,
+    MinSum = 5,
+    Entropy = 6,
+    Bigrams = 7,
+    BigEnt = 8,
+    Brute = 9,
+  }
+
   export interface PngCompressPayload {
     input_path: string;
     options?: CompressPayloadOptions;
-    process_options: Partial<{
-      progressive: boolean;
-      compressionLevel: number;
-      adaptiveFiltering: boolean;
-      palette: boolean;
-      quality: number;
-      effort: number;
-      colours: number;
-      colors: number;
-      dither: number;
-      force: boolean;
-    }>;
+    process_options:
+      | Partial<{
+          progressive: boolean;
+          compressionLevel: number;
+          adaptiveFiltering: boolean;
+          palette: boolean;
+          quality: number;
+          effort: number;
+          colours: number;
+          colors: number;
+          dither: number;
+          force: boolean;
+        }>
+      | Partial<{
+          fixErrors?: boolean;
+          force?: boolean;
+          filter?: Array<OxiPngRowFilter>;
+          bitDepthReduction?: boolean;
+          colorTypeReduction?: boolean;
+          paletteReduction?: boolean;
+          grayscaleReduction?: boolean;
+          idatRecoding?: boolean;
+          strip?: boolean;
+          lossless: boolean;
+        }>;
   }
   export interface SvgCompressPayload {
     input_path: string;
@@ -172,7 +198,7 @@ export namespace ICompressor {
     }>;
   }
 
-  enum TiffCompressionEnum {
+  export enum TiffCompressionEnum {
     None = 'none',
     Jpeg = 'jpeg',
     Deflate = 'deflate',
@@ -184,20 +210,20 @@ export namespace ICompressor {
     Jp2k = 'jp2k',
   }
 
-  enum TiffPredictorEnum {
+  export enum TiffPredictorEnum {
     None = 'none',
     Horizontal = 'horizontal',
     Float = 'float',
   }
 
-  enum TiffBitDepthEnum {
+  export enum TiffBitDepthEnum {
     One = 1,
     Two = 2,
     Four = 4,
     Eight = 8,
   }
 
-  enum TiffResolutionUnitEnum {
+  export enum TiffResolutionUnitEnum {
     Inch = 'inch',
     Cm = 'cm',
   }
@@ -559,7 +585,7 @@ export default class Compressor {
   };
 
   private process = async <T extends ICompressor.CompressType>(
-    type: T,
+    type: string,
     payload: ICompressor.CompressPayloadMap[T],
   ) => {
     try {
@@ -582,6 +608,7 @@ export default class Compressor {
               convert_types: this.options.convertTypes,
               convert_alpha: this.options.convertAlpha,
               keep_metadata: this.options.keepMetadata,
+              lossless: this.options.compressionType === CompressionType.Lossless,
             },
             payload.options,
           ),
@@ -608,13 +635,24 @@ export default class Compressor {
   };
 
   png = async (file: FileInfo) => {
-    return this.process('png', {
-      input_path: file.path,
-      process_options: {
-        ...PNG_COMPRESSION_LEVEL_PRESET[this.options.compressionLevel],
-        force: true,
-      },
-    });
+    if (this.options.compressionType === CompressionType.Lossless) {
+      return this.process('png/lossless', {
+        input_path: file.path,
+        process_options: {
+          strip: !this.options?.keepMetadata,
+          force: true,
+          lossless: true,
+        },
+      });
+    } else {
+      return this.process('png', {
+        input_path: file.path,
+        process_options: {
+          ...PNG_COMPRESSION_LEVEL_PRESET[this.options.compressionLevel],
+          force: true,
+        },
+      });
+    }
   };
 
   webp = async (file: FileInfo) => {
@@ -650,6 +688,10 @@ export default class Compressor {
       process_options: {
         ...TIFF_COMPRESSION_LEVEL_PRESET[this.options.compressionLevel],
         force: true,
+        compression:
+          this.options.compressionType === CompressionType.Lossless
+            ? ICompressor.TiffCompressionEnum.Deflate
+            : ICompressor.TiffCompressionEnum.Jpeg,
       },
     });
   };

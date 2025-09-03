@@ -10,13 +10,23 @@ import { useI18n } from '@/i18n';
 import { memo } from 'react';
 import useSettingsStore from '@/store/settings';
 import useSelector from '@/hooks/useSelector';
-import { SettingsKey, CompressionType } from '@/constants';
+import { SettingsKey, CompressionType, CompressionMode } from '@/constants';
 import SettingItem from '../setting-item';
 import { Badge } from '@/components/ui/badge';
 export default memo(function SettingsCompressionLevel() {
   const t = useI18n();
-  const { compression_level: level, set } = useSettingsStore(
-    useSelector([SettingsKey.CompressionLevel, 'set']),
+  const {
+    compression_level: level,
+    compression_mode: mode,
+    compression_type: type,
+    set,
+  } = useSettingsStore(
+    useSelector([
+      SettingsKey.CompressionLevel,
+      SettingsKey.CompressionMode,
+      SettingsKey.CompressionType,
+      'set',
+    ]),
   );
 
   const options = [
@@ -52,12 +62,17 @@ export default memo(function SettingsCompressionLevel() {
         <>
           <span>{t('settings.compression.level.title')}</span>
           <Badge variant='third'>{t(`settings.compression.mode.option.local`)}</Badge>
+          <Badge variant='third'>{t(`settings.compression.type.option.lossy`)}</Badge>
         </>
       }
       titleClassName='flex flex-row items-center gap-x-2'
       description={t('settings.compression.level.description')}
     >
-      <Select value={String(level)} onValueChange={handleChange}>
+      <Select
+        value={String(level)}
+        onValueChange={handleChange}
+        disabled={mode === CompressionMode.Remote || type === CompressionType.Lossless}
+      >
         <SelectTrigger>
           <SelectValue placeholder={t('settings.compression.level.title')} />
         </SelectTrigger>
