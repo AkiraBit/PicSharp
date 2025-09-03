@@ -1,5 +1,17 @@
 {
   "releases": {
+    "2.0.0": {
+      "date": "2025-09-03",
+      "notes": [
+        "🚀 [Improvement] Provides better support for PNG/APNG, TIF/TIFF lossless compression.",
+        "🚀 [Improvement] Brand new UI interface, get the best experience on MacOS, Windows, and Linux.",
+        "🚀 [Improvement] Improve system stability and multitasking performance.",
+        "🚀 [Improvement] Enhance application interaction.",
+        "💡 [Feature] Provide auto-start configuration upon startup.",
+        "💡 [Feature] In \"File Monitoring\" mode, support for configuring \"Ignore Files\".",
+        "🐛 [BugFix] Fix some known bugs."
+      ]
+    },
     "1.5.1": {
       "date": "2025-07-17",
       "notes": [
