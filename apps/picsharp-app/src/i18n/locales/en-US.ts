@@ -68,7 +68,7 @@ const enUS = {
   // Settings.Compression.Type
   'settings.compression.type.title': 'Compression Type',
   'settings.compression.type.description.lossless':
-    'Preserve complete image details but with a lower compression rate, supported formats: PNG, WebP, AVIF, TIFF/TIF',
+    'Preserve complete image details but with a lower compression rate, supported formats: PNG/APNG, WebP, AVIF, TIFF/TIF',
   'settings.compression.type.description.lossy':
     'Reduce some image details to significantly reduce file size, all formats are supported.',
   'settings.compression.type.option.lossless': 'Lossless',

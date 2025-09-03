@@ -67,7 +67,7 @@ export default {
   // Settings.Compression.Type
   'settings.compression.type.title': '压缩类型',
   'settings.compression.type.description.lossless':
-    '保留完整图像细节但压缩率较低，仅支持PNG、WebP、AVIF、TIFF/TIF格式',
+    '保留完整图像细节但压缩率较低，仅支持PNG/APNG、WebP、AVIF、TIFF/TIF格式',
   'settings.compression.type.description.lossy':
     '调整部分图像细节来显著减小文件体积，所有格式均支持。',
   'settings.compression.type.option.lossless': '无损压缩',
@@ -87,7 +87,7 @@ export default {
   //Settings.Compression.Output
   'settings.compression.output.title': '保存方式',
   'settings.compression.output.description': '图片压缩完成后的保存方式',
-  'settings.compression.output.option.overwrite': '覆盖原文件',
+  'settings.compression.output.option.overwrite': '替换原文件',
   'settings.compression.output.option.save_as_new_file': '保存为新文件',
   'settings.compression.output.option.save_to_new_folder': '保存到指定文件夹',
   'settings.compression.output.option.save_as_new_file.title': '新文件的名称后缀',
