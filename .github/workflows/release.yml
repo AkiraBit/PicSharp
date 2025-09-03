@@ -107,57 +107,75 @@ jobs:
         id: find-sidecar-binary
         run: |
           if [[ "${{ matrix.platform }}" == "macos-latest" ]]; then
-            echo "macOS: Finding the .node file under node_modules/@img"
-            node_file_path=$(find node_modules/@img -type f -name "*.node" -print -quit 2>/dev/null || true) # -quit makes find exit after the first match. 2>/dev/null suppresses errors if no file is found. `|| true` ensures the command doesn't fail the step if no file is found.
+            echo "macOS: Finding the .node file under node_modules/@img and node_modules/@napi-rs"
+            sharp_node_file_path=$(find node_modules/@img -type f -name "*.node" -print -quit 2>/dev/null || true) # -quit makes find exit after the first match. 2>/dev/null suppresses errors if no file is found. `|| true` ensures the command doesn't fail the step if no file is found.
+            rs_image_node_file_path=$(find node_modules/@napi-rs -type f -name "*.node" -print -quit 2>/dev/null || true) # -quit makes find exit after the first match. 2>/dev/null suppresses errors if no file is found. `|| true` ensures the command doesn't fail the step if no file is found.
 
-            if [[ -n "$node_file_path" ]]; then
-              echo "Found .node file: $node_file_path"
-              echo "node_file=packages/picsharp-sidecar/$node_file_path" >> $GITHUB_OUTPUT
+            if [[ -n "$sharp_node_file_path" ]]; then
+              echo "Found sharp .node file: $sharp_node_file_path"
+              echo "sharp_node_file=packages/picsharp-sidecar/$sharp_node_file_path" >> $GITHUB_OUTPUT
             else
-              echo "No .node files found."
-              echo "node_file=" >> $GITHUB_OUTPUT
+              echo "No sharp .node files found."
+              echo "sharp_node_file=" >> $GITHUB_OUTPUT
+            fi
+
+            if [[ -n "$rs_image_node_file_path" ]]; then
+              echo "Found rs-image .node file: $rs_image_node_file_path"
+              echo "rs_image_node_file=packages/picsharp-sidecar/$rs_image_node_file_path" >> $GITHUB_OUTPUT
+            else
+              echo "No rs-image .node files found."
+              echo "rs_image_node_file=" >> $GITHUB_OUTPUT
             fi
 
             echo "macOS: Finding the .dylib file under node_modules/@img"
-            dylib_file_path=$(find node_modules/@img -type f -name "*.dylib" -print -quit 2>/dev/null || true) # -quit makes find exit after the first match. 2>/dev/null suppresses errors if no file is found. `|| true` ensures the command doesn't fail the step if no file is found.
+            sharp_dylib_file_path=$(find node_modules/@img -type f -name "*.dylib" -print -quit 2>/dev/null || true) # -quit makes find exit after the first match. 2>/dev/null suppresses errors if no file is found. `|| true` ensures the command doesn't fail the step if no file is found.
 
-            if [[ -n "$dylib_file_path" ]]; then
-              echo "Found .dylib file: $dylib_file_path"
-              echo "dylib_file=packages/picsharp-sidecar/$dylib_file_path" >> $GITHUB_OUTPUT
+            if [[ -n "$sharp_dylib_file_path" ]]; then
+              echo "Found sharp .dylib file: $sharp_dylib_file_path"
+              echo "sharp_dylib_file=packages/picsharp-sidecar/$sharp_dylib_file_path" >> $GITHUB_OUTPUT
             else
-              echo "No .dylib files found."
-              echo "dylib_file=" >> $GITHUB_OUTPUT
+              echo "No sharp .dylib files found."
+              echo "sharp_dylib_file=" >> $GITHUB_OUTPUT
             fi
           elif [[ "${{ matrix.platform }}" == "windows-latest" ]]; then
-            echo "Windows: Finding the .node file under node_modules/@img"
-            node_file_path=$(find node_modules/@img -type f -name "*.node" -print -quit 2>/dev/null || true) # -quit makes find exit after the first match. 2>/dev/null suppresses errors if no file is found. `|| true` ensures the command doesn't fail the step if no file is found.
+            echo "Windows: Finding the .node file under node_modules/@img and node_modules/@napi-rs"
+            sharp_node_file_path=$(find node_modules/@img -type f -name "*.node" -print -quit 2>/dev/null || true) # -quit makes find exit after the first match. 2>/dev/null suppresses errors if no file is found. `|| true` ensures the command doesn't fail the step if no file is found.
+            rs_image_node_file_path=$(find node_modules/@napi-rs -type f -name "*.node" -print -quit 2>/dev/null || true) # -quit makes find exit after the first match. 2>/dev/null suppresses errors if no file is found. `|| true` ensures the command doesn't fail the step if no file is found.
 
-            if [[ -n "$node_file_path" ]]; then
-              echo "Found .node file: $node_file_path"
-              echo "node_file=packages/picsharp-sidecar/$node_file_path" >> $GITHUB_OUTPUT
+            if [[ -n "$sharp_node_file_path" ]]; then
+              echo "Found sharp .node file: $sharp_node_file_path"
+              echo "sharp_node_file=packages/picsharp-sidecar/$sharp_node_file_path" >> $GITHUB_OUTPUT
             else
-              echo "No .node files found."
-              echo "node_file=" >> $GITHUB_OUTPUT
+              echo "No sharp .node files found."
+              echo "sharp_node_file=" >> $GITHUB_OUTPUT
             fi
 
-            echo "Windows: Finding the .dll file under node_modules/@img"
-            dll_file_path=$(find node_modules/@img -type f -name "*.dll" -print -quit 2>/dev/null || true) # -quit makes find exit after the first match. 2>/dev/null suppresses errors if no file is found. `|| true` ensures the command doesn't fail the step if no file is found.
-
-            if [[ -n "$dll_file_path" ]]; then
-              echo "Found .dll file: $dll_file_path"
-              echo "dll_file=packages/picsharp-sidecar/$dll_file_path" >> $GITHUB_OUTPUT
+            if [[ -n "$rs_image_node_file_path" ]]; then
+              echo "Found rs-image .node file: $rs_image_node_file_path"
+              echo "rs_image_node_file=packages/picsharp-sidecar/$rs_image_node_file_path" >> $GITHUB_OUTPUT
             else
-              echo "No .dll files found."
-              echo "dll_file=" >> $GITHUB_OUTPUT
+              echo "No rs-image .node files found."
+              echo "rs_image_node_file=" >> $GITHUB_OUTPUT
+            fi
+
+            echo "Windows: Finding the sharp .dll file under node_modules/@img"
+            sharp_dll_file_path=$(find node_modules/@img -type f -name "*.dll" -print -quit 2>/dev/null || true) # -quit makes find exit after the first match. 2>/dev/null suppresses errors if no file is found. `|| true` ensures the command doesn't fail the step if no file is found.
+
+            if [[ -n "$sharp_dll_file_path" ]]; then
+              echo "Found sharp .dll file: $sharp_dll_file_path"
+              echo "sharp_dll_file=packages/picsharp-sidecar/$sharp_dll_file_path" >> $GITHUB_OUTPUT
+            else
+              echo "No sharp .dll files found."
+              echo "sharp_dll_file=" >> $GITHUB_OUTPUT
             fi
           fi
         working-directory: packages/picsharp-sidecar
 
-      - name: Code Signing Sidecar .node Binary (MacOS Only)
+      - name: Code Signing Sidecar Sharp .node Binary (MacOS Only)
         if: matrix.platform == 'macos-latest'
         uses: lando/code-sign-action@v3
         with:
-          file: ${{ steps.find-sidecar-binary.outputs.node_file }}
+          file: ${{ steps.find-sidecar-binary.outputs.sharp_node_file }}
           certificate-data: ${{ secrets.APPLE_CERTIFICATE }}
           certificate-password: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
           certificate-id: ${{ secrets.APPLE_TEAM_ID }}
@@ -178,11 +196,36 @@ jobs:
 
           echo "✅ Cleanup complete."
 
-      - name: Code Signing Sidecar .dylib Binary (MacOS Only)
+      - name: Code Signing Sidecar rs-image .node Binary (MacOS Only)
         if: matrix.platform == 'macos-latest'
         uses: lando/code-sign-action@v3
         with:
-          file: ${{ steps.find-sidecar-binary.outputs.dylib_file }}
+          file: ${{ steps.find-sidecar-binary.outputs.rs_image_node_file }}
+          certificate-data: ${{ secrets.APPLE_CERTIFICATE }}
+          certificate-password: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          certificate-id: ${{ secrets.APPLE_TEAM_ID }}
+
+      - name: Clean up macos-build.keychain
+        if: matrix.platform == 'macos-latest'
+        run: |
+          echo "🔍 Checking for existing macos-build.keychain..."
+          if security list-keychains -d user | grep -q "macos-build.keychain"; then
+            echo "✅ Removing macos-build.keychain from keychain list..."
+            security list-keychains -s $(security list-keychains -d user | grep -v "macos-build.keychain")
+          else
+            echo "❌ macos-build.keychain not found in keychain list."
+          fi
+
+          echo "🗑️ Deleting macos-build.keychain files..."
+          rm -f ~/Library/Keychains/macos-build.keychain ~/Library/Keychains/macos-build.keychain-db
+
+          echo "✅ Cleanup complete."
+
+      - name: Code Signing Sidecar Sharp .dylib Binary (MacOS Only)
+        if: matrix.platform == 'macos-latest'
+        uses: lando/code-sign-action@v3
+        with:
+          file: ${{ steps.find-sidecar-binary.outputs.sharp_dylib_file }}
           certificate-data: ${{ secrets.APPLE_CERTIFICATE }}
           certificate-password: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
           certificate-id: ${{ secrets.APPLE_TEAM_ID }}

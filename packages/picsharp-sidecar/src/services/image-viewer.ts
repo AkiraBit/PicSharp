@@ -1,5 +1,7 @@
 import sharp, { ResizeOptions } from 'sharp';
 import path from 'node:path';
+import { Transformer } from '@napi-rs/image';
+import { readFile } from 'node:fs/promises';
 
 export interface ThumbnailPayload {
   input_path: string;
@@ -12,7 +14,9 @@ export interface ThumbnailPayload {
 
 export async function generateThumbnail(payload: ThumbnailPayload) {
   const { input_path, output_dir, width, height, options } = payload;
-  const image = sharp(input_path, { limitInputPixels: false });
+  const buffer = await readFile(input_path);
+  const transformedBuffer = await new Transformer(buffer).webp();
+  const image = sharp(transformedBuffer, { limitInputPixels: false });
   const finalResizeOptions: ResizeOptions = {
     width,
     height,
