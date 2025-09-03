@@ -23,7 +23,7 @@ export function createApp() {
     .use('*', cors())
     .use(
       '*',
-      timeout(30000, () => new HTTPException(500, { message: 'Process timeout' })),
+      timeout(60000, () => new HTTPException(500, { message: 'Process timeout' })),
     )
     // .use(
     //   '/api/*',

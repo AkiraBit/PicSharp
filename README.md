@@ -1,10 +1,12 @@
-<div align="center">
+<!-- <div align="center">
   <a href="" target="_blank">
     <img src="./doc/logo.png" alt="PicSharp Logo" width="20%" />
   </a>
   <h1>PicSharp</h1>
   <br>
-</div>
+</div> -->
+
+![PicSharp](./doc/picsharp_banner.webp)
 
 <div align="center">
   <div>
@@ -47,17 +49,17 @@
   </p>
 </div>
 
-A feature-rich, efficient and flexible cross-platform desktop image compression application.
+A modern, full-featured, high-performance, cross-platform image compression application.
 
 ## Supported Platforms
 
 - **Mac:** ✅ (macOS 12+)
 - **Windows:** ✅ (Windows 10+ x64)
-- **Linux:** ✅ (Ubuntu 20.04+ or other Linux distributions that support `libstdc++` 11.3+)
+- **Linux:** ✅ (Ubuntu 20.04+ or other Linux distributions)
 
-| MacOS                           | Windows       | Linux(Ubuntu)                      |
-| ------------------------------- | ------------- | ---------------------------------- |
-| ![macOS](./doc/mac_preview.png) | [Placeholder] | ![Linux](./doc/ubuntu_preview.png) |
+| MacOS                            | Windows                            | Linux(Ubuntu)                      |
+| -------------------------------- | ---------------------------------- | ---------------------------------- |
+| ![macOS](./doc/picsharp_mac.png) | ![Windows](./doc/picsharp_win.png) | ![Linux](./doc/picsharp_linux.png) |
 
 ## Key Features
 
@@ -241,13 +243,17 @@ About building on different platforms can distribute product details, please ref
 
 If you want to help out please see [CONTRIBUTING.md](CONTRIBUTING.md) to see how to get started.
 
-## Roadmap
+<!-- ## Roadmap
 
-- [ ] Add Windows arm64 support
+- [ ] Add Windows arm64 support -->
 
 ## Support
 
 If you enjoy this project consider giving it a star ⭐.
+
+## Related Projects
+
+- [DirSpy](https://github.com/AkiraBit/dirspy) - A simple, efficient and flexible cross-platform directory watching library
 
 ## Star History
 
