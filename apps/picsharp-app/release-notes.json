@@ -1,5 +1,11 @@
 {
   "releases": {
+    "2.0.1": {
+      "date": "2025-09-04",
+      "notes": [
+        "🛠️ [Modify] In file listening mode, the listening connection will remain active all the time unless it is manually closed."
+      ]
+    },
     "2.0.0": {
       "date": "2025-09-03",
       "notes": [
