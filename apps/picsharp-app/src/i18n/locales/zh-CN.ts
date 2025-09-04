@@ -107,6 +107,33 @@ export default {
   'settings.compression.convert_alpha.title': '透明背景填充',
   'settings.compression.convert_alpha.description':
     '当具有透明背景的图像转换为不支持透明通道的图像格式（如WEBP、AVIF、PNG转为JPG）时，指定使用哪种颜色进行填充',
+  // Settings.Compression.Resize
+  'settings.compression.resize.dimensions.title': '调整尺寸',
+  'settings.compression.resize.dimensions.description':
+    '在压缩时调整图像尺寸，并始终保持原始宽高比。只需设置宽度或高度，另一项将自动计算（设为0表示自动）。',
+  'settings.compression.resize.dimensions.width': '宽度',
+  'settings.compression.resize.dimensions.height': '高度',
+  'settings.compression.resize.dimensions.auto': '自动',
+  // Settings.Compression.Resize.Fit
+  'settings.compression.resize.fit.title': '内容适应',
+  'settings.compression.resize.fit.description':
+    '决定了图像应如何调整以适应给定的尺寸，同时保持宽高比。',
+  'settings.compression.resize.fit.tooltip.title': '适应方式说明',
+  'settings.compression.resize.fit.tooltip.contain':
+    '包含: 缩放图像以完全适应指定尺寸，保持宽高比，不裁剪。',
+  'settings.compression.resize.fit.tooltip.cover':
+    '覆盖: 缩放并裁剪图像以填满指定尺寸，保持宽高比。',
+  'settings.compression.resize.fit.tooltip.fill': '填充: 拉伸图像以填满指定尺寸，不保持宽高比。',
+  'settings.compression.resize.fit.tooltip.inside':
+    '内部: 缩放图像以在指定尺寸内尽可能大，但不超出。',
+  'settings.compression.resize.fit.tooltip.outside':
+    '外部: 缩放图像以在覆盖指定尺寸的同时尽可能小。',
+  // Settings.Compression.Resize.Fit.Option
+  'settings.compression.resize.fit.option.contain': '包含',
+  'settings.compression.resize.fit.option.cover': '覆盖',
+  'settings.compression.resize.fit.option.fill': '填充',
+  'settings.compression.resize.fit.option.inside': '内部',
+  'settings.compression.resize.fit.option.outside': '外部',
   // Settings.Compression.FileIgnore
   'settings.compression.file_ignore.title': '忽略文件',
   'settings.compression.file_ignore.description':

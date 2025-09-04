@@ -9,6 +9,7 @@ import {
   CompressionMode,
   CompressionType,
   ConvertFormat,
+  ResizeFit,
 } from '@/constants';
 import { downloadDir, appDataDir, join } from '@tauri-apps/api/path';
 import { copyFile } from '@tauri-apps/plugin-fs';
@@ -34,6 +35,8 @@ interface SettingsState {
   [SettingsKey.CompressionOutputSaveToFolder]: string;
   [SettingsKey.CompressionConvert]: ConvertFormat[];
   [SettingsKey.CompressionConvertAlpha]: string;
+  [SettingsKey.CompressionResizeDimensions]: number[];
+  [SettingsKey.CompressionResizeFit]: ResizeFit;
   [SettingsKey.CompressionWatchFileIgnore]: string[];
   [SettingsKey.TinypngApiKeys]: Array<{
     api_key: string;
@@ -73,6 +76,8 @@ const useSettingsStore = create(
       [SettingsKey.CompressionOutputSaveToFolder]: '',
       [SettingsKey.CompressionConvert]: [],
       [SettingsKey.CompressionConvertAlpha]: '#FFFFFF',
+      [SettingsKey.CompressionResizeDimensions]: [0, 0],
+      [SettingsKey.CompressionResizeFit]: ResizeFit.Cover,
       [SettingsKey.CompressionWatchFileIgnore]: [],
       [SettingsKey.TinypngApiKeys]: [],
       [SettingsKey.TinypngPreserveMetadata]: [

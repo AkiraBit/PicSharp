@@ -191,7 +191,7 @@ function CompressionWatch() {
           ignores,
         }),
         signal: ctrl.signal,
-        openWhenHidden: false,
+        openWhenHidden: true,
         onopen: async (response) => {
           if (response.ok && response.headers.get('content-type') === 'text/event-stream') {
             console.log('[Sidecar] Watch EventSource opened');

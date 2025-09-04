@@ -9,6 +9,7 @@ import { useEffect, useRef } from 'react';
 import Convert from './convert';
 import Metadata from './metadata';
 import WatchIgnore from './watch-ignore';
+import Resize from './resize';
 
 export default function SettingsCompression() {
   const outputElRef = useRef<HTMLDivElement>(null);
@@ -38,6 +39,9 @@ export default function SettingsCompression() {
       <Card>
         <Convert />
       </Card>
+      {/* <Card>
+        <Resize />
+      </Card> */}
       <Card>
         <WatchIgnore />
       </Card>

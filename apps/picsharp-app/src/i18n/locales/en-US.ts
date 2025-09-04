@@ -111,6 +111,34 @@ const enUS = {
   'settings.compression.convert_alpha.title': 'Alpha Background Fill',
   'settings.compression.convert_alpha.description':
     'Specifies which color to use for fill when an image with a transparent background is converted to an image format that does not support transparency (e.g. WEBP, AVIF, PNG to JPG).',
+  // Settings.Compression.Resize
+  'settings.compression.resize.dimensions.title': 'Resize',
+  'settings.compression.resize.dimensions.description':
+    'Adjust image dimensions during compression. Proportions are maintained automatically. If you set only width or height, the other is calculated automatically (set to 0 for auto).',
+  'settings.compression.resize.dimensions.width': 'Width',
+  'settings.compression.resize.dimensions.height': 'Height',
+  'settings.compression.resize.dimensions.auto': 'Auto',
+  // Settings.Compression.Resize.Fit
+  'settings.compression.resize.fit.title': 'Content Fit',
+  'settings.compression.resize.fit.description':
+    'Determines how the image should be resized to fit the given dimensions. Preserves aspect ratio.',
+  'settings.compression.resize.fit.tooltip.title': 'Fit Options Explained',
+  'settings.compression.resize.fit.tooltip.contain':
+    'Contain: Resizes the image to fit within the dimensions, preserving aspect ratio. No cropping.',
+  'settings.compression.resize.fit.tooltip.cover':
+    'Cover: Resizes to fill the dimensions, preserving aspect ratio. The image may be cropped.',
+  'settings.compression.resize.fit.tooltip.fill':
+    'Fill: Stretches the image to fill the dimensions, ignoring aspect ratio.',
+  'settings.compression.resize.fit.tooltip.inside':
+    'Inside: Resizes to be as large as possible while being contained within the dimensions.',
+  'settings.compression.resize.fit.tooltip.outside':
+    'Outside: Resizes to be as small as possible while covering the dimensions.',
+  // Settings.Compression.Resize.Fit.Option
+  'settings.compression.resize.fit.option.contain': 'Contain',
+  'settings.compression.resize.fit.option.cover': 'Cover',
+  'settings.compression.resize.fit.option.fill': 'Fill',
+  'settings.compression.resize.fit.option.inside': 'Inside',
+  'settings.compression.resize.fit.option.outside': 'Outside',
   // Settings.Compression.FileIgnore
   'settings.compression.file_ignore.title': 'Ignoring Files',
   'settings.compression.file_ignore.description':
