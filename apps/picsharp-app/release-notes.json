@@ -1,5 +1,12 @@
 {
   "releases": {
+    "2.1.0": {
+      "date": "2025-09-05",
+      "notes": [
+        "🆕 [Feature] Supports resizing images during compression",
+        "🆕 [新特性] 支持在压缩时调整图片尺寸"
+      ]
+    },
     "2.0.1": {
       "date": "2025-09-04",
       "notes": [

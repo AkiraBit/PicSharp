@@ -1,7 +1,7 @@
 {
   "name": "@picsharp/picsharp-app",
   "private": true,
-  "version": "2.0.1",
+  "version": "2.1.0",
   "type": "module",
   "author": "AkiraBit",
   "license": "AGPL-3.0",
