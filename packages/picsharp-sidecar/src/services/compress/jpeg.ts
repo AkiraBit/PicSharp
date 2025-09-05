@@ -11,6 +11,7 @@ import { copyFile, writeFile } from 'node:fs/promises';
 import { isValidArray, isWindows } from '../../utils';
 import { SaveMode } from '../../constants';
 import { bulkConvert } from '../convert';
+import { resizeFromSharpStream } from '../resize';
 
 export interface ImageTaskPayload {
   input_path: string;
@@ -26,8 +27,13 @@ export async function processJpeg(payload: ImageTaskPayload) {
   }
   const instance = sharp(input_path, { limitInputPixels: false });
   if (options.keep_metadata) instance.keepMetadata();
-  const optimizedInstance = instance.jpeg(process_options);
-  const optimizedImageBuffer = await optimizedInstance.toBuffer();
+  instance.jpeg(process_options);
+  resizeFromSharpStream({
+    stream: instance,
+    originalMetadata: await instance.metadata(),
+    options,
+  });
+  const optimizedImageBuffer = await instance.toBuffer();
   const compressedSize = optimizedImageBuffer.byteLength;
   const compressionRate = calCompressionRate(originalSize, compressedSize);
   const availableCompressRate = compressionRate >= (options.limit_compress_rate || 0);
@@ -36,11 +42,9 @@ export async function processJpeg(payload: ImageTaskPayload) {
     new_file_suffix: options.save.new_file_suffix,
     new_folder_path: options.save.new_folder_path,
   });
-  // let mssim = 1;
   const tempFilePath = options.temp_dir ? await copyFileToTemp(input_path, options.temp_dir) : '';
   if (availableCompressRate) {
     await writeFile(newOutputPath, optimizedImageBuffer);
-    // mssim = await calculateSSIM(input_path, newOutputPath);
   } else {
     if (input_path !== newOutputPath) {
       await copyFile(input_path, newOutputPath);
@@ -48,7 +52,12 @@ export async function processJpeg(payload: ImageTaskPayload) {
   }
   let convert_results: any[] = [];
   if (isValidArray(options.convert_types)) {
-    const results = await bulkConvert(newOutputPath, options.convert_types, options.convert_alpha);
+    const results = await bulkConvert(
+      newOutputPath,
+      options.convert_types,
+      options.convert_alpha,
+      instance,
+    );
     convert_results = results;
   }
   return {

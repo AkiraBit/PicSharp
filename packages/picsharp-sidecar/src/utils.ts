@@ -172,7 +172,7 @@ export function hashFile(filePath: string, algorithm = 'md5', highWaterMark = 10
 }
 
 export async function getImageRawData(path: string) {
-  const instance = sharp(path);
+  const instance = sharp(path, { limitInputPixels: false });
   const buffer = await instance.ensureAlpha().raw().toBuffer();
   const metadata = await instance.metadata();
   return {

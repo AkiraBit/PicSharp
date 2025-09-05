@@ -11,6 +11,9 @@ import {
   isValidArray,
   hashFile,
 } from '../../utils';
+import { resizeFromSharpStream } from '../resize';
+import { Readable } from 'node:stream';
+import sharp from 'sharp';
 
 export interface ImageTaskPayload {
   input_path: string;
@@ -58,6 +61,7 @@ export async function processTinyPng(payload: ImageTaskPayload) {
   });
 
   const tempFilePath = options.temp_dir ? await copyFileToTemp(input_path, options.temp_dir) : '';
+  let convert_results: any[] = [];
   if (availableCompressRate) {
     const body: Record<string, any> = {};
     if (isValidArray(process_options.preserveMetadata)) {
@@ -71,7 +75,27 @@ export async function processTinyPng(payload: ImageTaskPayload) {
       },
       body: JSON.stringify(body),
     });
-    await pipeline(response.body, createWriteStream(newOutputPath));
+    const transformer = sharp();
+    response.body.pipe(transformer);
+    resizeFromSharpStream({
+      stream: transformer,
+      originalMetadata: {
+        width: data.output.width,
+        height: data.output.height,
+      },
+      options,
+    });
+    const convertedStream = transformer.clone();
+    await pipeline(transformer, createWriteStream(newOutputPath));
+    if (isValidArray(options.convert_types)) {
+      const results = await bulkConvert(
+        newOutputPath,
+        options.convert_types,
+        options.convert_alpha,
+        convertedStream,
+      );
+      convert_results = results;
+    }
   } else {
     if (input_path !== newOutputPath) {
       await copyFile(input_path, newOutputPath);
@@ -93,11 +117,7 @@ export async function processTinyPng(payload: ImageTaskPayload) {
       options,
       process_options,
     },
+    convert_results,
   };
-
-  if (isValidArray(options.convert_types)) {
-    const results = await bulkConvert(newOutputPath, options.convert_types, options.convert_alpha);
-    result.convert_results = results;
-  }
   return result;
 }

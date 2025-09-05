@@ -11,6 +11,7 @@ import { writeFile, copyFile, readFile } from 'node:fs/promises';
 import { isValidArray, isWindows } from '../../utils';
 import { SaveMode } from '../../constants';
 import { bulkConvert } from '../convert';
+import { resizeFromSharpStream } from '../resize';
 import { losslessCompressPng, PNGLosslessOptions } from '@napi-rs/image';
 
 export async function processPngLossy(payload: {
@@ -20,7 +21,6 @@ export async function processPngLossy(payload: {
     lossy: PngOptions;
   };
 }) {
-  console.log('有损压缩');
   const {
     input_path,
     options,
@@ -32,8 +32,13 @@ export async function processPngLossy(payload: {
   }
   const instance = sharp(input_path, { limitInputPixels: false });
   if (options.keep_metadata) instance.keepMetadata();
-  const optimizedInstance = instance.png(process_options);
-  const optimizedImageBuffer = await optimizedInstance.toBuffer();
+  instance.png(process_options);
+  resizeFromSharpStream({
+    stream: instance,
+    originalMetadata: await instance.metadata(),
+    options,
+  });
+  const optimizedImageBuffer = await instance.toBuffer();
   const compressedSize = optimizedImageBuffer.byteLength;
   const compressionRate = calCompressionRate(originalSize, compressedSize);
   const availableCompressRate = compressionRate >= (options.limit_compress_rate || 0);
@@ -42,11 +47,9 @@ export async function processPngLossy(payload: {
     new_file_suffix: options.save.new_file_suffix,
     new_folder_path: options.save.new_folder_path,
   });
-  // let mssim = 1;
   const tempFilePath = options.temp_dir ? await copyFileToTemp(input_path, options.temp_dir) : '';
   if (availableCompressRate) {
     await writeFile(newOutputPath, optimizedImageBuffer);
-    // mssim = await calculateSSIM(input_path, newOutputPath);
   } else {
     if (input_path !== newOutputPath) {
       await copyFile(input_path, newOutputPath);
@@ -54,7 +57,12 @@ export async function processPngLossy(payload: {
   }
   let convert_results: any[] = [];
   if (isValidArray(options.convert_types)) {
-    const results = await bulkConvert(newOutputPath, options.convert_types, options.convert_alpha);
+    const results = await bulkConvert(
+      newOutputPath,
+      options.convert_types,
+      options.convert_alpha,
+      instance,
+    );
     convert_results = results;
   }
   return {
@@ -67,7 +75,6 @@ export async function processPngLossy(payload: {
     available_compress_rate: availableCompressRate,
     hash: await hashFile(newOutputPath),
     convert_results,
-    // ssim: mssim,
   };
 }
 
@@ -78,7 +85,6 @@ export async function processPngLossless(payload: {
     lossless: PNGLosslessOptions;
   };
 }) {
-  console.log('无损压缩');
   const {
     input_path,
     options,
@@ -86,7 +92,13 @@ export async function processPngLossless(payload: {
   } = payload;
   const originalSize = await getFileSize(input_path);
   const fileData = await readFile(input_path);
-  const optimizedData = await losslessCompressPng(fileData, process_options);
+  const optimizedImageBuffer = await losslessCompressPng(fileData, process_options);
+  const instance = sharp(optimizedImageBuffer, { limitInputPixels: false });
+  const optimizedData = await resizeFromSharpStream({
+    stream: instance,
+    originalMetadata: await instance.metadata(),
+    options,
+  }).toBuffer();
   const compressedSize = optimizedData.byteLength;
   const compressionRate = calCompressionRate(originalSize, compressedSize);
   const availableCompressRate = compressionRate >= (options.limit_compress_rate || 0);
@@ -105,7 +117,12 @@ export async function processPngLossless(payload: {
   }
   let convert_results: any[] = [];
   if (isValidArray(options.convert_types)) {
-    const results = await bulkConvert(newOutputPath, options.convert_types, options.convert_alpha);
+    const results = await bulkConvert(
+      newOutputPath,
+      options.convert_types,
+      options.convert_alpha,
+      instance,
+    );
     convert_results = results;
   }
   return {

@@ -18,6 +18,7 @@ import useCompressionStore from '@/store/compression';
 import { Badge } from '@/components/ui/badge';
 import { openPath } from '@tauri-apps/plugin-opener';
 import { useTrafficLightStore } from '@/store/trafficLight';
+import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow';
 
 export interface NavLink {
   title: string;
@@ -68,92 +69,112 @@ function Header() {
     }
   }, [location.pathname, navigation]);
 
-  return (
-    <header
-      className={cn(
-        'relative flex h-[48px] w-full flex-shrink-0 items-center',
-        isMac && isTrafficLightVisible ? 'px-[73px]' : 'px-2',
-      )}
-      data-tauri-drag-region
-    >
-      {working && watchingFolder && (
-        <Badge
-          variant='midnight'
-          className='absolute left-1/2 z-[10] -translate-x-1/2 cursor-pointer text-nowrap transition-all duration-300 hover:underline'
-          onClick={() => {
-            openPath(watchingFolder);
-          }}
-        >
-          <span className='max-w-[60vw] truncate'>{watchingFolder}</span>
-        </Badge>
-      )}
-      <Tabs
-        value={activeTab}
+  if (getCurrentWebviewWindow().label === 'main') {
+    return (
+      <header
         className={cn(
-          'absolute left-1/2 -translate-x-1/2 transition-all duration-300',
-          working &&
-            cn(
-              isMac && isTrafficLightVisible
-                ? 'left-[73px] -translate-x-0'
-                : 'left-2 -translate-x-0',
-            ),
+          'relative flex h-[48px] w-full flex-shrink-0 items-center',
+          isMac && isTrafficLightVisible ? 'px-[73px]' : 'px-2',
         )}
+        data-tauri-drag-region
       >
-        <TabsList className='dark:border-white/10 dark:bg-black/30'>
-          {navigation.primary.map((item) => (
-            <Link key={item.key} to={item.href}>
-              <TabsTrigger
-                value={item.key}
-                className={cn(
-                  'group flex select-none items-center justify-center',
-                  !working && 'gap-2',
-                )}
-              >
-                {item.icon}
-                <div
+        {working && watchingFolder && (
+          <Badge
+            variant='midnight'
+            className='absolute left-1/2 z-[10] -translate-x-1/2 cursor-pointer text-nowrap transition-all duration-300 hover:underline'
+            onClick={() => {
+              openPath(watchingFolder);
+            }}
+          >
+            <span className='max-w-[60vw] truncate'>{watchingFolder}</span>
+          </Badge>
+        )}
+        <Tabs
+          value={activeTab}
+          className={cn(
+            'absolute left-1/2 -translate-x-1/2 transition-all duration-300',
+            working &&
+              cn(
+                isMac && isTrafficLightVisible
+                  ? 'left-[73px] -translate-x-0'
+                  : 'left-2 -translate-x-0',
+              ),
+          )}
+        >
+          <TabsList className='dark:border-white/10 dark:bg-black/30'>
+            {navigation.primary.map((item) => (
+              <Link key={item.key} to={item.href}>
+                <TabsTrigger
+                  value={item.key}
                   className={cn(
-                    working &&
-                      'w-0 max-w-[max-content] overflow-hidden text-left transition-all duration-300 group-hover:ml-2 group-hover:w-[60px]',
+                    'group flex select-none items-center justify-center',
+                    !working && 'gap-2',
                   )}
                 >
-                  {item.title}
+                  {item.icon}
+                  <div
+                    className={cn(
+                      working &&
+                        'w-0 max-w-[max-content] overflow-hidden text-left transition-all duration-300 group-hover:ml-2 group-hover:w-[60px]',
+                    )}
+                  >
+                    {item.title}
+                  </div>
+                </TabsTrigger>
+              </Link>
+            ))}
+          </TabsList>
+        </Tabs>
+        <div className='absolute right-2 flex items-center gap-2'>
+          <Tooltip>
+            <TooltipTrigger>
+              <Link to='/settings' title={t('nav.settings')} viewTransition>
+                <div className='relative flex items-center justify-center'>
+                  <div
+                    className={clsx(
+                      'absolute right-1 top-1 h-[6px] w-[6px] rounded-full',
+                      (isProd && sidecar?.process && sidecar?.origin && sidecar?.spawning) ||
+                        (isDev && sidecar?.origin)
+                        ? 'bg-green-400'
+                        : 'bg-red-400',
+                    )}
+                  ></div>
+                  <Button
+                    variant={location.pathname.startsWith('/settings') ? 'secondary' : 'ghost'}
+                    className={cn('flex h-9 w-9 items-center justify-center')}
+                  >
+                    <SettingsGearIcon size={32} />
+                  </Button>
                 </div>
-              </TabsTrigger>
-            </Link>
-          ))}
-        </TabsList>
-      </Tabs>
-      <div className='absolute right-2 flex items-center gap-2'>
-        <Tooltip>
-          <TooltipTrigger>
-            <Link to='/settings' title={t('nav.settings')} viewTransition>
-              <div className='relative flex items-center justify-center'>
-                <div
-                  className={clsx(
-                    'absolute right-1 top-1 h-[6px] w-[6px] rounded-full',
-                    (isProd && sidecar?.process && sidecar?.origin && sidecar?.spawning) ||
-                      (isDev && sidecar?.origin)
-                      ? 'bg-green-400'
-                      : 'bg-red-400',
-                  )}
-                ></div>
-                <Button
-                  variant={location.pathname.startsWith('/settings') ? 'secondary' : 'ghost'}
-                  className={cn('flex h-9 w-9 items-center justify-center')}
-                >
-                  <SettingsGearIcon size={32} />
-                </Button>
-              </div>
-            </Link>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>{t('nav.settings')}</p>
-          </TooltipContent>
-        </Tooltip>
-        <WindowControl showControls={!isMac} showFullscreen={!isMac} />
-      </div>
-    </header>
-  );
+              </Link>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{t('nav.settings')}</p>
+            </TooltipContent>
+          </Tooltip>
+          <WindowControl showControls={!isMac} showFullscreen={!isMac} />
+        </div>
+      </header>
+    );
+  } else if (
+    getCurrentWebviewWindow().label !== 'main' &&
+    (location.pathname.startsWith('/compression/watch') ||
+      location.pathname.startsWith('/compression/classic'))
+  ) {
+    return (
+      <header
+        className={cn(
+          'relative flex h-[48px] w-full flex-shrink-0 items-center',
+          isMac && isTrafficLightVisible ? 'px-[73px]' : 'px-2',
+        )}
+        data-tauri-drag-region
+      >
+        <WindowControl showControls={!isMac} showFullscreen={!isMac} showAlwaysOnTop={true} />
+      </header>
+    );
+  } else {
+    return null;
+  }
 }
 
 export default Header;

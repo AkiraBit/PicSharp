@@ -16,7 +16,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { X, Info } from 'lucide-react';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 function Diamensions() {
   const t = useI18n();
@@ -114,31 +114,32 @@ function Fit() {
   return (
     <SettingItem
       title={
-        <div className='flex flex-row items-center gap-x-2'>
+        <>
           <span>{t('settings.compression.resize.fit.title')}</span>
-        </div>
+          <Badge variant='third'>{t(`settings.compression.mode.option.local`)}</Badge>
+          <Badge variant='third'>TinyPNG</Badge>
+        </>
       }
+      titleClassName='flex flex-row items-center gap-x-2'
       description={t('settings.compression.resize.fit.description')}
     >
       <div className='flex flex-row items-center gap-x-2'>
-        <Tooltip>
-          <TooltipTrigger>
+        <Popover>
+          <PopoverTrigger>
             <Info className='h-4 w-4' />
-          </TooltipTrigger>
-          <TooltipContent>
-            <div className='max-w-xs p-2 text-left'>
-              <ul className='space-y-2'>
-                <li>{t('settings.compression.resize.fit.tooltip.contain')}</li>
-                <li>{t('settings.compression.resize.fit.tooltip.cover')}</li>
-                <li>{t('settings.compression.resize.fit.tooltip.fill')}</li>
-                <li>{t('settings.compression.resize.fit.tooltip.inside')}</li>
-                <li>{t('settings.compression.resize.fit.tooltip.outside')}</li>
-              </ul>
-            </div>
-          </TooltipContent>
-        </Tooltip>
+          </PopoverTrigger>
+          <PopoverContent className='max-h-[250px] overflow-y-auto p-3'>
+            <ul className='space-y-2 text-sm'>
+              <li>{t('settings.compression.resize.fit.tooltip.contain')}</li>
+              <li>{t('settings.compression.resize.fit.tooltip.cover')}</li>
+              <li>{t('settings.compression.resize.fit.tooltip.fill')}</li>
+              <li>{t('settings.compression.resize.fit.tooltip.inside')}</li>
+              <li>{t('settings.compression.resize.fit.tooltip.outside')}</li>
+            </ul>
+          </PopoverContent>
+        </Popover>
         <Select value={resizeFit} onValueChange={handleChange}>
-          <SelectTrigger className='w-[128px]'>
+          <SelectTrigger className='w-[160px]'>
             <SelectValue placeholder={t('settings.compression.resize.fit.title')} />
           </SelectTrigger>
           <SelectContent>

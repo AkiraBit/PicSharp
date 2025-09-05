@@ -114,25 +114,25 @@ const enUS = {
   // Settings.Compression.Resize
   'settings.compression.resize.dimensions.title': 'Resize',
   'settings.compression.resize.dimensions.description':
-    'Adjust image dimensions during compression. Proportions are maintained automatically. If you set only width or height, the other is calculated automatically (set to 0 for auto).',
+    'Adjust image dimensions during compression. If only one side is configured, the other side will be calculated automatically according to the content itself; if both sides are configured, the image will be scaled or cropped according to the configured size; when the configured size is greater than the original size, the image will not be adjusted.',
   'settings.compression.resize.dimensions.width': 'Width',
   'settings.compression.resize.dimensions.height': 'Height',
   'settings.compression.resize.dimensions.auto': 'Auto',
   // Settings.Compression.Resize.Fit
   'settings.compression.resize.fit.title': 'Content Fit',
   'settings.compression.resize.fit.description':
-    'Determines how the image should be resized to fit the given dimensions. Preserves aspect ratio.',
+    'When adjusting dimensions, how should the image be scaled or cropped when the configured size does not match the content itself.',
   'settings.compression.resize.fit.tooltip.title': 'Fit Options Explained',
   'settings.compression.resize.fit.tooltip.contain':
-    'Contain: Resizes the image to fit within the dimensions, preserving aspect ratio. No cropping.',
+    'Contain: Preserve aspect ratio, scale the image to fit within the dimensions, no cropping.',
   'settings.compression.resize.fit.tooltip.cover':
-    'Cover: Resizes to fill the dimensions, preserving aspect ratio. The image may be cropped.',
+    'Cover: (default) Preserving aspect ratio, attempt to ensure the image covers both provided dimensions by cropping/clipping to fit.',
   'settings.compression.resize.fit.tooltip.fill':
-    'Fill: Stretches the image to fill the dimensions, ignoring aspect ratio.',
+    'Fill: Ignore the aspect ratio of the input and stretch to both provided dimensions.',
   'settings.compression.resize.fit.tooltip.inside':
-    'Inside: Resizes to be as large as possible while being contained within the dimensions.',
+    'Inside: Preserving aspect ratio, resize the image to be as large as possible while ensuring its dimensions are less than or equal to both those specified.',
   'settings.compression.resize.fit.tooltip.outside':
-    'Outside: Resizes to be as small as possible while covering the dimensions.',
+    'Outside: Preserving aspect ratio, resize the image to be as small as possible while ensuring its dimensions are greater than or equal to both those specified.',
   // Settings.Compression.Resize.Fit.Option
   'settings.compression.resize.fit.option.contain': 'Contain',
   'settings.compression.resize.fit.option.cover': 'Cover',

@@ -10,6 +10,7 @@ import { copyFile, writeFile } from 'node:fs/promises';
 import { isValidArray, isWindows } from '../../utils';
 import { SaveMode } from '../../constants';
 import { bulkConvert } from '../convert';
+import { resizeFromSharpStream } from '../resize';
 export interface ImageTaskPayload {
   input_path: string;
   options: any;
@@ -24,8 +25,13 @@ export async function processWebp(payload: ImageTaskPayload) {
   }
   const instance = sharp(input_path, { animated: true, limitInputPixels: false });
   if (options.keep_metadata) instance.keepMetadata();
-  const optimizedInstance = instance.webp(process_options);
-  const optimizedImageBuffer = await optimizedInstance.toBuffer();
+  instance.webp(process_options);
+  resizeFromSharpStream({
+    stream: instance,
+    originalMetadata: await instance.metadata(),
+    options,
+  });
+  const optimizedImageBuffer = await instance.toBuffer();
   const compressedSize = optimizedImageBuffer.byteLength;
   const compressionRate = calCompressionRate(originalSize, compressedSize);
   const availableCompressRate = compressionRate >= (options.limit_compress_rate || 0);
@@ -44,7 +50,12 @@ export async function processWebp(payload: ImageTaskPayload) {
   }
   let convert_results: any[] = [];
   if (isValidArray(options.convert_types)) {
-    const results = await bulkConvert(newOutputPath, options.convert_types, options.convert_alpha);
+    const results = await bulkConvert(
+      newOutputPath,
+      options.convert_types,
+      options.convert_alpha,
+      instance,
+    );
     convert_results = results;
   }
   return {

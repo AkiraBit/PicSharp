@@ -68,6 +68,7 @@ export async function createWebviewWindow(
   console.log(`[createWebviewWindow] ${label}`, target);
   if (target) {
     target.show();
+    target.setFocus();
     return target;
   } else {
     return new WebviewWindow(label, {

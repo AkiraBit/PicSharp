@@ -45,6 +45,8 @@ function ToolbarCompress() {
     [SettingsKey.CompressionLevel]: compressionLevel,
     [SettingsKey.CompressionConvert]: convertTypes,
     [SettingsKey.CompressionConvertAlpha]: convertAlpha,
+    [SettingsKey.CompressionResizeDimensions]: resizeDimensions,
+    [SettingsKey.CompressionResizeFit]: resizeFit,
     [SettingsKey.CompressionKeepMetadata]: keepMetadata,
   } = useSettingsStore(
     useSelector([
@@ -59,6 +61,8 @@ function ToolbarCompress() {
       SettingsKey.CompressionLevel,
       SettingsKey.CompressionConvert,
       SettingsKey.CompressionConvertAlpha,
+      SettingsKey.CompressionResizeDimensions,
+      SettingsKey.CompressionResizeFit,
       SettingsKey.CompressionKeepMetadata,
     ]),
   );
@@ -137,6 +141,8 @@ function ToolbarCompress() {
         sidecarDomain: sidecar?.origin,
         convertTypes,
         convertAlpha,
+        resizeDimensions,
+        resizeFit,
         keepMetadata: keepMetadata,
       }).compress(
         files,
@@ -199,7 +205,7 @@ function ToolbarCompress() {
         }),
       );
       sendTextNotification(
-        `PicSharp - ${t('common.compress_completed')}`,
+        t('common.compress_completed'),
         t('tips.compress_completed', {
           fulfilled,
           rejected,
@@ -208,10 +214,7 @@ function ToolbarCompress() {
       );
     } catch (_) {
       messageApi?.error(t('common.compress_failed_msg'));
-      sendTextNotification(
-        `PicSharp - ${t('common.compress_failed')}`,
-        t('common.compress_failed_msg'),
-      );
+      sendTextNotification(t('common.compress_failed'), t('common.compress_failed_msg'));
     } finally {
       if (indicatorRef.current) {
         indicatorRef.current.textContent = '0%';

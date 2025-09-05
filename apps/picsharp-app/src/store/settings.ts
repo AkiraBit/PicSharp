@@ -35,7 +35,7 @@ interface SettingsState {
   [SettingsKey.CompressionOutputSaveToFolder]: string;
   [SettingsKey.CompressionConvert]: ConvertFormat[];
   [SettingsKey.CompressionConvertAlpha]: string;
-  [SettingsKey.CompressionResizeDimensions]: number[];
+  [SettingsKey.CompressionResizeDimensions]: [number, number];
   [SettingsKey.CompressionResizeFit]: ResizeFit;
   [SettingsKey.CompressionWatchFileIgnore]: string[];
   [SettingsKey.TinypngApiKeys]: Array<{

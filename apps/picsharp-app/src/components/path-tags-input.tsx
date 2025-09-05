@@ -98,10 +98,10 @@ const EditableTag = React.memo(function EditableTag({
     <Tooltip>
       <TooltipTrigger>
         <Badge
-          variant='midnight'
+          variant='secondary'
           className={cn(
             'group inline-flex max-w-[300px] cursor-text items-center gap-1',
-            disabled && 'cursor-not-allowed opacity-60',
+            disabled && 'cursor-not-allowed',
           )}
           onClick={() => {
             if (!disabled) {
@@ -309,7 +309,6 @@ export function PathTagsInput({
         }
       }
       if (e.key === 'ArrowLeft' && pendingText.length === 0) {
-        // 将焦点移到最后一个 tag，便于可达性
         const lastTag = containerRef.current?.querySelector<HTMLDivElement>(
           '[data-path-tag]:last-of-type',
         );
@@ -326,7 +325,7 @@ export function PathTagsInput({
         ref={containerRef}
         className={cn(
           'group relative flex min-h-[60px] w-full flex-wrap items-start gap-2 rounded-md border border-neutral-200 bg-transparent text-base shadow-sm focus-within:ring-1 focus-within:ring-neutral-950 md:text-sm dark:border-neutral-600 dark:focus-within:ring-neutral-300',
-          disabled && 'cursor-not-allowed opacity-60',
+          disabled && 'cursor-not-allowed',
           className,
         )}
         onClick={() => {

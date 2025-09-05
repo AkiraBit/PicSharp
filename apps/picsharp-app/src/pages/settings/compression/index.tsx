@@ -39,9 +39,9 @@ export default function SettingsCompression() {
       <Card>
         <Convert />
       </Card>
-      {/* <Card>
+      <Card>
         <Resize />
-      </Card> */}
+      </Card>
       <Card>
         <WatchIgnore />
       </Card>

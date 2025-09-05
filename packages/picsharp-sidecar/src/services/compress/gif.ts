@@ -10,6 +10,7 @@ import { copyFile, writeFile } from 'node:fs/promises';
 import { isValidArray, isWindows } from '../../utils';
 import { bulkConvert } from '../convert';
 import { SaveMode } from '../../constants';
+import { resizeFromSharpStream } from '../resize';
 
 export interface ImageTaskPayload {
   input_path: string;
@@ -25,8 +26,13 @@ export async function processGif(payload: ImageTaskPayload) {
   }
   const instance = sharp(input_path, { animated: true, limitInputPixels: false });
   if (options.keep_metadata) instance.keepMetadata();
-  const optimizedInstance = instance.gif(process_options);
-  const optimizedImageBuffer = await optimizedInstance.toBuffer();
+  instance.gif(process_options);
+  resizeFromSharpStream({
+    stream: instance,
+    originalMetadata: await instance.metadata(),
+    options,
+  });
+  const optimizedImageBuffer = await instance.toBuffer();
   const compressedSize = optimizedImageBuffer.byteLength;
   const compressionRate = calCompressionRate(originalSize, compressedSize);
   const availableCompressRate = compressionRate >= (options.limit_compress_rate || 0);
@@ -45,7 +51,12 @@ export async function processGif(payload: ImageTaskPayload) {
   }
   let convert_results: any[] = [];
   if (isValidArray(options.convert_types)) {
-    const results = await bulkConvert(newOutputPath, options.convert_types, options.convert_alpha);
+    const results = await bulkConvert(
+      newOutputPath,
+      options.convert_types,
+      options.convert_alpha,
+      instance,
+    );
     convert_results = results;
   }
   return {

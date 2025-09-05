@@ -2,7 +2,7 @@ import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
 import { checkFile } from '../../utils';
-import { SaveMode, ConvertFormat } from '../../constants';
+import { SaveMode, ConvertFormat, ResizeFit } from '../../constants';
 import { getThreadPool } from '../../workers/thread-pool';
 
 const app = new Hono();
@@ -21,6 +21,8 @@ const OptionsSchema = z
     temp_dir: z.string().optional(),
     convert_types: z.array(z.nativeEnum(ConvertFormat)).optional().default([]),
     convert_alpha: z.string().optional().default('#FFFFFF'),
+    resize_dimensions: z.array(z.number()).optional().default([]),
+    resize_fit: z.nativeEnum(ResizeFit).optional().default(ResizeFit.Cover),
     keep_metadata: z.boolean().optional().default(false),
   })
   .optional()

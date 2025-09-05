@@ -77,6 +77,7 @@ function FileCard(props: FileCardProps) {
             const targetWindow = await WebviewWindow.getByLabel(label);
             if (targetWindow) {
               targetWindow.show();
+              targetWindow.setFocus();
             } else {
               const window = await createWebviewWindow(label, {
                 url: '/image-compare',

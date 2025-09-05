@@ -1,5 +1,5 @@
 import Scheduler from './scheduler';
-import { CompressionMode, ConvertFormat, VALID_TINYPNG_IMAGE_EXTS } from '../constants';
+import { CompressionMode, ConvertFormat, VALID_TINYPNG_IMAGE_EXTS, ResizeFit } from '../constants';
 import { CompressionOutputMode, CompressionType } from '../constants';
 import { error } from '@tauri-apps/plugin-log';
 import { draw, isFunction } from 'radash';
@@ -23,6 +23,8 @@ export namespace ICompressor {
     sidecarDomain?: string;
     convertTypes?: ConvertFormat[];
     convertAlpha?: string;
+    resizeDimensions?: [number, number];
+    resizeFit?: ResizeFit;
     keepMetadata?: boolean;
   };
 
@@ -607,6 +609,8 @@ export default class Compressor {
               temp_dir: this.options.tempDir,
               convert_types: this.options.convertTypes,
               convert_alpha: this.options.convertAlpha,
+              resize_dimensions: this.options.resizeDimensions,
+              resize_fit: this.options.resizeFit,
               keep_metadata: this.options.keepMetadata,
               lossless: this.options.compressionType === CompressionType.Lossless,
             },

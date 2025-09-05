@@ -38,6 +38,7 @@ export default function AppLayout() {
   const navigate = useNavigate();
   const t = useI18n();
   const { messageApi } = useContext(AppContext);
+
   useEffect(() => {
     let unlistenNsCompress: UnlistenFn | null = null;
     let unlistenNsWatchAndCompress: UnlistenFn | null = null;
@@ -119,6 +120,7 @@ export default function AppLayout() {
         const hasSpawned = await spawnNewWindow('ns_compress', paths);
         if (!hasSpawned) {
           currentWindow.show();
+          currentWindow.setFocus();
           process('ns_compress', paths);
         }
       });
@@ -130,6 +132,7 @@ export default function AppLayout() {
           const hasSpawned = await spawnNewWindow('ns_watch_and_compress', paths);
           if (!hasSpawned) {
             currentWindow.show();
+            currentWindow.setFocus();
             process('ns_watch_and_compress', paths);
           }
         },
@@ -239,7 +242,7 @@ export default function AppLayout() {
           }}
         />
         <PageProgress ref={progressRef} />
-        {WebviewWindow.getCurrent().label === 'main' && <Header />}
+        <Header />
         <div
           className={cn(
             'select-none overflow-hidden rounded-t-xl dark:bg-[#181818]',

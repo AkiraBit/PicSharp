@@ -6,26 +6,23 @@ export async function convert(
   inputPath: string,
   type: ConvertFormat,
   alpha: string,
-  sharpInstance: Sharp,
+  stream: Sharp,
 ) {
   try {
     const outputPath = createExtOutputPath(inputPath, type);
     let result = null;
     switch (type) {
       case ConvertFormat.PNG:
-        result = await sharpInstance.toFormat('png').toFile(outputPath);
+        result = await stream.png().toFile(outputPath);
         break;
       case ConvertFormat.JPG:
-        result = await sharpInstance
-          .flatten({ background: alpha })
-          .toFormat('jpg')
-          .toFile(outputPath);
+        result = await stream.flatten({ background: alpha }).jpeg().toFile(outputPath);
         break;
       case ConvertFormat.WEBP:
-        result = await sharpInstance.toFormat('webp').toFile(outputPath);
+        result = await stream.webp().toFile(outputPath);
         break;
       case ConvertFormat.AVIF:
-        result = await sharpInstance.toFormat('avif').toFile(outputPath);
+        result = await stream.avif().toFile(outputPath);
         break;
       default:
         throw new Error(`Unsupported convert format: ${type}`);
@@ -49,18 +46,19 @@ export async function bulkConvert(
   inputPath: string,
   types: ConvertFormat[],
   alpha: string,
-  sharpInstance?: Sharp,
+  stream?: Sharp,
 ) {
   const tasks = [];
   const ext = getFileExtWithoutDot(inputPath);
-  if (!sharpInstance) {
-    sharpInstance = sharp(inputPath);
+  if (!stream) {
+    stream = sharp(inputPath, { limitInputPixels: false });
   }
   for (const type of types) {
     if (ext === 'jpeg' && type === ConvertFormat.JPG) {
       continue;
     } else if (ext !== type) {
-      tasks.push(convert(inputPath, type, alpha, sharpInstance));
+      const convertStream = stream.clone();
+      tasks.push(convert(inputPath, type, alpha, convertStream));
     }
   }
   return Promise.all(tasks);

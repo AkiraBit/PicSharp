@@ -37,3 +37,11 @@ export const VALID_IMAGE_EXTS = [
   '.tiff',
   '.tif',
 ];
+
+export enum ResizeFit {
+  Contain = 'contain',
+  Cover = 'cover',
+  Fill = 'fill',
+  Inside = 'inside',
+  Outside = 'outside',
+}

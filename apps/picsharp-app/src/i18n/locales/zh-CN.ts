@@ -110,30 +110,31 @@ export default {
   // Settings.Compression.Resize
   'settings.compression.resize.dimensions.title': '调整尺寸',
   'settings.compression.resize.dimensions.description':
-    '在压缩时调整图像尺寸，并始终保持原始宽高比。只需设置宽度或高度，另一项将自动计算（设为0表示自动）。',
+    '在压缩时调整图像尺寸，只配置一边时，另一边将根据内容本身比例自动计算；两边都配置时，则按照配置的尺寸进行缩放或裁剪；当配置尺寸大于原图尺寸时，则保持图像原始比例，不进行调整；',
   'settings.compression.resize.dimensions.width': '宽度',
   'settings.compression.resize.dimensions.height': '高度',
   'settings.compression.resize.dimensions.auto': '自动',
   // Settings.Compression.Resize.Fit
   'settings.compression.resize.fit.title': '内容适应',
   'settings.compression.resize.fit.description':
-    '决定了图像应如何调整以适应给定的尺寸，同时保持宽高比。',
+    '调整尺寸时，图片在配置的尺寸大小与内容本身比例不一致时，应如何缩放或裁剪',
   'settings.compression.resize.fit.tooltip.title': '适应方式说明',
   'settings.compression.resize.fit.tooltip.contain':
-    '包含: 缩放图像以完全适应指定尺寸，保持宽高比，不裁剪。',
+    '包含: 保持宽高比，缩放图像以完全适应指定尺寸，不裁剪。',
   'settings.compression.resize.fit.tooltip.cover':
-    '覆盖: 缩放并裁剪图像以填满指定尺寸，保持宽高比。',
-  'settings.compression.resize.fit.tooltip.fill': '填充: 拉伸图像以填满指定尺寸，不保持宽高比。',
+    '覆盖: （默认）保持宽高比，尝试通过裁剪/剪切来确保图像覆盖两个提供的尺寸。',
+  'settings.compression.resize.fit.tooltip.fill':
+    '填充: 不保持宽高比，拉伸图像以填满两个提供的尺寸。',
   'settings.compression.resize.fit.tooltip.inside':
-    '内部: 缩放图像以在指定尺寸内尽可能大，但不超出。',
+    '内部: 保持宽高比，将图像调整为尽可能大，同时确保其尺寸小于或等于指定的尺寸。',
   'settings.compression.resize.fit.tooltip.outside':
-    '外部: 缩放图像以在覆盖指定尺寸的同时尽可能小。',
+    '外部: 保持宽高比，将图像调整为尽可能小，同时确保其尺寸大于或等于指定的尺寸。',
   // Settings.Compression.Resize.Fit.Option
-  'settings.compression.resize.fit.option.contain': '包含',
-  'settings.compression.resize.fit.option.cover': '覆盖',
-  'settings.compression.resize.fit.option.fill': '填充',
-  'settings.compression.resize.fit.option.inside': '内部',
-  'settings.compression.resize.fit.option.outside': '外部',
+  'settings.compression.resize.fit.option.contain': '包含（Contain）',
+  'settings.compression.resize.fit.option.cover': '覆盖（Cover）',
+  'settings.compression.resize.fit.option.fill': '填充（Fill）',
+  'settings.compression.resize.fit.option.inside': '内部（Inside）',
+  'settings.compression.resize.fit.option.outside': '外部（Outside）',
   // Settings.Compression.FileIgnore
   'settings.compression.file_ignore.title': '忽略文件',
   'settings.compression.file_ignore.description':
