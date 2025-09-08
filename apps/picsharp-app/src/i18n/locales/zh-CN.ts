@@ -49,6 +49,9 @@ export default {
   // Settings.General.Update
   'settings.general.update.title': '自动检查更新',
   'settings.general.update.description': '当有新版本可用时,自动检查更新并通知',
+  // Settings.General.Privacy
+  'settings.general.privacy.title': '隐私模式',
+  'settings.general.privacy.description': '当隐私模式启用时，应用不会收集任何数据',
   // Settings.Compression
   'settings.compression.title': '压缩设置',
   // Settings.Compression.Concurrency
@@ -139,6 +142,34 @@ export default {
   'settings.compression.file_ignore.title': '忽略文件',
   'settings.compression.file_ignore.description':
     '当监听新增图片时，将会忽略这些文件，多个文件用换行符分隔，支持glob语法',
+  // Settings.Compression.Watermark
+  'settings.compression.watermark.title': '水印',
+  'settings.compression.watermark.description': '压缩完成后为图片添加水印',
+  'settings.compression.watermark.option.type': '类型',
+  'settings.compression.watermark.option.type.none': '无',
+  'settings.compression.watermark.option.type.text': '文本',
+  'settings.compression.watermark.option.type.image': '图片',
+  // Settings.Compression.Watermark.Position
+  'settings.compression.watermark.position.title': '位置',
+  'settings.compression.watermark.position.description': '水印在图片中的位置',
+  'settings.compression.watermark.option.position.top': '顶部',
+  'settings.compression.watermark.option.position.top_right': '顶部右侧',
+  'settings.compression.watermark.option.position.top_left': '顶部左侧',
+  'settings.compression.watermark.option.position.bottom': '底部',
+  'settings.compression.watermark.option.position.bottom_right': '底部右侧',
+  'settings.compression.watermark.option.position.bottom_left': '底部左侧',
+  'settings.compression.watermark.option.position.left': '左侧',
+  'settings.compression.watermark.option.position.right': '右侧',
+  'settings.compression.watermark.option.position.center': '中心',
+  // Settings.Compression.Watermark.Text
+  'settings.compression.watermark.text.title': '内容',
+  'settings.compression.watermark.text.description': '',
+  // Settings.Compression.Watermark.Text.Color
+  'settings.compression.watermark.text.color.title': '颜色',
+  'settings.compression.watermark.text.color.description': '',
+  // Settings.Compression.Watermark.Text.FontSize
+  'settings.compression.watermark.text.font_size.title': '字体大小',
+  'settings.compression.watermark.text.font_size.description': '',
   // Settings.Tinypng
   'settings.tinypng.title': 'TinyPNG',
   // Settings.Tinypng.ApiKeys

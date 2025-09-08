@@ -10,6 +10,7 @@ import Convert from './convert';
 import Metadata from './metadata';
 import WatchIgnore from './watch-ignore';
 import Resize from './resize';
+import Watermark from './watermark';
 
 export default function SettingsCompression() {
   const outputElRef = useRef<HTMLDivElement>(null);
@@ -41,6 +42,9 @@ export default function SettingsCompression() {
       </Card>
       <Card>
         <Resize />
+      </Card>
+      <Card>
+        <Watermark />
       </Card>
       <Card>
         <WatchIgnore />

@@ -10,6 +10,8 @@ import {
   CompressionType,
   ConvertFormat,
   ResizeFit,
+  WatermarkType,
+  WatermarkPosition,
 } from '@/constants';
 import { downloadDir, appDataDir, join } from '@tauri-apps/api/path';
 import { copyFile } from '@tauri-apps/plugin-fs';
@@ -23,6 +25,7 @@ interface SettingsState {
   [SettingsKey.Language]: string;
   [SettingsKey.Autostart]: boolean;
   [SettingsKey.AutoCheckUpdate]: boolean;
+  [SettingsKey.PrivacyMode]: boolean;
   [SettingsKey.CompressionMode]: CompressionMode;
   [SettingsKey.CompressionType]: CompressionType;
   [SettingsKey.CompressionLevel]: number;
@@ -37,6 +40,11 @@ interface SettingsState {
   [SettingsKey.CompressionConvertAlpha]: string;
   [SettingsKey.CompressionResizeDimensions]: [number, number];
   [SettingsKey.CompressionResizeFit]: ResizeFit;
+  [SettingsKey.CompressionWatermarkType]: WatermarkType;
+  [SettingsKey.CompressionWatermarkPosition]: WatermarkPosition;
+  [SettingsKey.CompressionWatermarkText]: string;
+  [SettingsKey.CompressionWatermarkTextColor]: string;
+  [SettingsKey.CompressionWatermarkFontSize]: number;
   [SettingsKey.CompressionWatchFileIgnore]: string[];
   [SettingsKey.TinypngApiKeys]: Array<{
     api_key: string;
@@ -64,6 +72,7 @@ const useSettingsStore = create(
       [SettingsKey.Language]: 'en-US',
       [SettingsKey.Autostart]: false,
       [SettingsKey.AutoCheckUpdate]: true,
+      [SettingsKey.PrivacyMode]: false,
       [SettingsKey.CompressionMode]: CompressionMode.Local,
       [SettingsKey.CompressionType]: CompressionType.Lossy,
       [SettingsKey.CompressionLevel]: 4,
@@ -78,6 +87,11 @@ const useSettingsStore = create(
       [SettingsKey.CompressionConvertAlpha]: '#FFFFFF',
       [SettingsKey.CompressionResizeDimensions]: [0, 0],
       [SettingsKey.CompressionResizeFit]: ResizeFit.Cover,
+      [SettingsKey.CompressionWatermarkType]: WatermarkType.None,
+      [SettingsKey.CompressionWatermarkPosition]: WatermarkPosition.BottomRight,
+      [SettingsKey.CompressionWatermarkText]: '',
+      [SettingsKey.CompressionWatermarkTextColor]: '#FFFFFF',
+      [SettingsKey.CompressionWatermarkFontSize]: 16,
       [SettingsKey.CompressionWatchFileIgnore]: [],
       [SettingsKey.TinypngApiKeys]: [],
       [SettingsKey.TinypngPreserveMetadata]: [

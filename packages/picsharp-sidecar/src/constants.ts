@@ -45,3 +45,21 @@ export enum ResizeFit {
   Inside = 'inside',
   Outside = 'outside',
 }
+
+export enum WatermarkType {
+  None = 'none',
+  Text = 'text',
+  Image = 'image',
+}
+
+export enum WatermarkPosition {
+  Top = 'north',
+  TopLeft = 'northwest',
+  TopRight = 'northeast',
+  Bottom = 'south',
+  BottomRight = 'southeast',
+  BottomLeft = 'southwest',
+  Left = 'west',
+  Right = 'east',
+  Center = 'center',
+}

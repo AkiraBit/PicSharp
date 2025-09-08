@@ -8,7 +8,8 @@ import {
 } from '../../utils';
 import { copyFile, writeFile } from 'node:fs/promises';
 import { isValidArray, isWindows } from '../../utils';
-import { SaveMode } from '../../constants';
+import { SaveMode, WatermarkType } from '../../constants';
+import { addTextWatermark } from '../watermark';
 import { bulkConvert } from '../convert';
 import { resizeFromSharpStream } from '../resize';
 export interface ImageTaskPayload {
@@ -26,9 +27,20 @@ export async function processWebp(payload: ImageTaskPayload) {
   const instance = sharp(input_path, { animated: true, limitInputPixels: false });
   if (options.keep_metadata) instance.keepMetadata();
   instance.webp(process_options);
+  const metadata = await instance.metadata();
+  if (options.watermark_type === WatermarkType.Text) {
+    await addTextWatermark({
+      stream: instance,
+      text: options.watermark_text,
+      color: options.watermark_text_color,
+      fontSize: options.watermark_font_size,
+      position: options.watermark_position,
+      container: metadata,
+    });
+  }
   resizeFromSharpStream({
     stream: instance,
-    originalMetadata: await instance.metadata(),
+    originalMetadata: metadata,
     options,
   });
   const optimizedImageBuffer = await instance.toBuffer();

@@ -47,6 +47,11 @@ function ToolbarCompress() {
     [SettingsKey.CompressionConvertAlpha]: convertAlpha,
     [SettingsKey.CompressionResizeDimensions]: resizeDimensions,
     [SettingsKey.CompressionResizeFit]: resizeFit,
+    [SettingsKey.CompressionWatermarkType]: watermarkType,
+    [SettingsKey.CompressionWatermarkPosition]: watermarkPosition,
+    [SettingsKey.CompressionWatermarkText]: watermarkText,
+    [SettingsKey.CompressionWatermarkTextColor]: watermarkTextColor,
+    [SettingsKey.CompressionWatermarkFontSize]: watermarkFontSize,
     [SettingsKey.CompressionKeepMetadata]: keepMetadata,
   } = useSettingsStore(
     useSelector([
@@ -63,6 +68,11 @@ function ToolbarCompress() {
       SettingsKey.CompressionConvertAlpha,
       SettingsKey.CompressionResizeDimensions,
       SettingsKey.CompressionResizeFit,
+      SettingsKey.CompressionWatermarkType,
+      SettingsKey.CompressionWatermarkPosition,
+      SettingsKey.CompressionWatermarkText,
+      SettingsKey.CompressionWatermarkTextColor,
+      SettingsKey.CompressionWatermarkFontSize,
       SettingsKey.CompressionKeepMetadata,
     ]),
   );
@@ -143,6 +153,11 @@ function ToolbarCompress() {
         convertAlpha,
         resizeDimensions,
         resizeFit,
+        watermarkType,
+        watermarkPosition,
+        watermarkText,
+        watermarkTextColor,
+        watermarkFontSize,
         keepMetadata: keepMetadata,
       }).compress(
         files,

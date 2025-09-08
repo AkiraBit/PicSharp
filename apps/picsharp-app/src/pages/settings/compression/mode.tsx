@@ -15,9 +15,11 @@ import SettingItem from '../setting-item';
 
 export default memo(function SettingsCompressionMode() {
   const t = useI18n();
-  const { compression_mode: mode, set } = useSettingsStore(
-    useSelector([SettingsKey.CompressionMode, 'set']),
-  );
+  const {
+    compression_mode: mode,
+    privacy_mode: privacyMode,
+    set,
+  } = useSettingsStore(useSelector([SettingsKey.CompressionMode, SettingsKey.PrivacyMode, 'set']));
 
   const modes = [
     {
@@ -43,7 +45,7 @@ export default memo(function SettingsCompressionMode() {
       title={t('settings.compression.mode.title')}
       description={t(`settings.compression.mode.description.${mode}`)}
     >
-      <Select value={mode} onValueChange={handleChange}>
+      <Select value={mode} onValueChange={handleChange} disabled={privacyMode}>
         <SelectTrigger>
           <SelectValue placeholder={t('settings.compression.mode.title')} />
         </SelectTrigger>

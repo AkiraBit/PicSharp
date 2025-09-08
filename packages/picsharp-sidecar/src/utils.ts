@@ -202,3 +202,19 @@ export async function calculateSSIM(original: string, compressed: string) {
 
 export const isBuilt = __dirname.includes('dist');
 export const isDev = process.env.NODE_ENV !== 'production' && !isBuilt;
+
+/**
+ * Convert px to Pango size (for <span size="..."> in Pango Markup).
+ * Formula: size = px * 768
+ */
+export function pxToPangoSize(px: number): number {
+  return Math.round(px * 768);
+}
+
+/**
+ * Convert Pango size back to px.
+ * Formula: px = size / 768
+ */
+export function pangoSizeToPx(size: number): number {
+  return Math.round(size / 768);
+}

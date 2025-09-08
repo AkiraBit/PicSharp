@@ -5,6 +5,7 @@ import Notification from './notification';
 import Section from '../section';
 import Update from './update';
 import { isMac } from '@/utils';
+import Privacy from './privacy';
 export default function SettingsGeneral() {
   return (
     <Section>
@@ -13,6 +14,7 @@ export default function SettingsGeneral() {
         <Notification />
         <Autostart />
         <Update />
+        <Privacy />
       </Card>
     </Section>
   );

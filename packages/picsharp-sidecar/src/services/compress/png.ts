@@ -9,23 +9,18 @@ import {
 } from '../../utils';
 import { writeFile, copyFile, readFile } from 'node:fs/promises';
 import { isValidArray, isWindows } from '../../utils';
-import { SaveMode } from '../../constants';
+import { SaveMode, WatermarkType } from '../../constants';
 import { bulkConvert } from '../convert';
 import { resizeFromSharpStream } from '../resize';
 import { losslessCompressPng, PNGLosslessOptions } from '@napi-rs/image';
+import { addTextWatermark } from '../watermark';
 
 export async function processPngLossy(payload: {
   input_path: string;
   options: any;
-  process_options: {
-    lossy: PngOptions;
-  };
+  process_options: PngOptions;
 }) {
-  const {
-    input_path,
-    options,
-    process_options: { lossy: process_options },
-  } = payload;
+  const { input_path, options, process_options } = payload;
   const originalSize = await getFileSize(input_path);
   if (isWindows && options.save.mode === SaveMode.Overwrite) {
     sharp.cache(false);
@@ -33,9 +28,20 @@ export async function processPngLossy(payload: {
   const instance = sharp(input_path, { limitInputPixels: false });
   if (options.keep_metadata) instance.keepMetadata();
   instance.png(process_options);
+  const metadata = await instance.metadata();
+  if (options.watermark_type === WatermarkType.Text) {
+    await addTextWatermark({
+      stream: instance,
+      text: options.watermark_text,
+      color: options.watermark_text_color,
+      fontSize: options.watermark_font_size,
+      position: options.watermark_position,
+      container: metadata,
+    });
+  }
   resizeFromSharpStream({
     stream: instance,
-    originalMetadata: await instance.metadata(),
+    originalMetadata: metadata,
     options,
   });
   const optimizedImageBuffer = await instance.toBuffer();
@@ -81,15 +87,9 @@ export async function processPngLossy(payload: {
 export async function processPngLossless(payload: {
   input_path: string;
   options: any;
-  process_options: {
-    lossless: PNGLosslessOptions;
-  };
+  process_options: PNGLosslessOptions;
 }) {
-  const {
-    input_path,
-    options,
-    process_options: { lossless: process_options },
-  } = payload;
+  const { input_path, options, process_options } = payload;
   const originalSize = await getFileSize(input_path);
   const fileData = await readFile(input_path);
   const optimizedImageBuffer = await losslessCompressPng(fileData, process_options);

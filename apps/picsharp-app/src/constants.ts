@@ -22,6 +22,7 @@ export enum SettingsKey {
   Language = 'language',
   Autostart = 'autostart',
   AutoCheckUpdate = 'auto_check_update',
+  PrivacyMode = 'privacy_mode',
   CompressionMode = 'compression_mode',
   CompressionType = 'compression_type',
   CompressionLevel = 'compression_level',
@@ -36,6 +37,11 @@ export enum SettingsKey {
   CompressionConvertAlpha = 'compression_convert_alpha',
   CompressionResizeDimensions = 'compression_resize_dimensions',
   CompressionResizeFit = 'compression_resize_fit',
+  CompressionWatermarkType = 'compression_watermark_type',
+  CompressionWatermarkPosition = 'compression_watermark_position',
+  CompressionWatermarkText = 'compression_watermark_text',
+  CompressionWatermarkTextColor = 'compression_watermark_text_color',
+  CompressionWatermarkFontSize = 'compression_watermark_text_font_size',
   CompressionWatchFileIgnore = 'compression_watch_file_ignore',
   TinypngApiKeys = 'tinypng_api_keys',
   TinypngPreserveMetadata = 'tinypng_preserve_metadata',
@@ -77,4 +83,22 @@ export enum ResizeFit {
   Fill = 'fill',
   Inside = 'inside',
   Outside = 'outside',
+}
+
+export enum WatermarkType {
+  None = 'none',
+  Text = 'text',
+  Image = 'image',
+}
+
+export enum WatermarkPosition {
+  Top = 'north',
+  TopLeft = 'northwest',
+  TopRight = 'northeast',
+  Bottom = 'south',
+  BottomRight = 'southeast',
+  BottomLeft = 'southwest',
+  Left = 'west',
+  Right = 'east',
+  Center = 'center',
 }

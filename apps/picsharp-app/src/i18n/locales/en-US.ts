@@ -49,6 +49,10 @@ const enUS = {
   'settings.general.update.title': 'Auto Check Update',
   'settings.general.update.description':
     'Automatically check for updates and notify you when a new version is available.',
+  // Settings.General.Privacy
+  'settings.general.privacy.title': 'Privacy Mode',
+  'settings.general.privacy.description':
+    'When privacy mode is enabled, the application will not collect any data.',
   // Settings.Compression
   'settings.compression.title': 'Compression',
   // Settings.Compression.Concurrency
@@ -139,6 +143,35 @@ const enUS = {
   'settings.compression.resize.fit.option.fill': 'Fill',
   'settings.compression.resize.fit.option.inside': 'Inside',
   'settings.compression.resize.fit.option.outside': 'Outside',
+  // Settings.Compression.Watermark
+  'settings.compression.watermark.title': 'Watermark',
+  'settings.compression.watermark.description': 'Add a watermark to the image after compression.',
+  'settings.compression.watermark.option.type': 'Type',
+  'settings.compression.watermark.option.type.none': 'None',
+  'settings.compression.watermark.option.type.text': 'Text',
+  'settings.compression.watermark.option.type.image': 'Image',
+  // Settings.Compression.Watermark.Position
+  'settings.compression.watermark.position.title': 'Position',
+  'settings.compression.watermark.position.description':
+    'The position of the watermark in the image.',
+  'settings.compression.watermark.option.position.top': 'Top',
+  'settings.compression.watermark.option.position.top_left': 'Top Left',
+  'settings.compression.watermark.option.position.top_right': 'Top Right',
+  'settings.compression.watermark.option.position.bottom': 'Bottom',
+  'settings.compression.watermark.option.position.bottom_right': 'Bottom Right',
+  'settings.compression.watermark.option.position.bottom_left': 'Bottom Left',
+  'settings.compression.watermark.option.position.left': 'Left',
+  'settings.compression.watermark.option.position.right': 'Right',
+  'settings.compression.watermark.option.position.center': 'Center',
+  // Settings.Compression.Watermark.Text
+  'settings.compression.watermark.text.title': 'Content',
+  'settings.compression.watermark.text.description': '',
+  // Settings.Compression.Watermark.Text.Color
+  'settings.compression.watermark.text.color.title': 'Color',
+  'settings.compression.watermark.text.color.description': '',
+  // Settings.Compression.Watermark.Text.FontSize
+  'settings.compression.watermark.text.font_size.title': 'Font Size',
+  'settings.compression.watermark.text.font_size.description': '',
   // Settings.Compression.FileIgnore
   'settings.compression.file_ignore.title': 'Ignoring Files',
   'settings.compression.file_ignore.description':

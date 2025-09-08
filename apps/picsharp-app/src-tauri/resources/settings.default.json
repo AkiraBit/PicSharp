@@ -2,6 +2,7 @@
   "language": "",
   "autostart": false,
   "auto_check_update": true,
+  "privacy_mode": false,
   "compression_mode": "local",
   "compression_type": "lossy",
   "compression_level": 4,
@@ -21,6 +22,10 @@
   "compression_convert_alpha": "#FFFFFF",
   "compression_resize_dimensions": [0, 0],
   "compression_resize_fit": "cover",
+  "compression_watermark_type": "none",
+  "compression_watermark_position": "bottom_right",
+  "compression_watermark_text": "",
+  "compression_watermark_text_color": "#FFFFFF",
   "compression_watch_file_ignore": [
     ".git",
     "node_modules"

@@ -241,7 +241,7 @@ export default function AppLayout() {
               'radial-gradient(ellipse 80% 60% at 50% 0%, rgba(226, 232, 240, 0.15), transparent 70%), #000000',
           }}
         />
-        <PageProgress ref={progressRef} />
+        <PageProgress ref={progressRef} description={t('tips.import_files')} />
         <Header />
         <div
           className={cn(

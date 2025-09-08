@@ -1,5 +1,12 @@
 import Scheduler from './scheduler';
-import { CompressionMode, ConvertFormat, VALID_TINYPNG_IMAGE_EXTS, ResizeFit } from '../constants';
+import {
+  CompressionMode,
+  ConvertFormat,
+  VALID_TINYPNG_IMAGE_EXTS,
+  ResizeFit,
+  WatermarkType,
+  WatermarkPosition,
+} from '../constants';
 import { CompressionOutputMode, CompressionType } from '../constants';
 import { error } from '@tauri-apps/plugin-log';
 import { draw, isFunction } from 'radash';
@@ -25,6 +32,12 @@ export namespace ICompressor {
     convertAlpha?: string;
     resizeDimensions?: [number, number];
     resizeFit?: ResizeFit;
+    watermarkType?: WatermarkType;
+    watermarkPosition?: WatermarkPosition;
+    watermarkText?: string;
+    watermarkTextColor?: string;
+    watermarkFontSize?: number;
+    watermarkImage?: string;
     keepMetadata?: boolean;
   };
 
@@ -72,6 +85,11 @@ export namespace ICompressor {
     convert_types?: ConvertFormat[];
     convert_alpha?: string;
     keep_metadata?: boolean;
+    watermark_type?: WatermarkType;
+    watermark_position?: WatermarkPosition;
+    watermark_text?: string;
+    watermark_text_color?: string;
+    watermark_font_size?: number;
   }
 
   export interface JpegCompressPayload {
@@ -379,8 +397,8 @@ const PNG_COMPRESSION_LEVEL_PRESET: Record<
     quality: 90,
     palette: true,
     adaptiveFiltering: true,
-    effort: 5,
-    compressionLevel: 6,
+    effort: 9,
+    compressionLevel: 9,
   },
   4: {
     quality: 85,
@@ -612,6 +630,11 @@ export default class Compressor {
               resize_dimensions: this.options.resizeDimensions,
               resize_fit: this.options.resizeFit,
               keep_metadata: this.options.keepMetadata,
+              watermark_type: this.options.watermarkType,
+              watermark_position: this.options.watermarkPosition,
+              watermark_text: this.options.watermarkText,
+              watermark_text_color: this.options.watermarkTextColor,
+              watermark_font_size: this.options.watermarkFontSize,
               lossless: this.options.compressionType === CompressionType.Lossless,
             },
             payload.options,

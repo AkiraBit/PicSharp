@@ -169,7 +169,9 @@ function Header() {
         )}
         data-tauri-drag-region
       >
-        <WindowControl showControls={!isMac} showFullscreen={!isMac} showAlwaysOnTop={true} />
+        <div className='absolute right-2 flex items-center gap-2'>
+          <WindowControl showControls={!isMac} showFullscreen={!isMac} showAlwaysOnTop={true} />
+        </div>
       </header>
     );
   } else {
