@@ -224,6 +224,10 @@ const enUS = {
   'settings.about.feedback.title': 'Feedback',
   'settings.about.feedback.description':
     'Optimize suggestions, Bug feedback, Feature requests, etc.',
+  // Settings.About.Detail
+  'settings.about.detail.title': 'GitHub',
+  'settings.about.detail.description':
+    'If you like PicSharp and enjoy this project consider giving it a star ⭐️,make it more known to others 🥰',
   // Tray
   'tray.open': 'Open',
   'tray.settings': 'Settings',

@@ -217,6 +217,9 @@ export default {
   // Settings.About.Feedback
   'settings.about.feedback.title': '反馈',
   'settings.about.feedback.description': '优化建议、Bug反馈、功能需求等',
+  // Settings.About.Detail
+  'settings.about.detail.title': 'GitHub',
+  'settings.about.detail.description': '如果你喜欢PicSharp，请给个⭐️吧～使它让更多人知道🥰',
   // Tray
   'tray.open': '打开',
   'tray.settings': '设置',
