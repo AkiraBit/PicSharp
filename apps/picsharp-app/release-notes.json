@@ -1,5 +1,12 @@
 {
   "releases": {
+    "2.2.0": {
+      "date": "2025-09-09",
+      "notes": [
+        "🆕 [Feature] Support adding text or image watermarks after compression",
+        "🆕 [新特性] 支持在压缩后添加文字或图片水印。"
+      ]
+    },
     "2.1.0": {
       "date": "2025-09-05",
       "notes": [
