@@ -144,10 +144,10 @@ export default {
     '当监听新增图片时，将会忽略这些文件，多个文件用换行符分隔，支持glob语法',
   // Settings.Compression.Watermark
   'settings.compression.watermark.title': '水印',
-  'settings.compression.watermark.description': '压缩完成后为图片添加水印',
+  'settings.compression.watermark.description': '压缩后为图片添加文字或图片水印',
   'settings.compression.watermark.option.type': '类型',
   'settings.compression.watermark.option.type.none': '无',
-  'settings.compression.watermark.option.type.text': '文本',
+  'settings.compression.watermark.option.type.text': '文字',
   'settings.compression.watermark.option.type.image': '图片',
   // Settings.Compression.Watermark.Position
   'settings.compression.watermark.position.title': '位置',
@@ -162,18 +162,21 @@ export default {
   'settings.compression.watermark.option.position.right': '右侧',
   'settings.compression.watermark.option.position.center': '中心',
   // Settings.Compression.Watermark.Text
-  'settings.compression.watermark.text.title': '内容',
-  'settings.compression.watermark.text.description': '',
+  'settings.compression.watermark.text.title': '文字内容',
+  'settings.compression.watermark.text.description': '设置水印文字的内容',
   // Settings.Compression.Watermark.Text.Color
   'settings.compression.watermark.text.color.title': '颜色',
-  'settings.compression.watermark.text.color.description': '',
+  'settings.compression.watermark.text.color.description': '设置水印文字的颜色',
   // Settings.Compression.Watermark.Text.FontSize
   'settings.compression.watermark.text.font_size.title': '字体大小',
-  'settings.compression.watermark.text.font_size.description': '',
+  'settings.compression.watermark.text.font_size.description': '设置水印文字的字体大小',
   // Settings.Compression.Watermark.Image
   'settings.compression.watermark.image.title': '图片',
   'settings.compression.watermark.image.description': '请选择作为水印的图片',
   'settings.compression.watermark.image.select_image': '选择图片',
+  'settings.compression.watermark.image.not_set': '未设置',
+  'settings.compression.watermark.image.file_not_exists': '文件不存在',
+  'settings.compression.watermark.image.reset': '重置',
   // Settings.Compression.Watermark.Image.Opacity
   'settings.compression.watermark.image.opacity.title': '透明度',
   'settings.compression.watermark.image.opacity.description': '设置水印图片的透明度',

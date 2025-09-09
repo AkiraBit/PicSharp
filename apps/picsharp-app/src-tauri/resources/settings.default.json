@@ -26,6 +26,9 @@
   "compression_watermark_position": "bottom_right",
   "compression_watermark_text": "",
   "compression_watermark_text_color": "#FFFFFF",
+  "compression_watermark_image_path": "",
+  "compression_watermark_image_opacity": 1,
+  "compression_watermark_image_scale": 0.15,
   "compression_watch_file_ignore": [
     ".git",
     "node_modules"

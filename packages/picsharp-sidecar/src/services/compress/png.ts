@@ -13,7 +13,7 @@ import { SaveMode, WatermarkType } from '../../constants';
 import { bulkConvert } from '../convert';
 import { resizeFromSharpStream } from '../resize';
 import { losslessCompressPng, PNGLosslessOptions } from '@napi-rs/image';
-import { addTextWatermark } from '../watermark';
+import { addTextWatermark, addImageWatermark } from '../watermark';
 
 export async function processPngLossy(payload: {
   input_path: string;
@@ -29,12 +29,21 @@ export async function processPngLossy(payload: {
   if (options.keep_metadata) instance.keepMetadata();
   instance.png(process_options);
   const metadata = await instance.metadata();
-  if (options.watermark_type === WatermarkType.Text) {
+  if (options.watermark_type === WatermarkType.Text && options.watermark_text) {
     await addTextWatermark({
       stream: instance,
       text: options.watermark_text,
       color: options.watermark_text_color,
       fontSize: options.watermark_font_size,
+      position: options.watermark_position,
+      container: metadata,
+    });
+  } else if (options.watermark_type === WatermarkType.Image && options.watermark_image_path) {
+    await addImageWatermark({
+      stream: instance,
+      imagePath: options.watermark_image_path,
+      opacity: options.watermark_image_opacity,
+      scale: options.watermark_image_scale,
       position: options.watermark_position,
       container: metadata,
     });

@@ -37,7 +37,9 @@ export namespace ICompressor {
     watermarkText?: string;
     watermarkTextColor?: string;
     watermarkFontSize?: number;
-    watermarkImage?: string;
+    watermarkImagePath?: string;
+    watermarkImageOpacity?: number;
+    watermarkImageScale?: number;
     keepMetadata?: boolean;
   };
 
@@ -90,6 +92,9 @@ export namespace ICompressor {
     watermark_text?: string;
     watermark_text_color?: string;
     watermark_font_size?: number;
+    watermark_image_path?: string;
+    watermark_image_opacity?: number;
+    watermark_image_scale?: number;
   }
 
   export interface JpegCompressPayload {
@@ -635,6 +640,9 @@ export default class Compressor {
               watermark_text: this.options.watermarkText,
               watermark_text_color: this.options.watermarkTextColor,
               watermark_font_size: this.options.watermarkFontSize,
+              watermark_image_path: this.options.watermarkImagePath,
+              watermark_image_opacity: this.options.watermarkImageOpacity,
+              watermark_image_scale: this.options.watermarkImageScale,
               lossless: this.options.compressionType === CompressionType.Lossless,
             },
             payload.options,

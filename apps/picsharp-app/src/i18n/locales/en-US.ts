@@ -145,7 +145,8 @@ const enUS = {
   'settings.compression.resize.fit.option.outside': 'Outside',
   // Settings.Compression.Watermark
   'settings.compression.watermark.title': 'Watermark',
-  'settings.compression.watermark.description': 'Add a watermark to the image after compression.',
+  'settings.compression.watermark.description':
+    'Add a text or image watermark to the image after compression.',
   'settings.compression.watermark.option.type': 'Type',
   'settings.compression.watermark.option.type.none': 'None',
   'settings.compression.watermark.option.type.text': 'Text',
@@ -165,23 +166,29 @@ const enUS = {
   'settings.compression.watermark.option.position.center': 'Center',
   // Settings.Compression.Watermark.Text
   'settings.compression.watermark.text.title': 'Content',
-  'settings.compression.watermark.text.description': '',
+  'settings.compression.watermark.text.description': 'Set the content of the watermark text.',
   // Settings.Compression.Watermark.Text.Color
   'settings.compression.watermark.text.color.title': 'Color',
-  'settings.compression.watermark.text.color.description': '',
+  'settings.compression.watermark.text.color.description': 'Set the color of the watermark text.',
   // Settings.Compression.Watermark.Text.FontSize
   'settings.compression.watermark.text.font_size.title': 'Font Size',
-  'settings.compression.watermark.text.font_size.description': '',
+  'settings.compression.watermark.text.font_size.description':
+    'Set the font size of the watermark text.',
   // Settings.Compression.Watermark.Image
   'settings.compression.watermark.image.title': 'Image',
   'settings.compression.watermark.image.description': 'Select the image to use as a watermark.',
   'settings.compression.watermark.image.select_image': 'Select Image',
+  'settings.compression.watermark.image.not_set': 'Not Set',
+  'settings.compression.watermark.image.file_not_exists': 'File does not exist',
+  'settings.compression.watermark.image.reset': 'Reset',
   // Settings.Compression.Watermark.Image.Opacity
   'settings.compression.watermark.image.opacity.title': 'Opacity',
-  'settings.compression.watermark.image.opacity.description': 'Set the opacity of the watermark image.',
+  'settings.compression.watermark.image.opacity.description':
+    'Set the opacity of the watermark image.',
   // Settings.Compression.Watermark.Image.Scale
   'settings.compression.watermark.image.scale.title': 'Scale',
-  'settings.compression.watermark.image.scale.description': 'Scale the watermark image to the original image size.',
+  'settings.compression.watermark.image.scale.description':
+    'Scale the watermark image to the original image size.',
   // Settings.Compression.FileIgnore
   'settings.compression.file_ignore.title': 'Ignoring Files',
   'settings.compression.file_ignore.description':

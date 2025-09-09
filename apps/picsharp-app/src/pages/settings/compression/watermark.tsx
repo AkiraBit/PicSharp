@@ -18,6 +18,9 @@ import { ColorPicker, ColorPickerProps } from 'antd';
 import { Button } from '@/components/ui/button';
 import { open } from '@tauri-apps/plugin-dialog';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { exists } from '@tauri-apps/plugin-fs';
+import { AlertCircle, Trash2 } from 'lucide-react';
+import { openPath } from '@tauri-apps/plugin-opener';
 
 function Type() {
   const t = useI18n();
@@ -72,6 +75,15 @@ function ImagePath() {
   const { compression_watermark_image_path: watermarkImagePath = '', set } = useSettingsStore(
     useSelector([SettingsKey.CompressionWatermarkImagePath, 'set']),
   );
+  const [fileExists, setFileExists] = useState(false);
+
+  useEffect(() => {
+    if (watermarkImagePath) {
+      exists(watermarkImagePath).then(setFileExists);
+    } else {
+      setFileExists(false);
+    }
+  }, [watermarkImagePath]);
 
   const handleSelectImage = async () => {
     const selected = await open({
@@ -81,6 +93,10 @@ function ImagePath() {
     if (selected) {
       await set(SettingsKey.CompressionWatermarkImagePath, selected as string);
     }
+  };
+
+  const handleReset = async () => {
+    await set(SettingsKey.CompressionWatermarkImagePath, '');
   };
 
   return (
@@ -94,17 +110,44 @@ function ImagePath() {
       description={t('settings.compression.watermark.image.description')}
     >
       <div className='flex flex-col items-end gap-y-2'>
-        <Button onClick={handleSelectImage} size='sm'>
-          {t('settings.compression.watermark.image.select_image')}
-        </Button>
-        <Tooltip>
-          <TooltipTrigger>
-            <span className='text-foreground max-w-[150px] cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap text-sm underline'>
-              {watermarkImagePath}
-            </span>
-          </TooltipTrigger>
-          <TooltipContent>{watermarkImagePath}</TooltipContent>
-        </Tooltip>
+        <div className='flex flex-row items-center gap-x-1'>
+          <Button onClick={handleSelectImage} size='sm'>
+            {t('settings.compression.watermark.image.select_image')}
+          </Button>
+          {watermarkImagePath && (
+            <Button onClick={handleReset} size='icon' variant='ghost'>
+              <Trash2 className='h-4 w-4' />
+            </Button>
+          )}
+        </div>
+        {watermarkImagePath ? (
+          <Tooltip>
+            <TooltipTrigger>
+              <div className='flex items-center gap-x-1'>
+                {!fileExists && <AlertCircle className='text-destructive h-4 w-4' />}
+                <span
+                  className='max-w-[250px] cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap text-sm underline'
+                  onClick={() => {
+                    if (fileExists) {
+                      openPath(watermarkImagePath);
+                    }
+                  }}
+                >
+                  {watermarkImagePath}
+                </span>
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              {!fileExists
+                ? t('settings.compression.watermark.image.file_not_exists')
+                : watermarkImagePath}
+            </TooltipContent>
+          </Tooltip>
+        ) : (
+          <span className='text-sm text-red-400 underline'>
+            {t('settings.compression.watermark.image.not_set')}
+          </span>
+        )}
       </div>
     </SettingItem>
   );

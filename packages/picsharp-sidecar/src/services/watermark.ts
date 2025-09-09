@@ -54,31 +54,33 @@ export async function addImageWatermark(payload: {
   position: Gravity;
   container: Metadata;
 }) {
-  const { stream, imagePath, opacity, scale, position, container } = payload;
+  const { stream, imagePath, opacity = 0, scale, position, container } = payload;
 
   const watermarkWidth = Math.floor((container.width || 0) * scale);
   const watermarkBuffer = await sharp(imagePath)
+    .ensureAlpha(0)
     .resize({
       width: watermarkWidth,
       fit: 'inside',
       withoutEnlargement: true,
     })
-    .toBuffer();
-
-  const watermarkWithOpacity = await sharp(watermarkBuffer)
     .composite([
       {
         input: Buffer.from([255, 255, 255, Math.floor(255 * opacity)]),
         raw: { width: 1, height: 1, channels: 4 },
         tile: true,
-        blend: 'in',
+        blend: 'dest-in',
       },
     ])
+    .png({
+      quality: 90,
+      force: true,
+    })
     .toBuffer();
 
   return stream.composite([
     {
-      input: watermarkWithOpacity,
+      input: watermarkBuffer,
       gravity: position,
       limitInputPixels: false,
       animated: true,
