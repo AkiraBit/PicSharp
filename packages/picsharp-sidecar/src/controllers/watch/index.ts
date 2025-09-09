@@ -41,44 +41,44 @@ app.post('/new-images', (c) => {
             stream.writeSSE({
               data: '',
               event: 'ready',
-              id: id.toString(),
+              id: (++id).toString(),
             });
             watcher
               .on(Event.ADD, (payload) => {
                 stream.writeSSE({
                   data: JSON.stringify(payload, jsonBigInt),
                   event: 'add',
-                  id: id.toString(),
+                  id: (++id).toString(),
                 });
               })
               .on(Event.SELF_ENOENT, () => {
                 stream.writeSSE({
                   data: '',
                   event: 'self-enoent',
-                  id: id.toString(),
+                  id: (++id).toString(),
                 });
               })
               .on(Event.ERROR, (error) => {
                 stream.writeSSE({
                   data: error.toString(),
                   event: 'fault',
-                  id: id.toString(),
+                  id: (++id).toString(),
                 });
               });
           });
         }
         await stream.sleep(1000 * 10);
         await stream.writeSSE({
-          data: 'ping',
+          data: '',
           event: 'ping',
-          id: id.toString(),
+          id: (++id).toString(),
         });
       }
     } catch (error: any) {
       await stream.writeSSE({
         data: error.toString(),
         event: 'abort',
-        id: id.toString(),
+        id: (++id).toString(),
       });
       stream.close();
     }

@@ -14,7 +14,7 @@ export default function SettingsGeneral() {
         <Notification />
         <Autostart />
         <Update />
-        <Privacy />
+        {/* <Privacy /> */}
       </Card>
     </Section>
   );

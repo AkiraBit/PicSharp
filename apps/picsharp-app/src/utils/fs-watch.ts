@@ -105,7 +105,7 @@ export const watchFolder = async (
   return watch(
     path,
     async (event) => {
-      console.log('event', event);
+      // console.log('event', event);
       // context.executeStrategies(event as WatchEvent, callbacks);
     },
     { delayMs: 1000, recursive: true },

@@ -18,6 +18,7 @@ import { AppContext } from '@/routes';
 import { CompressionContext } from '.';
 import { message } from '@/components/message';
 import { fetchEventSource } from '@microsoft/fetch-event-source';
+import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow';
 
 function CompressionWatch() {
   const { progressRef } = useContext(CompressionContext);
@@ -222,6 +223,8 @@ function CompressionWatch() {
             ctrl.abort();
             regain();
             alert(t('tips.file_watch_target_changed'));
+            getCurrentWebviewWindow().show();
+            getCurrentWebviewWindow().setFocus();
           } else if (msg.event === 'fault') {
             console.log('[Sidecar] Watch EventSource fault', msg);
           }
@@ -236,11 +239,21 @@ function CompressionWatch() {
               } else {
                 alert(t('tips.file_watch_abort'));
               }
+              getCurrentWebviewWindow().show();
+              getCurrentWebviewWindow().setFocus();
             }
           }, 1000);
         },
         onclose() {
+          console.log('[Sidecar] Watch EventSource closed');
           regain();
+          if (isFirstInit.current) {
+            alert(t('tips.watch_service_startup_failed'));
+          } else {
+            alert(t('tips.file_watch_abort'));
+          }
+          getCurrentWebviewWindow().show();
+          getCurrentWebviewWindow().setFocus();
         },
       });
     }
@@ -249,11 +262,16 @@ function CompressionWatch() {
         if (ctrl.signal.aborted && !isFirstInit.current) {
           regain();
           alert(t('tips.file_watch_abort'));
+          getCurrentWebviewWindow().show();
+          getCurrentWebviewWindow().setFocus();
         }
       }
     }
     if (!watchingFolder) {
       regain();
+      alert(t('tips.file_watch_abort'));
+      getCurrentWebviewWindow().show();
+      getCurrentWebviewWindow().setFocus();
       return;
     }
     handleWatch();

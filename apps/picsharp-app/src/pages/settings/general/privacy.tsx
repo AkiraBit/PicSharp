@@ -8,7 +8,7 @@ import SettingItem from '../setting-item';
 
 export default memo(function SettingsGeneralPrivacy() {
   const t = useI18n();
-  const { privacy_mode: privacyMode, set } = useSettingsStore(
+  const { privacy_mode: privacyMode = false, set } = useSettingsStore(
     useSelector([SettingsKey.PrivacyMode, 'set']),
   );
 
