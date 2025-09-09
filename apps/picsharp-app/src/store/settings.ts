@@ -45,6 +45,9 @@ interface SettingsState {
   [SettingsKey.CompressionWatermarkText]: string;
   [SettingsKey.CompressionWatermarkTextColor]: string;
   [SettingsKey.CompressionWatermarkFontSize]: number;
+  [SettingsKey.CompressionWatermarkImagePath]: string;
+  [SettingsKey.CompressionWatermarkImageOpacity]: number;
+  [SettingsKey.CompressionWatermarkImageScale]: number;
   [SettingsKey.CompressionWatchFileIgnore]: string[];
   [SettingsKey.TinypngApiKeys]: Array<{
     api_key: string;
@@ -92,6 +95,9 @@ const useSettingsStore = create(
       [SettingsKey.CompressionWatermarkText]: '',
       [SettingsKey.CompressionWatermarkTextColor]: '#FFFFFF',
       [SettingsKey.CompressionWatermarkFontSize]: 16,
+      [SettingsKey.CompressionWatermarkImagePath]: '',
+      [SettingsKey.CompressionWatermarkImageOpacity]: 1,
+      [SettingsKey.CompressionWatermarkImageScale]: 0.15,
       [SettingsKey.CompressionWatchFileIgnore]: [],
       [SettingsKey.TinypngApiKeys]: [],
       [SettingsKey.TinypngPreserveMetadata]: [

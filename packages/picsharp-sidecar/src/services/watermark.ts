@@ -45,3 +45,43 @@ export async function addTextWatermark(payload: {
     },
   ]);
 }
+
+export async function addImageWatermark(payload: {
+  stream: Sharp;
+  imagePath: string;
+  opacity: number;
+  scale: number;
+  position: Gravity;
+  container: Metadata;
+}) {
+  const { stream, imagePath, opacity, scale, position, container } = payload;
+
+  const watermarkWidth = Math.floor((container.width || 0) * scale);
+  const watermarkBuffer = await sharp(imagePath)
+    .resize({
+      width: watermarkWidth,
+      fit: 'inside',
+      withoutEnlargement: true,
+    })
+    .toBuffer();
+
+  const watermarkWithOpacity = await sharp(watermarkBuffer)
+    .composite([
+      {
+        input: Buffer.from([255, 255, 255, Math.floor(255 * opacity)]),
+        raw: { width: 1, height: 1, channels: 4 },
+        tile: true,
+        blend: 'in',
+      },
+    ])
+    .toBuffer();
+
+  return stream.composite([
+    {
+      input: watermarkWithOpacity,
+      gravity: position,
+      limitInputPixels: false,
+      animated: true,
+    },
+  ]);
+}

@@ -2,7 +2,7 @@ import { memo, useEffect, useState } from 'react';
 import { useI18n } from '@/i18n';
 import useSettingsStore from '@/store/settings';
 import useSelector from '@/hooks/useSelector';
-import { SettingsKey, WatermarkType, WatermarkPosition } from '@/constants';
+import { SettingsKey, WatermarkType, WatermarkPosition, VALID_IMAGE_EXTS } from '@/constants';
 import SettingItem from '../setting-item';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -15,6 +15,9 @@ import {
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { ColorPicker, ColorPickerProps } from 'antd';
+import { Button } from '@/components/ui/button';
+import { open } from '@tauri-apps/plugin-dialog';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 function Type() {
   const t = useI18n();
@@ -59,6 +62,119 @@ function Type() {
             </SelectGroup>
           </SelectContent>
         </Select>
+      </div>
+    </SettingItem>
+  );
+}
+
+function ImagePath() {
+  const t = useI18n();
+  const { compression_watermark_image_path: watermarkImagePath = '', set } = useSettingsStore(
+    useSelector([SettingsKey.CompressionWatermarkImagePath, 'set']),
+  );
+
+  const handleSelectImage = async () => {
+    const selected = await open({
+      multiple: false,
+      filters: [{ name: 'Image', extensions: VALID_IMAGE_EXTS }],
+    });
+    if (selected) {
+      await set(SettingsKey.CompressionWatermarkImagePath, selected as string);
+    }
+  };
+
+  return (
+    <SettingItem
+      title={
+        <>
+          <span>{t('settings.compression.watermark.image.title')}</span>
+        </>
+      }
+      titleClassName='flex flex-row items-center gap-x-2'
+      description={t('settings.compression.watermark.image.description')}
+    >
+      <div className='flex flex-col items-end gap-y-2'>
+        <Button onClick={handleSelectImage} size='sm'>
+          {t('settings.compression.watermark.image.select_image')}
+        </Button>
+        <Tooltip>
+          <TooltipTrigger>
+            <span className='text-foreground max-w-[150px] cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap text-sm underline'>
+              {watermarkImagePath}
+            </span>
+          </TooltipTrigger>
+          <TooltipContent>{watermarkImagePath}</TooltipContent>
+        </Tooltip>
+      </div>
+    </SettingItem>
+  );
+}
+
+function ImageOpacity() {
+  const t = useI18n();
+  const { compression_watermark_image_opacity: opacity = 1, set } = useSettingsStore(
+    useSelector([SettingsKey.CompressionWatermarkImageOpacity, 'set']),
+  );
+
+  const handleChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    await set(SettingsKey.CompressionWatermarkImageOpacity, Number(event.target.value));
+  };
+
+  return (
+    <SettingItem
+      title={
+        <>
+          <span>{t('settings.compression.watermark.image.opacity.title')}</span>
+        </>
+      }
+      titleClassName='flex flex-row items-center gap-x-2'
+      description={t('settings.compression.watermark.image.opacity.description')}
+    >
+      <div className='flex flex-row items-center gap-x-2'>
+        <Input
+          type='number'
+          step={0.1}
+          min={0}
+          max={1}
+          defaultValue={opacity}
+          onChange={handleChange}
+          className='w-[160px] flex-shrink-0'
+        />
+      </div>
+    </SettingItem>
+  );
+}
+
+function ImageScale() {
+  const t = useI18n();
+  const { compression_watermark_image_scale: scale = 0.15, set } = useSettingsStore(
+    useSelector([SettingsKey.CompressionWatermarkImageScale, 'set']),
+  );
+
+  const handleChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    await set(SettingsKey.CompressionWatermarkImageScale, Number(event.target.value));
+  };
+
+  return (
+    <SettingItem
+      title={
+        <>
+          <span>{t('settings.compression.watermark.image.scale.title')}</span>
+        </>
+      }
+      titleClassName='flex flex-row items-center gap-x-2'
+      description={t('settings.compression.watermark.image.scale.description')}
+    >
+      <div className='flex flex-row items-center gap-x-2'>
+        <Input
+          type='number'
+          step={0.05}
+          min={0}
+          max={1}
+          defaultValue={scale}
+          onChange={handleChange}
+          className='w-[160px] flex-shrink-0'
+        />
       </div>
     </SettingItem>
   );
@@ -253,7 +369,14 @@ function SettingsCompressionWatermark() {
           <TextColor />
         </>
       )}
-      <Position />
+      {watermarkType === WatermarkType.Image && (
+        <>
+          <ImagePath />
+          <ImageOpacity />
+          <ImageScale />
+        </>
+      )}
+      {watermarkType !== WatermarkType.None && <Position />}
     </>
   );
 }

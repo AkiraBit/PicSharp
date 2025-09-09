@@ -172,6 +172,16 @@ const enUS = {
   // Settings.Compression.Watermark.Text.FontSize
   'settings.compression.watermark.text.font_size.title': 'Font Size',
   'settings.compression.watermark.text.font_size.description': '',
+  // Settings.Compression.Watermark.Image
+  'settings.compression.watermark.image.title': 'Image',
+  'settings.compression.watermark.image.description': 'Select the image to use as a watermark.',
+  'settings.compression.watermark.image.select_image': 'Select Image',
+  // Settings.Compression.Watermark.Image.Opacity
+  'settings.compression.watermark.image.opacity.title': 'Opacity',
+  'settings.compression.watermark.image.opacity.description': 'Set the opacity of the watermark image.',
+  // Settings.Compression.Watermark.Image.Scale
+  'settings.compression.watermark.image.scale.title': 'Scale',
+  'settings.compression.watermark.image.scale.description': 'Scale the watermark image to the original image size.',
   // Settings.Compression.FileIgnore
   'settings.compression.file_ignore.title': 'Ignoring Files',
   'settings.compression.file_ignore.description':
