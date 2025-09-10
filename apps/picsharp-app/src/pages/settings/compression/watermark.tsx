@@ -158,9 +158,31 @@ function ImageOpacity() {
   const { compression_watermark_image_opacity: opacity = 1, set } = useSettingsStore(
     useSelector([SettingsKey.CompressionWatermarkImageOpacity, 'set']),
   );
+  const [inputValue, setInputValue] = useState(String(opacity));
 
-  const handleChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    await set(SettingsKey.CompressionWatermarkImageOpacity, Number(event.target.value));
+  useEffect(() => {
+    setInputValue(String(opacity));
+  }, [opacity]);
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(event.target.value);
+  };
+
+  const handleBlur = async () => {
+    let value = parseFloat(inputValue);
+
+    if (isNaN(value)) {
+      value = 1;
+    }
+
+    if (value > 1) {
+      value = 1;
+    } else if (value < 0) {
+      value = 0;
+    }
+
+    setInputValue(String(value));
+    await set(SettingsKey.CompressionWatermarkImageOpacity, value);
   };
 
   return (
@@ -179,8 +201,9 @@ function ImageOpacity() {
           step={0.1}
           min={0}
           max={1}
-          defaultValue={opacity}
+          value={inputValue}
           onChange={handleChange}
+          onBlur={handleBlur}
           className='w-[160px] flex-shrink-0'
         />
       </div>
@@ -193,9 +216,31 @@ function ImageScale() {
   const { compression_watermark_image_scale: scale = 0.15, set } = useSettingsStore(
     useSelector([SettingsKey.CompressionWatermarkImageScale, 'set']),
   );
+  const [inputValue, setInputValue] = useState(String(scale));
 
-  const handleChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    await set(SettingsKey.CompressionWatermarkImageScale, Number(event.target.value));
+  useEffect(() => {
+    setInputValue(String(scale));
+  }, [scale]);
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(event.target.value);
+  };
+
+  const handleBlur = async () => {
+    let value = parseFloat(inputValue);
+
+    if (isNaN(value)) {
+      value = 1;
+    }
+
+    if (value > 1) {
+      value = 1;
+    } else if (value < 0.05) {
+      value = 0.05;
+    }
+
+    setInputValue(String(value));
+    await set(SettingsKey.CompressionWatermarkImageScale, value);
   };
 
   return (
@@ -212,10 +257,11 @@ function ImageScale() {
         <Input
           type='number'
           step={0.05}
-          min={0}
+          min={0.05}
           max={1}
-          defaultValue={scale}
+          value={inputValue}
           onChange={handleChange}
+          onBlur={handleBlur}
           className='w-[160px] flex-shrink-0'
         />
       </div>
@@ -228,9 +274,18 @@ function Text() {
   const { compression_watermark_text: watermarkText = '', set } = useSettingsStore(
     useSelector([SettingsKey.CompressionWatermarkText, 'set']),
   );
+  const [inputValue, setInputValue] = useState(watermarkText);
 
-  const handleChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    await set(SettingsKey.CompressionWatermarkText, event.target.value);
+  useEffect(() => {
+    setInputValue(watermarkText);
+  }, [watermarkText]);
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(event.target.value);
+  };
+
+  const handleBlur = async () => {
+    await set(SettingsKey.CompressionWatermarkText, inputValue);
   };
 
   return (
@@ -245,8 +300,9 @@ function Text() {
     >
       <div className='flex flex-row items-center gap-x-2'>
         <Input
-          defaultValue={watermarkText}
+          value={inputValue}
           onChange={handleChange}
+          onBlur={handleBlur}
           className='w-[160px] flex-shrink-0'
         />
       </div>
@@ -293,9 +349,23 @@ function TextFontSize() {
   const { compression_watermark_text_font_size: fontSize = 16, set } = useSettingsStore(
     useSelector([SettingsKey.CompressionWatermarkFontSize, 'set']),
   );
+  const [inputValue, setInputValue] = useState(String(fontSize));
 
-  const handleChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    await set(SettingsKey.CompressionWatermarkFontSize, event.target.value);
+  useEffect(() => {
+    setInputValue(String(fontSize));
+  }, [fontSize]);
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(event.target.value);
+  };
+
+  const handleBlur = async () => {
+    let value = parseInt(inputValue, 10);
+    if (isNaN(value) || value <= 0) {
+      value = 16;
+    }
+    setInputValue(String(value));
+    await set(SettingsKey.CompressionWatermarkFontSize, value);
   };
 
   return (
@@ -311,8 +381,9 @@ function TextFontSize() {
       <div className='flex flex-row items-center gap-x-2'>
         <Input
           type='number'
-          defaultValue={fontSize}
+          value={inputValue}
           onChange={handleChange}
+          onBlur={handleBlur}
           className='w-[160px] flex-shrink-0'
         />
       </div>

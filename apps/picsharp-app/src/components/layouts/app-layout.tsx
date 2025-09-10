@@ -102,10 +102,16 @@ export default function AppLayout() {
           cancelText: t('current_window'),
         });
         if (result) {
-          spawnWindow({
-            mode,
-            paths,
-          });
+          spawnWindow(
+            {
+              mode,
+              paths,
+            },
+            {
+              width: 917,
+              height: 600,
+            },
+          );
         }
         return result;
       }
@@ -246,7 +252,12 @@ export default function AppLayout() {
         <div
           className={cn(
             'select-none overflow-hidden rounded-t-xl dark:bg-[#181818]',
-            WebviewWindow.getCurrent().label === 'main' ? 'h-[calc(100%-48px)]' : 'h-full',
+            WebviewWindow.getCurrent().label === 'main' ||
+              (WebviewWindow.getCurrent().label !== 'main' &&
+                (location.pathname.startsWith('/compression/watch') ||
+                  location.pathname.startsWith('/compression/classic')))
+              ? 'h-[calc(100%-48px)]'
+              : 'h-full',
           )}
         >
           <main className='relative h-full overflow-hidden'>

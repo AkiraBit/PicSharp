@@ -5,15 +5,15 @@ import { bulkConvert } from '../../services/convert';
 import { createReadStream, createWriteStream } from 'node:fs';
 import {
   calCompressionRate,
-  checkFile,
   createOutputPath,
   copyFileToTemp,
   isValidArray,
   hashFile,
 } from '../../utils';
 import { resizeFromSharpStream } from '../resize';
-import { Readable } from 'node:stream';
 import sharp from 'sharp';
+import { addTextWatermark, addImageWatermark } from '../watermark';
+import { WatermarkType } from '../../constants';
 
 export interface ImageTaskPayload {
   input_path: string;
@@ -85,6 +85,38 @@ export async function processTinyPng(payload: ImageTaskPayload) {
       },
       options,
     });
+    if (options.watermark_type !== WatermarkType.None) {
+      const { info } = await transformer
+        .toFormat(data.output.type.replace('image/', '') as any)
+        .toBuffer({
+          resolveWithObject: true,
+        });
+      if (options.watermark_type === WatermarkType.Text && options.watermark_text) {
+        await addTextWatermark({
+          stream: transformer,
+          text: options.watermark_text,
+          color: options.watermark_text_color,
+          fontSize: options.watermark_font_size,
+          position: options.watermark_position,
+          container: {
+            width: info.width,
+            height: info.height,
+          },
+        });
+      } else if (options.watermark_type === WatermarkType.Image && options.watermark_image_path) {
+        await addImageWatermark({
+          stream: transformer,
+          imagePath: options.watermark_image_path,
+          opacity: options.watermark_image_opacity,
+          scale: options.watermark_image_scale,
+          position: options.watermark_position,
+          container: {
+            width: info.width,
+            height: info.height,
+          },
+        });
+      }
+    }
     const convertedStream = transformer.clone();
     await pipeline(transformer, createWriteStream(newOutputPath));
     if (isValidArray(options.convert_types)) {

@@ -45,10 +45,10 @@ impl Default for WindowConfig {
         Self {
             label: Some(format!("picsharp_{}", ID.fetch_add(1, Ordering::Relaxed))),
             title: Some("PicSharp".to_string()),
-            width: Some(700.0),
-            height: Some(500.0),
-            min_width: Some(100.0),
-            min_height: Some(100.0),
+            width: Some(1024.0),
+            height: Some(670.0),
+            min_width: Some(1024.0),
+            min_height: Some(670.0),
             resizable: Some(true),
             #[cfg(target_os = "macos")]
             hidden_title: Some(true),

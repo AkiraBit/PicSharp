@@ -7,7 +7,7 @@ export async function addTextWatermark(payload: {
   color: string;
   fontSize: number;
   position: Gravity;
-  container: Metadata;
+  container: Metadata | { width: number; height: number };
 }) {
   const { stream, text, color, fontSize, position, container } = payload;
   const watermarkImage = sharp({
@@ -52,7 +52,7 @@ export async function addImageWatermark(payload: {
   opacity: number;
   scale: number;
   position: Gravity;
-  container: Metadata;
+  container: Metadata | { width: number; height: number };
 }) {
   const { stream, imagePath, opacity = 0, scale, position, container } = payload;
 

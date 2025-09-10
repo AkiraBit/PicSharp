@@ -2,7 +2,13 @@ import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
 import { checkFile } from '../../utils';
-import { SaveMode, ConvertFormat, ResizeFit } from '../../constants';
+import {
+  SaveMode,
+  ConvertFormat,
+  ResizeFit,
+  WatermarkType,
+  WatermarkPosition,
+} from '../../constants';
 import { getThreadPool } from '../../workers/thread-pool';
 const app = new Hono();
 
@@ -22,6 +28,17 @@ const OptionsSchema = z
     convert_alpha: z.string().optional().default('#FFFFFF'),
     resize_dimensions: z.array(z.number()).optional().default([]),
     resize_fit: z.nativeEnum(ResizeFit).optional().default(ResizeFit.Cover),
+    watermark_type: z.nativeEnum(WatermarkType).optional().default(WatermarkType.None),
+    watermark_position: z
+      .nativeEnum(WatermarkPosition)
+      .optional()
+      .default(WatermarkPosition.BottomRight),
+    watermark_text: z.string().optional().default(''),
+    watermark_text_color: z.string().optional().default('#FFFFFF'),
+    watermark_font_size: z.string().optional().default('16'),
+    watermark_image_path: z.string().optional().default(''),
+    watermark_image_opacity: z.number().min(0).max(1).optional().default(1),
+    watermark_image_scale: z.number().min(0).max(1).optional().default(0.15),
   })
   .optional()
   .default({});

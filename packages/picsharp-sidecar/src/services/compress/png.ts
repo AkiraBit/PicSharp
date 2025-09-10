@@ -28,31 +28,41 @@ export async function processPngLossy(payload: {
   const instance = sharp(input_path, { limitInputPixels: false });
   if (options.keep_metadata) instance.keepMetadata();
   instance.png(process_options);
-  const metadata = await instance.metadata();
-  if (options.watermark_type === WatermarkType.Text && options.watermark_text) {
-    await addTextWatermark({
-      stream: instance,
-      text: options.watermark_text,
-      color: options.watermark_text_color,
-      fontSize: options.watermark_font_size,
-      position: options.watermark_position,
-      container: metadata,
-    });
-  } else if (options.watermark_type === WatermarkType.Image && options.watermark_image_path) {
-    await addImageWatermark({
-      stream: instance,
-      imagePath: options.watermark_image_path,
-      opacity: options.watermark_image_opacity,
-      scale: options.watermark_image_scale,
-      position: options.watermark_position,
-      container: metadata,
-    });
-  }
   resizeFromSharpStream({
     stream: instance,
-    originalMetadata: metadata,
+    originalMetadata: await instance.metadata(),
     options,
   });
+  if (options.watermark_type !== WatermarkType.None) {
+    const { info } = await instance.toBuffer({
+      resolveWithObject: true,
+    });
+    if (options.watermark_type === WatermarkType.Text && options.watermark_text) {
+      await addTextWatermark({
+        stream: instance,
+        text: options.watermark_text,
+        color: options.watermark_text_color,
+        fontSize: options.watermark_font_size,
+        position: options.watermark_position,
+        container: {
+          width: info.width,
+          height: info.height,
+        },
+      });
+    } else if (options.watermark_type === WatermarkType.Image && options.watermark_image_path) {
+      await addImageWatermark({
+        stream: instance,
+        imagePath: options.watermark_image_path,
+        opacity: options.watermark_image_opacity,
+        scale: options.watermark_image_scale,
+        position: options.watermark_position,
+        container: {
+          width: info.width,
+          height: info.height,
+        },
+      });
+    }
+  }
   const optimizedImageBuffer = await instance.toBuffer();
   const compressedSize = optimizedImageBuffer.byteLength;
   const compressionRate = calCompressionRate(originalSize, compressedSize);

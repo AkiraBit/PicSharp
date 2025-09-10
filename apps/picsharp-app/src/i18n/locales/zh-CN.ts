@@ -172,17 +172,19 @@ export default {
   'settings.compression.watermark.text.font_size.description': '设置水印文字的字体大小',
   // Settings.Compression.Watermark.Image
   'settings.compression.watermark.image.title': '图片',
-  'settings.compression.watermark.image.description': '请选择作为水印的图片',
+  'settings.compression.watermark.image.description': '选择作为水印的图片',
   'settings.compression.watermark.image.select_image': '选择图片',
   'settings.compression.watermark.image.not_set': '未设置',
   'settings.compression.watermark.image.file_not_exists': '文件不存在',
   'settings.compression.watermark.image.reset': '重置',
   // Settings.Compression.Watermark.Image.Opacity
   'settings.compression.watermark.image.opacity.title': '透明度',
-  'settings.compression.watermark.image.opacity.description': '设置水印图片的透明度',
+  'settings.compression.watermark.image.opacity.description':
+    '设置水印图片的透明度，值在0-1之间，1为完全不透明，0为完全透明',
   // Settings.Compression.Watermark.Image.Scale
   'settings.compression.watermark.image.scale.title': '缩放',
-  'settings.compression.watermark.image.scale.description': '根据原图尺寸，等比缩放水印',
+  'settings.compression.watermark.image.scale.description':
+    '设置水印图片的缩放比例，值在0.05-1之间，1为不缩放，保持原图尺寸',
   // Settings.Tinypng
   'settings.tinypng.title': 'TinyPNG',
   // Settings.Tinypng.ApiKeys

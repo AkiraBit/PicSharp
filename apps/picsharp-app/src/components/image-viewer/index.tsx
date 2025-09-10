@@ -77,6 +77,9 @@ const ImageViewer = forwardRef<ImageViewerRef, ImageViewerProps>(function ImageV
           throw new Error(`HTTP ${response.status}`);
         }
         const json: { width: number; height: number; output_path: string } = await response.json();
+        if (!json?.output_path) {
+          throw new Error('Thumbnail generation failed');
+        }
         if (aborted) return;
         setDisplaySrc(convertFileSrc(json.output_path));
         const cacheKey = getImageViewerCacheKey(path, json.width, json.height);
@@ -90,9 +93,9 @@ const ImageViewer = forwardRef<ImageViewerRef, ImageViewerProps>(function ImageV
         putCache(record);
         hasRenderedRef.current = true;
       } catch (err) {
-        if (!aborted) setErrorMessage(t('tips.load_image_failed'));
+        setErrorMessage(t('tips.load_image_failed'));
       } finally {
-        if (!aborted) setIsLoading(false);
+        setIsLoading(false);
       }
     };
     const cacheKey = getImageViewerCacheKey(path, 200, 150);

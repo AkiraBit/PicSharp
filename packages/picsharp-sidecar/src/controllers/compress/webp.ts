@@ -36,6 +36,9 @@ const OptionsSchema = z
     watermark_text: z.string().optional().default(''),
     watermark_text_color: z.string().optional().default('#FFFFFF'),
     watermark_font_size: z.string().optional().default('16'),
+    watermark_image_path: z.string().optional().default(''),
+    watermark_image_opacity: z.number().min(0).max(1).optional().default(1),
+    watermark_image_scale: z.number().min(0).max(1).optional().default(0.15),
     keep_metadata: z.boolean().optional().default(false),
   })
   .optional()

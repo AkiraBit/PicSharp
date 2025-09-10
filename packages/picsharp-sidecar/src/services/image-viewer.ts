@@ -14,9 +14,7 @@ export interface ThumbnailPayload {
 
 export async function generateThumbnail(payload: ThumbnailPayload) {
   const { input_path, output_dir, width, height, options } = payload;
-  const buffer = await readFile(input_path);
-  const transformedBuffer = await new Transformer(buffer).webp();
-  const image = sharp(transformedBuffer, { limitInputPixels: false });
+  const outputPath = path.join(output_dir, `thumb_${Date.now()}_${process.hrtime.bigint()}.webp`);
   const finalResizeOptions: ResizeOptions = {
     width,
     height,
@@ -25,11 +23,21 @@ export async function generateThumbnail(payload: ThumbnailPayload) {
     ...(width && height ? { fit: 'cover' as const } : {}),
     ...options,
   };
-
-  const outputPath = path.join(output_dir, `thumb_${Date.now()}_${process.hrtime.bigint()}.webp`);
-  const info = await image
-    .resize(width, height, finalResizeOptions)
-    .webp({ quality: 70, force: true })
-    .toFile(outputPath);
-  return { width: info.width, height: info.height, output_path: outputPath };
+  try {
+    const info = await sharp(input_path, { limitInputPixels: false })
+      .resize(width, height, finalResizeOptions)
+      .webp({ quality: 70, force: true })
+      .toFile(outputPath);
+    return { width: info.width, height: info.height, output_path: outputPath };
+  } catch (error) {
+    const buffer = await readFile(input_path);
+    const transformedBuffer = await new Transformer(buffer).webp();
+    const image = sharp(transformedBuffer, { limitInputPixels: false });
+    const outputPath = path.join(output_dir, `thumb_${Date.now()}_${process.hrtime.bigint()}.webp`);
+    const info = await image
+      .resize(width, height, finalResizeOptions)
+      .webp({ quality: 70, force: true })
+      .toFile(outputPath);
+    return { width: info.width, height: info.height, output_path: outputPath };
+  }
 }

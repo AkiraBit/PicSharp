@@ -9,7 +9,8 @@ import {
 import { copyFile, writeFile } from 'node:fs/promises';
 import { isValidArray, isWindows } from '../../utils';
 import { bulkConvert } from '../convert';
-import { SaveMode } from '../../constants';
+import { SaveMode, WatermarkType } from '../../constants';
+import { addTextWatermark, addImageWatermark } from '../watermark';
 import { resizeFromSharpStream } from '../resize';
 
 export interface ImageTaskPayload {
@@ -32,6 +33,36 @@ export async function processAvif(payload: ImageTaskPayload) {
     originalMetadata: await instance.metadata(),
     options,
   });
+  if (options.watermark_type !== WatermarkType.None) {
+    const { info } = await instance.toBuffer({
+      resolveWithObject: true,
+    });
+    if (options.watermark_type === WatermarkType.Text && options.watermark_text) {
+      await addTextWatermark({
+        stream: instance,
+        text: options.watermark_text,
+        color: options.watermark_text_color,
+        fontSize: options.watermark_font_size,
+        position: options.watermark_position,
+        container: {
+          width: info.width,
+          height: info.height,
+        },
+      });
+    } else if (options.watermark_type === WatermarkType.Image && options.watermark_image_path) {
+      await addImageWatermark({
+        stream: instance,
+        imagePath: options.watermark_image_path,
+        opacity: options.watermark_image_opacity,
+        scale: options.watermark_image_scale,
+        position: options.watermark_position,
+        container: {
+          width: info.width,
+          height: info.height,
+        },
+      });
+    }
+  }
   const optimizedImageBuffer = await instance.toBuffer();
   const compressedSize = optimizedImageBuffer.byteLength;
   const compressionRate = calCompressionRate(originalSize, compressedSize);

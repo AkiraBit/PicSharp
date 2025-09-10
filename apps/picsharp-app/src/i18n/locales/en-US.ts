@@ -184,11 +184,11 @@ const enUS = {
   // Settings.Compression.Watermark.Image.Opacity
   'settings.compression.watermark.image.opacity.title': 'Opacity',
   'settings.compression.watermark.image.opacity.description':
-    'Set the opacity of the watermark image.',
+    'Set the opacity of the watermark image, value in 0-1, 1 means completely opaque, 0 means completely transparent.',
   // Settings.Compression.Watermark.Image.Scale
   'settings.compression.watermark.image.scale.title': 'Scale',
   'settings.compression.watermark.image.scale.description':
-    'Scale the watermark image to the original image size.',
+    'Set the scale of the watermark image, value in 0.05-1, 1 means no scale, keep the original image size.',
   // Settings.Compression.FileIgnore
   'settings.compression.file_ignore.title': 'Ignoring Files',
   'settings.compression.file_ignore.description':
