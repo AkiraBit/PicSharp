@@ -1,5 +1,14 @@
 {
   "releases": {
+    "2.2.1": {
+      "date": "2025-09-09",
+      "notes": [
+        "🚀 [Improvement] Optimize the implementation of the function for adding text/image watermarks",
+        "🐛 [BugFix] Fix some known bugs.",
+        "🚀 [优化] 优化了添加文字/图片水印的实现方式，提升了性能和稳定性。",
+        "🐛 [问题] 修复了一些已知问题。"
+      ]
+    },
     "2.2.0": {
       "date": "2025-09-09",
       "notes": [
