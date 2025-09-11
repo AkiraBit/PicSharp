@@ -1,5 +1,14 @@
 {
   "releases": {
+    "2.2.2": {
+      "date": "2025-09-11",
+      "notes": [
+        "🆕 [Feature] Support copying images as Base64 text",
+        "🆕 [新特性] 支持复制图片为 Base64 文本。",
+        "🐛 [BugFix] Fix some known bugs.",
+        "🐛 [问题] 修复了一些已知问题。"
+      ]
+    },
     "2.2.1": {
       "date": "2025-09-09",
       "notes": [
