@@ -175,6 +175,32 @@ function FileCard(props: FileCardProps) {
         messageApi?.success(t('tips.markdown_code_copied'));
       },
     };
+
+    const copyAsBase64MenuItem: ImperativeContextMenuItem = {
+      type: 'item',
+      name: t('compression.file_action.copy_as_base64'),
+      onClick: async () => {
+        let path = file.status === ICompressor.Status.Completed ? file.outputPath : file.path;
+        if (sidecar?.origin) {
+          try {
+            messageApi?.loading(t('tips.copying'));
+            const response = await fetch(`${sidecar?.origin}/api/codec/base64`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ input_path: path }),
+            });
+            const data = await response.json();
+            await writeText(data.data);
+            messageApi?.destroy();
+            messageApi?.success(t('tips.copied_success'));
+          } catch (error) {
+            messageApi?.error(t('tips.copied_failed'));
+          }
+        } else {
+          messageApi?.error(t('tips.copied_failed'));
+        }
+      },
+    };
     const undoMenuItem: ImperativeContextMenuItem = {
       type: 'item',
       name: t('compression.file_action.undo'),
@@ -223,7 +249,7 @@ function FileCard(props: FileCardProps) {
     menuItems.push({
       type: 'item',
       name: t('compression.file_action.copy'),
-      children: [copyPathMenuItem, copyFileMenuItem, copyAsMarkdownMenuItem],
+      children: [copyPathMenuItem, copyFileMenuItem, copyAsMarkdownMenuItem, copyAsBase64MenuItem],
     });
     ContextMenu.open({
       x: event.clientX,

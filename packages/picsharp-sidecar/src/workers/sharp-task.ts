@@ -7,7 +7,7 @@ import { processGif } from '../services/compress/gif';
 import { processTiff } from '../services/compress/tiff';
 import { processSvg } from '../services/compress/svg';
 import { processTinyPng } from '../services/compress/tinypng';
-import { getRawPixels } from '../services/codec';
+import { getRawPixels, toBase64 } from '../services/codec';
 import { generateThumbnail } from '../services/image-viewer';
 
 if (!parentPort) {
@@ -43,8 +43,10 @@ parentPort.on('message', async (msg: { requestId: string; type: string; payload:
       const result = await processSvg(payload as any);
       parentPort!.postMessage({ requestId, type: 'result', data: result });
     } else if (type === 'codec:get-raw-pixels') {
-      const { input_path } = payload as { input_path: string };
-      const result = await getRawPixels(input_path);
+      const result = await getRawPixels(payload.input_path);
+      parentPort!.postMessage({ requestId, type: 'result', data: result });
+    } else if (type === 'codec:to-base64') {
+      const result = await toBase64(payload.input_path);
       parentPort!.postMessage({ requestId, type: 'result', data: result });
     } else if (type === 'image:thumbnail') {
       const result = await generateThumbnail(payload as any);

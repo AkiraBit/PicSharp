@@ -7,6 +7,10 @@ const GetRawPixelsPayloadSchema = z.object({
   input_path: z.string(),
 });
 
+const ToBase64PayloadSchema = z.object({
+  input_path: z.string(),
+});
+
 export function createCodecRouter() {
   const app = new Hono();
 
@@ -15,6 +19,17 @@ export function createCodecRouter() {
     const pool = getThreadPool();
     const data = await pool.run<any, any>({
       type: 'codec:get-raw-pixels' as any,
+      payload: { input_path },
+    });
+    return c.json(data);
+  });
+
+  app.post('/base64', zValidator('json', ToBase64PayloadSchema), async (c) => {
+    const { input_path } = await c.req.json<z.infer<typeof ToBase64PayloadSchema>>();
+    console.log('input_path', input_path);
+    const pool = getThreadPool();
+    const data = await pool.run<any, any>({
+      type: 'codec:to-base64' as any,
       payload: { input_path },
     });
     return c.json(data);
