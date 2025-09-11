@@ -116,7 +116,7 @@ const ImageViewer = forwardRef<ImageViewerRef, ImageViewerProps>(function ImageV
   }, [useThumbnail, path, sidecarOrigin, imageTempDir]);
 
   return (
-    <div className={cn('relative flex items-center justify-center', className)}>
+    <div className={cn('relative flex h-full items-center justify-center', className)}>
       {isLoading ? (
         <div className='absolute inset-0 flex items-center justify-center text-nowrap text-center text-xs text-neutral-500'>
           {t('image_viewer.loading')}
@@ -130,7 +130,7 @@ const ImageViewer = forwardRef<ImageViewerRef, ImageViewerProps>(function ImageV
           ref={imgRef}
           src={useThumbnail ? displaySrc : src || convertFileSrc(path)}
           alt={path}
-          className={cn('max-h-full object-contain', imgClassName)}
+          className={cn('h-full object-contain')}
           loading='lazy'
           draggable={false}
         />

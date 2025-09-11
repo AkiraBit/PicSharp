@@ -20,6 +20,7 @@
   ],
   "compression_convert": [],
   "compression_convert_alpha": "#FFFFFF",
+  "compression_resize_enable": false,
   "compression_resize_dimensions": [0, 0],
   "compression_resize_fit": "cover",
   "compression_watermark_type": "none",

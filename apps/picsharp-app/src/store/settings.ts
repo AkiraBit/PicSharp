@@ -38,6 +38,7 @@ interface SettingsState {
   [SettingsKey.CompressionOutputSaveToFolder]: string;
   [SettingsKey.CompressionConvert]: ConvertFormat[];
   [SettingsKey.CompressionConvertAlpha]: string;
+  [SettingsKey.CompressionResizeEnable]: boolean;
   [SettingsKey.CompressionResizeDimensions]: [number, number];
   [SettingsKey.CompressionResizeFit]: ResizeFit;
   [SettingsKey.CompressionWatermarkType]: WatermarkType;
@@ -88,6 +89,7 @@ const useSettingsStore = create(
       [SettingsKey.CompressionOutputSaveToFolder]: '',
       [SettingsKey.CompressionConvert]: [],
       [SettingsKey.CompressionConvertAlpha]: '#FFFFFF',
+      [SettingsKey.CompressionResizeEnable]: false,
       [SettingsKey.CompressionResizeDimensions]: [0, 0],
       [SettingsKey.CompressionResizeFit]: ResizeFit.Cover,
       [SettingsKey.CompressionWatermarkType]: WatermarkType.None,

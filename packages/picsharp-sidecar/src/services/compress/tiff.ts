@@ -28,11 +28,13 @@ export async function processTiff(payload: ImageTaskPayload) {
   const instance = sharp(input_path, { limitInputPixels: false });
   if (options.keep_metadata) instance.keepMetadata();
   instance.tiff(process_options);
-  resizeFromSharpStream({
-    stream: instance,
-    originalMetadata: await instance.metadata(),
-    options,
-  });
+  if (options.resize_enable) {
+    resizeFromSharpStream({
+      stream: instance,
+      originalMetadata: await instance.metadata(),
+      options,
+    });
+  }
   if (options.watermark_type !== WatermarkType.None) {
     const { info } = await instance.toBuffer({
       resolveWithObject: true,

@@ -35,6 +35,7 @@ export enum SettingsKey {
   CompressionOutputSaveToFolder = 'compression_output_save_to_folder',
   CompressionConvert = 'compression_convert',
   CompressionConvertAlpha = 'compression_convert_alpha',
+  CompressionResizeEnable = 'compression_resize_enable',
   CompressionResizeDimensions = 'compression_resize_dimensions',
   CompressionResizeFit = 'compression_resize_fit',
   CompressionWatermarkType = 'compression_watermark_type',

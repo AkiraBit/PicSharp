@@ -115,10 +115,13 @@ const enUS = {
   'settings.compression.convert_alpha.title': 'Alpha Background Fill',
   'settings.compression.convert_alpha.description':
     'Specifies which color to use for fill when an image with a transparent background is converted to an image format that does not support transparency (e.g. WEBP, AVIF, PNG to JPG).',
-  // Settings.Compression.Resize
-  'settings.compression.resize.dimensions.title': 'Resize',
+  // Settings.Compression.Resize.Enable
+  'settings.compression.resize.enable.title': 'Image Resizing',
+  'settings.compression.resize.enable.description': 'Enable image resizing during compression.',
+  // Settings.Compression.Resize.Dimensions
+  'settings.compression.resize.dimensions.title': 'Dimensions',
   'settings.compression.resize.dimensions.description':
-    'Adjust image dimensions during compression. If only one side is configured, the other side will be calculated automatically according to the content itself; if both sides are configured, the image will be scaled or cropped according to the configured size; when the configured size is greater than the original size, the image will not be adjusted.',
+    'If only one side is configured, the other side will be calculated automatically according to the content itself; if both sides are configured, the image will be scaled or cropped according to the configured size; when the configured size is greater than the original size, the image will not be adjusted.',
   'settings.compression.resize.dimensions.width': 'Width',
   'settings.compression.resize.dimensions.height': 'Height',
   'settings.compression.resize.dimensions.auto': 'Auto',
@@ -198,7 +201,7 @@ const enUS = {
   // Settings.Tinypng.ApiKeys
   'settings.tinypng.api_keys.title': 'Api Keys',
   'settings.tinypng.api_keys.description':
-    '<tinypng>TinyPNG</tinypng> is a popular online image compression tool. You can click <here>here</here> to get your API key.',
+    '<tinypng>TinyPNG</tinypng> is a popular third-party online image compression service. You can click <here>here</here> to get your API key.',
   'settings.tinypng.api_keys.here': 'here',
   'settings.tinypng.api_keys.form.add_title': 'Add API Key',
   'settings.tinypng.api_keys.form.add_description': 'Add a new API Key to the system.',

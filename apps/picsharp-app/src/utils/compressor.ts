@@ -31,6 +31,7 @@ export namespace ICompressor {
     convertTypes?: ConvertFormat[];
     convertAlpha?: string;
     resizeDimensions?: [number, number];
+    resizeEnable?: boolean;
     resizeFit?: ResizeFit;
     watermarkType?: WatermarkType;
     watermarkPosition?: WatermarkPosition;
@@ -633,16 +634,17 @@ export default class Compressor {
               convert_types: this.options.convertTypes,
               convert_alpha: this.options.convertAlpha,
               resize_dimensions: this.options.resizeDimensions,
+              resize_enable: this.options.resizeEnable,
               resize_fit: this.options.resizeFit,
               keep_metadata: this.options.keepMetadata,
               watermark_type: this.options.watermarkType,
               watermark_position: this.options.watermarkPosition,
               watermark_text: this.options.watermarkText,
               watermark_text_color: this.options.watermarkTextColor,
-              watermark_font_size: this.options.watermarkFontSize,
+              watermark_font_size: Number(this.options.watermarkFontSize),
               watermark_image_path: this.options.watermarkImagePath,
-              watermark_image_opacity: this.options.watermarkImageOpacity,
-              watermark_image_scale: this.options.watermarkImageScale,
+              watermark_image_opacity: Number(this.options.watermarkImageOpacity),
+              watermark_image_scale: Number(this.options.watermarkImageScale),
               lossless: this.options.compressionType === CompressionType.Lossless,
             },
             payload.options,

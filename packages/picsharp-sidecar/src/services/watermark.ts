@@ -12,7 +12,7 @@ export async function addTextWatermark(payload: {
   const { stream, text, color, fontSize, position, container } = payload;
   const watermarkImage = sharp({
     text: {
-      text: `<span foreground="${color}" size="${pxToPangoSize(fontSize)}">${text}</span>`,
+      text: `<span foreground="${color}" size="${pxToPangoSize(Number(fontSize))}">${text}</span>`,
       font: 'sans',
       rgba: true,
     },

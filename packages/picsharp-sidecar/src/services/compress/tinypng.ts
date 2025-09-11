@@ -77,14 +77,16 @@ export async function processTinyPng(payload: ImageTaskPayload) {
     });
     const transformer = sharp();
     response.body.pipe(transformer);
-    resizeFromSharpStream({
-      stream: transformer,
-      originalMetadata: {
-        width: data.output.width,
-        height: data.output.height,
-      },
-      options,
-    });
+    if (options.resize_enable) {
+      resizeFromSharpStream({
+        stream: transformer,
+        originalMetadata: {
+          width: data.output.width,
+          height: data.output.height,
+        },
+        options,
+      });
+    }
     if (options.watermark_type !== WatermarkType.None) {
       const { info } = await transformer
         .toFormat(data.output.type.replace('image/', '') as any)

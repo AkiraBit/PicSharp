@@ -278,7 +278,6 @@ function FileCard(props: FileCardProps) {
             size={file.bytesSize}
             path={file.path}
             ext={file.ext}
-            imgClassName='overflow-hidden max-h-full object-contain'
             ref={imgRef}
           />
         </div>

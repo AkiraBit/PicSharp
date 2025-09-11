@@ -17,6 +17,34 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { X, Info } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Switch } from '@/components/ui/switch';
+
+function Enabled() {
+  const t = useI18n();
+  const { compression_resize_enable: enable, set } = useSettingsStore(
+    useSelector([SettingsKey.CompressionResizeEnable, 'set']),
+  );
+
+  const handleCheckedChange = (checked: boolean) => {
+    set(SettingsKey.CompressionResizeEnable, checked);
+  };
+
+  return (
+    <SettingItem
+      title={
+        <>
+          <span>{t('settings.compression.resize.enable.title')}</span>
+          <Badge variant='third'>{t(`settings.compression.mode.option.local`)}</Badge>
+          <Badge variant='third'>TinyPNG</Badge>
+        </>
+      }
+      titleClassName='flex flex-row items-center gap-x-2'
+      description={t('settings.compression.resize.enable.description')}
+    >
+      <Switch checked={enable} onCheckedChange={handleCheckedChange} />
+    </SettingItem>
+  );
+}
 
 function Diamensions() {
   const t = useI18n();
@@ -59,8 +87,8 @@ function Diamensions() {
       title={
         <>
           <span>{t('settings.compression.resize.dimensions.title')}</span>
-          <Badge variant='third'>{t(`settings.compression.mode.option.local`)}</Badge>
-          <Badge variant='third'>TinyPNG</Badge>
+          {/* <Badge variant='third'>{t(`settings.compression.mode.option.local`)}</Badge>
+          <Badge variant='third'>TinyPNG</Badge> */}
         </>
       }
       titleClassName='flex flex-row items-center gap-x-2'
@@ -116,8 +144,8 @@ function Fit() {
       title={
         <>
           <span>{t('settings.compression.resize.fit.title')}</span>
-          <Badge variant='third'>{t(`settings.compression.mode.option.local`)}</Badge>
-          <Badge variant='third'>TinyPNG</Badge>
+          {/* <Badge variant='third'>{t(`settings.compression.mode.option.local`)}</Badge>
+          <Badge variant='third'>TinyPNG</Badge> */}
         </>
       }
       titleClassName='flex flex-row items-center gap-x-2'
@@ -158,10 +186,19 @@ function Fit() {
 }
 
 function SettingsCompressionResize() {
+  const { compression_resize_enable: enable } = useSettingsStore(
+    useSelector([SettingsKey.CompressionResizeEnable]),
+  );
+
   return (
     <>
-      <Diamensions />
-      <Fit />
+      <Enabled />
+      {enable && (
+        <>
+          <Diamensions />
+          <Fit />
+        </>
+      )}
     </>
   );
 }

@@ -87,7 +87,7 @@ export default function UploadWidget() {
 
   return (
     <div ref={elRef} className='relative'>
-      <div className='relative z-10 mx-auto flex h-48 w-48 -translate-y-8 translate-x-8 cursor-pointer items-center justify-center rounded-xl bg-neutral-800/90 shadow-2xl transition-all duration-500 group-hover:translate-x-[1.25rem] group-hover:translate-y-[-1.25rem]'>
+      <div className='relative z-10 mx-auto flex h-48 w-48 -translate-y-8 translate-x-8 items-center justify-center rounded-xl bg-neutral-800/90 shadow-2xl transition-all duration-500 group-hover:translate-x-[1.25rem] group-hover:translate-y-[-1.25rem]'>
         {!isHovered ? (
           <Images size={24} className='text-neutral-400/80 transition-transform duration-300' />
         ) : (

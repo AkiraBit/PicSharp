@@ -110,10 +110,13 @@ export default {
   'settings.compression.convert_alpha.title': '透明背景填充',
   'settings.compression.convert_alpha.description':
     '当具有透明背景的图像转换为不支持透明通道的图像格式（如WEBP、AVIF、PNG转为JPG）时，指定使用哪种颜色进行填充',
-  // Settings.Compression.Resize
-  'settings.compression.resize.dimensions.title': '调整尺寸',
+  // Settings.Compression.Resize.Enable
+  'settings.compression.resize.enable.title': '尺寸调整',
+  'settings.compression.resize.enable.description': '在压缩时启用图片尺寸调整',
+  // Settings.Compression.Resize.Dimensions
+  'settings.compression.resize.dimensions.title': '尺寸参数',
   'settings.compression.resize.dimensions.description':
-    '在压缩时调整图像尺寸，只配置一边时，另一边将根据内容本身比例自动计算；两边都配置时，则按照配置的尺寸进行缩放或裁剪；当配置尺寸大于原图尺寸时，则保持图像原始比例，不进行调整；',
+    '只配置一边时，另一边将根据内容本身比例自动计算；两边都配置时，则按照配置的尺寸进行缩放或裁剪；当配置尺寸大于原图尺寸时，则保持图像原始比例，不进行调整',
   'settings.compression.resize.dimensions.width': '宽度',
   'settings.compression.resize.dimensions.height': '高度',
   'settings.compression.resize.dimensions.auto': '自动',
@@ -190,7 +193,7 @@ export default {
   // Settings.Tinypng.ApiKeys
   'settings.tinypng.api_keys.title': 'API密钥',
   'settings.tinypng.api_keys.description':
-    '<tinypng>TinyPNG</tinypng>是一个流行的在线图像压缩工具。你可以点击<here>这里</here>获取API密钥。',
+    '<tinypng>TinyPNG</tinypng>是一个流行的第三方在线图像压缩服务。你可以点击<here>这里</here>获取API密钥。',
   'settings.tinypng.api_keys.here': '这里',
   'settings.tinypng.api_keys.form.add_title': '添加API密钥',
   'settings.tinypng.api_keys.form.add_description': '添加一个新的API密钥到系统中。',
