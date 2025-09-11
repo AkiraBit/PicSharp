@@ -51,7 +51,7 @@ export async function bulkConvert(
   const tasks = [];
   const ext = getFileExtWithoutDot(inputPath);
   if (!stream) {
-    stream = sharp(inputPath, { limitInputPixels: false });
+    stream = sharp(inputPath, { limitInputPixels: false, animated: true });
   }
   for (const type of types) {
     if (ext === 'jpeg' && type === ConvertFormat.JPG) {
