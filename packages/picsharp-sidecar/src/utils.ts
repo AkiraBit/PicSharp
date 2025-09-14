@@ -6,7 +6,8 @@ import getPort from './get-port';
 import { createHash } from 'node:crypto';
 import { createReadStream } from 'node:fs';
 import ssim from 'ssim.js';
-import sharp from 'sharp';
+import sharp, { Metadata } from 'sharp';
+import { omit } from 'es-toolkit';
 
 export const calCompressionRate = (originalSize: number, compressedSize: number) => {
   return Number(((originalSize - compressedSize) / originalSize).toFixed(2));
@@ -217,4 +218,17 @@ export function pxToPangoSize(px: number): number {
  */
 export function pangoSizeToPx(size: number): number {
   return Math.round(size / 768);
+}
+
+export function getPlainMetadata(metadata?: Metadata) {
+  return metadata
+    ? omit<Metadata, keyof Metadata>(metadata, [
+        'exif',
+        'icc',
+        'iptc',
+        'xmp',
+        'tifftagPhotoshop',
+        'autoOrient',
+      ])
+    : undefined;
 }

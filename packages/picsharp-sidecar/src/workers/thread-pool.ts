@@ -2,6 +2,7 @@ import os from 'node:os';
 import { Worker } from 'node:worker_threads';
 import path from 'node:path';
 import { isDev } from '../utils';
+import Sentry from '@sentry/node';
 
 export type TaskType =
   | 'png'
@@ -37,9 +38,9 @@ export interface ThreadPool {
 
 function getWorkerEntry(): string {
   if (isDev) {
-    return path.join(__dirname, 'sharp-task.dev.js');
+    return path.join(__dirname, 'dispatcher.dev.js');
   }
-  return path.join(__dirname, 'sharp-task.js');
+  return path.join(__dirname, 'dispatcher.js');
 }
 
 function createWorkerInstance(): Worker {
@@ -67,7 +68,7 @@ export function initThreadPool(): ThreadPool {
     const w = createWorkerInstance();
     const wrap: PoolWorker = { worker: w, busy: false };
     w.on('message', (msg: any) => {
-      const { requestId, type, data, error } = msg || {};
+      const { requestId, data, error, errorPayload } = msg || {};
       if (!requestId) return;
       const pending = pendings.get(requestId);
       if (!pending) return;
@@ -75,8 +76,11 @@ export function initThreadPool(): ThreadPool {
       pendings.delete(requestId);
       wrap.busy = false;
       wrap.currentId = undefined;
-      if (type === 'error') {
-        pending.reject(new Error(data?.message || String(error || 'Unknown error')));
+      if (error) {
+        if (errorPayload) {
+          Sentry.setContext('Error Payload', errorPayload);
+        }
+        pending.reject(error);
       } else {
         pending.resolve(data);
       }
@@ -94,7 +98,6 @@ export function initThreadPool(): ThreadPool {
     w.on('exit', () => {
       const idx = workers.indexOf(wrap);
       if (idx >= 0) workers.splice(idx, 1);
-      // respawn
       spawn();
     });
     workers.push(wrap);
@@ -102,10 +105,9 @@ export function initThreadPool(): ThreadPool {
 
   for (let i = 0; i < poolSize; i++) spawn();
 
-  async function run<TReq, TRes>(task: PoolTask<TReq>, timeoutMs = 180_000): Promise<TRes> {
+  async function run<TReq, TRes>(task: PoolTask<TReq>, timeoutMs = 60_000 * 5): Promise<TRes> {
     const idle = getIdle();
     if (!idle) {
-      // 简易排队：轮询等待空闲
       await new Promise((r) => setTimeout(r, 5));
       return run(task, timeoutMs);
     }
@@ -119,7 +121,7 @@ export function initThreadPool(): ThreadPool {
           pendings.delete(requestId);
           idle.busy = false;
           idle.currentId = undefined;
-          reject(new Error('Task timeout'));
+          reject(new Error(`Task Timeout: ${task.type}`));
         }, timeoutMs).unref();
       }
       pendings.set(requestId, pending);

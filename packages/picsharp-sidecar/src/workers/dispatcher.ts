@@ -9,9 +9,10 @@ import { processSvg } from '../services/compress/svg';
 import { processTinyPng } from '../services/compress/tinypng';
 import { getRawPixels, toBase64 } from '../services/codec';
 import { generateThumbnail } from '../services/image-viewer';
+import { CompressError } from '../extends/CompressError';
 
 if (!parentPort) {
-  throw new Error('sharp-task must run in worker_threads');
+  throw new Error('dispatcher must run in worker_threads');
 }
 
 parentPort.on('message', async (msg: { requestId: string; type: string; payload: any }) => {
@@ -57,11 +58,11 @@ parentPort.on('message', async (msg: { requestId: string; type: string; payload:
     } else {
       throw new Error(`Unsupported task type: ${type}`);
     }
-  } catch (error: any) {
+  } catch (error: any | CompressError) {
     parentPort!.postMessage({
       requestId,
-      type: 'error',
-      data: { message: error?.message || String(error) },
+      error,
+      errorPayload: error.payload,
     });
   }
 });

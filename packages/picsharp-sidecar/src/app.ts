@@ -16,6 +16,7 @@ import svg from './controllers/compress/svg';
 import tinify from './controllers/compress/tinypng';
 import watch from './controllers/watch';
 import createKvAdminRouter from './controllers/admin/kv';
+import Sentry from '@sentry/node';
 
 export function createApp() {
   const app = new Hono()
@@ -23,7 +24,7 @@ export function createApp() {
     .use('*', cors())
     .use(
       '*',
-      timeout(60000, () => new HTTPException(500, { message: 'Process timeout' })),
+      timeout(60000 * 3, () => new HTTPException(500, { message: 'Process timeout' })),
     )
     // .use(
     //   '/api/*',
@@ -43,14 +44,45 @@ export function createApp() {
     //     noAuthenticationHeaderMessage: 'Permission denied',
     //   }),
     // )
-    .onError((err, c) => {
-      console.error('[ERROR Catch]', err);
-      // if (err instanceof HTTPException) {
-      //   return err.getResponse();
-      // }
-      return c.json({ status: 500, message: err.message || 'Internal Server Error' }, 500);
+    .onError(async (error, c) => {
+      console.error('[ERROR Catch]', error);
+      if (error instanceof HTTPException) {
+        const response = error.getResponse();
+        const data = await response.json();
+        Sentry.captureException(new Error(data.message || 'Internal Server Error'));
+        return c.json({
+          status: 500,
+          data,
+          message: data.message || 'Internal Server Error',
+        });
+      }
+      Sentry.captureException(error);
+      return c.json({ status: 500, message: error.message || 'Internal Server Error' }, 500);
     })
-    .get('/ping', (c) => c.text('pong'));
+    // .use((c, next) => {
+    //   const headers = c.req.header();
+    //   if (headers['x-user-id']) {
+    //     Sentry.setUser({
+    //       id: headers['x-user-id'],
+    //     });
+    //   }
+
+    // Only set project tag if session has project data
+    // @ts-ignore
+    // if (c?.session?.projectId !== undefined && c?.session?.projectId !== null) {
+    //   // @ts-ignore
+    //   Sentry.setTag('project_id', c?.session.projectId);
+    // }
+
+    //   return next();
+    // })
+    .get('/ping', (c) => c.text('pong'))
+    .get('/debug-sentry', () => {
+      Sentry.logger.info('User triggered test error', {
+        action: 'test_error_endpoint',
+      });
+      throw new Error('My first Sentry error!');
+    });
   app.route('/api/codec', createCodecRouter());
   app.route('/api/image-viewer', createImageViewerRouter());
   app.route('/api/compress/png', png);

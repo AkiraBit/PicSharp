@@ -13,31 +13,33 @@ export interface ThumbnailPayload {
 }
 
 export async function generateThumbnail(payload: ThumbnailPayload) {
-  const { input_path, output_dir, width, height, options } = payload;
+  const { input_path, output_dir, width, height, options, ext } = payload;
   const outputPath = path.join(output_dir, `thumb_${Date.now()}_${process.hrtime.bigint()}.webp`);
   const finalResizeOptions: ResizeOptions = {
     width,
     height,
     withoutEnlargement: true,
     background: { r: 255, g: 255, b: 255, alpha: 0 },
-    ...(width && height ? { fit: 'cover' as const } : {}),
+    fit: 'inside',
     ...options,
   };
   try {
-    const info = await sharp(input_path, { limitInputPixels: false })
-      .resize(width, height, finalResizeOptions)
-      .webp({ quality: 70, force: true })
+    await sharp(input_path, {
+      limitInputPixels: false,
+      animated: ext === 'gif' || ext === 'webp',
+    })
+      .resize(finalResizeOptions)
+      .webp({ quality: 70, force: true, effort: 0 })
       .toFile(outputPath);
-    return { width: info.width, height: info.height, output_path: outputPath };
+    const info = await sharp(outputPath).metadata();
+    return { width: info.width, height: info.height, size: info.size, output_path: outputPath };
   } catch (error) {
     const buffer = await readFile(input_path);
     const transformedBuffer = await new Transformer(buffer).webp();
     const image = sharp(transformedBuffer, { limitInputPixels: false });
     const outputPath = path.join(output_dir, `thumb_${Date.now()}_${process.hrtime.bigint()}.webp`);
-    const info = await image
-      .resize(width, height, finalResizeOptions)
-      .webp({ quality: 70, force: true })
-      .toFile(outputPath);
-    return { width: info.width, height: info.height, output_path: outputPath };
+    await image.resize(finalResizeOptions).webp({ quality: 70, force: true }).toFile(outputPath);
+    const info = await sharp(outputPath).metadata();
+    return { width: info.width, height: info.height, size: info.size, output_path: outputPath };
   }
 }
