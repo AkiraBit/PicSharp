@@ -215,6 +215,7 @@ function FileCard(props: FileCardProps) {
           file.assetPath = convertFileSrc(file.path);
           file.outputPath = '';
           file.originalTempPath = '';
+          file.originalTempPathConverted = '';
           file.saveType = null;
           update();
           messageApi?.success(t(undoMessage as any));
@@ -228,6 +229,7 @@ function FileCard(props: FileCardProps) {
       file.status === ICompressor.Status.Completed &&
       file.outputPath &&
       file.originalTempPath &&
+      file.originalTempPathConverted &&
       imgRef.current
     ) {
       menuItems.push(compareMenuItem);
@@ -235,7 +237,12 @@ function FileCard(props: FileCardProps) {
         type: 'separator',
       });
     }
-    if (file.status === ICompressor.Status.Completed && file.outputPath && file.originalTempPath) {
+    if (
+      file.status === ICompressor.Status.Completed &&
+      file.outputPath &&
+      file.originalTempPath &&
+      file.originalTempPathConverted
+    ) {
       menuItems.push(undoMenuItem);
       menuItems.push({
         type: 'separator',
@@ -301,8 +308,12 @@ function FileCard(props: FileCardProps) {
         >
           <ImageViewer
             src={file.assetPath}
-            size={file.bytesSize}
-            path={file.path}
+            size={
+              file.status === ICompressor.Status.Completed
+                ? file.compressedBytesSize
+                : file.bytesSize
+            }
+            path={file.status === ICompressor.Status.Completed ? file.outputPath : file.path}
             ext={file.ext}
             ref={imgRef}
           />

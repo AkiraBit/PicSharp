@@ -386,7 +386,7 @@ export default {
   'page.compression.classic.upload_title': '图像上传',
   'page.compression.classic.upload_description': '粘贴、拖放文件或文件夹到此处',
   'page.compression.classic.upload_file': '选择文件',
-  'page.compression.classic.upload_directory': '选择目录',
+  'page.compression.classic.upload_directory': '选择文件夹',
   'page.compression.classic.tinypng_supported_formats': 'TinyPNG支持的图像格式',
   'page.compression.classic.local_supported_formats': '本地压缩支持的图像格式',
   'page.compression.classic.drop_title': '松开鼠标上传图像',
@@ -395,7 +395,7 @@ export default {
   // 监控文件夹压缩引导页
   'page.compression.watch.guide.title': '监控目录新增图片并自动压缩',
   'page.compression.watch.guide.description': '监控目录内新增图片并自动压缩',
-  'page.compression.watch.guide.open_folder': '打开目录',
+  'page.compression.watch.guide.open_folder': '打开文件夹',
   'page.compression.watch.guide.folder': '目录',
   'page.compression.watch.guide.history': '历史',
   'page.compression.watch.guide.attention': '注意事项',

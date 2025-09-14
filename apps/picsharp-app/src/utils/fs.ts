@@ -52,6 +52,7 @@ export async function parsePaths(paths: string[], validExts: string[]) {
       outputPath: '',
       status: ICompressor.Status.Pending,
       originalTempPath: '',
+      originalTempPathConverted: '',
       ssim: 0,
     }));
   }
@@ -102,9 +103,11 @@ export async function undoSave(file: FileInfo) {
     file.status === ICompressor.Status.Completed &&
     file.outputPath &&
     file.originalTempPath &&
+    file.originalTempPathConverted &&
     file.saveType
   ) {
     const { path, outputPath, originalTempPath, saveType } = file;
+    console.log('undo', originalTempPath);
     if (!(await exists(originalTempPath))) {
       return {
         success: false,

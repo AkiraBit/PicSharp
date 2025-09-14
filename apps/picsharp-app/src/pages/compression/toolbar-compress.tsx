@@ -192,7 +192,8 @@ function ToolbarCompress() {
             }
             targetFile.assetPath = convertFileSrc(res.output_path);
             targetFile.outputPath = res.output_path;
-            targetFile.originalTempPath = convertFileSrc(res.original_temp_path);
+            targetFile.originalTempPath = res.original_temp_path;
+            targetFile.originalTempPathConverted = convertFileSrc(res.original_temp_path);
             targetFile.saveType = outputMode;
             if (isValidArray(res.convert_results)) {
               targetFile.convertResults = res.convert_results;

@@ -9,6 +9,7 @@ import WindowControl from '@/components/window-control';
 import { useTrafficLightStore } from '@/store/trafficLight';
 import useSelector from '@/hooks/useSelector';
 import { UnlistenFn } from '@tauri-apps/api/event';
+import ImageViewer from '@/components/image-viewer';
 
 export default function ImageCompare() {
   const [file, setFile] = useState<FileInfo | null>(null);
@@ -61,26 +62,40 @@ export default function ImageCompare() {
                 height: '100%',
               }}
               itemOne={
-                <ReactCompareSliderImage
-                  src={file?.originalTempPath}
-                  alt={file?.name}
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'contain',
-                  }}
+                <ImageViewer
+                  src={file?.originalTempPathConverted}
+                  path={file?.originalTempPath}
+                  ext={file?.ext}
+                  size={file?.bytesSize}
+                  className='h-full w-full'
                 />
+                // <ReactCompareSliderImage
+                //   src={file?.originalTempPath}
+                //   alt={file?.name}
+                //   style={{
+                //     width: '100%',
+                //     height: '100%',
+                //     objectFit: 'contain',
+                //   }}
+                // />
               }
               itemTwo={
-                <ReactCompareSliderImage
+                <ImageViewer
                   src={file?.assetPath}
-                  alt={file?.name}
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'contain',
-                  }}
+                  path={file?.outputPath}
+                  ext={file?.ext}
+                  size={file?.compressedBytesSize}
+                  className='h-full w-full'
                 />
+                // <ReactCompareSliderImage
+                //   src={file?.assetPath}
+                //   alt={file?.name}
+                //   style={{
+                //     width: '100%',
+                //     height: '100%',
+                //     objectFit: 'contain',
+                //   }}
+                // />
               }
             />
             <div className='absolute bottom-6 left-2 flex flex-col items-center justify-center overflow-hidden rounded-lg bg-neutral-800/80 p-2 dark:bg-neutral-50/80'>

@@ -203,7 +203,6 @@ function WatchCompressionGuide() {
           <div className='flex w-full items-center justify-center'>
             <Button
               variant='secondary'
-              size='sm'
               className='cursor-pointer text-neutral-400'
               onClick={() => handleWatch()}
             >

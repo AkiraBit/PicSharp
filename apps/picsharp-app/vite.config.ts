@@ -12,6 +12,7 @@ export default defineConfig(async () => ({
   //
   // 1. prevent vite from obscuring rust errors
   clearScreen: false,
+  envPrefix: 'PICSHARP_',
   server: {
     port: 1420,
     strictPort: true,

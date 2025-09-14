@@ -37,6 +37,7 @@ declare global {
     outputPath: string;
     status: ICompressor.Status;
     originalTempPath: string;
+    originalTempPathConverted: string;
     errorMessage?: string;
     saveType?: CompressionOutputMode;
     convertResults?: ConvertResult[];

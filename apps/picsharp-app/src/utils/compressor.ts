@@ -744,9 +744,9 @@ export default class Compressor {
   };
 
   tinify = async (file: FileInfo) => {
-    if (!VALID_TINYPNG_IMAGE_EXTS.includes(file.ext)) {
-      return Promise.reject(t('page.compression.tinify.error.unsupported_file_type'));
-    }
+    // if (!VALID_TINYPNG_IMAGE_EXTS.includes(file.ext)) {
+    //   return Promise.reject(t('page.compression.tinify.error.unsupported_file_type'));
+    // }
     return this.process('tinify', {
       input_path: file.path,
       process_options: {

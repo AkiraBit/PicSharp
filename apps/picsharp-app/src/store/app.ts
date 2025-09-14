@@ -53,6 +53,7 @@ const useAppStore = create(
                   PICSHARP_SIDECAR_CLUSTER: 'true',
                   PICSHARP_SIDECAR_MODE: 'server',
                   PICSHARP_SIDECAR_STORE: '{}',
+                  PICSHARP_SIDECAR_SENTRY_DSN: import.meta.env.PICSHARP_SIDECAR_SENTRY_DSN,
                   NODE_ENV: 'production',
                 },
               });

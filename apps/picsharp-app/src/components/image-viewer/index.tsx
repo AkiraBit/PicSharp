@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils';
 import { getImageViewerCacheKey, putCache, readCache, type ThumbnailCacheValue } from './cache';
 import useSelector from '@/hooks/useSelector';
 import { useI18n } from '@/i18n';
+import { useUpdateEffect } from 'ahooks';
 
 export interface ImageViewerProps {
   src: string;
@@ -26,8 +27,11 @@ const ImageViewer = forwardRef<ImageViewerRef, ImageViewerProps>(function ImageV
   props: ImageViewerProps,
   ref,
 ) {
-  const { src, path, ext, className, imgClassName } = props;
-  const useThumbnail = !noThumbnailTypes.includes(ext);
+  const { src, path, ext, className, imgClassName, size } = props;
+  const useThumbnail =
+    !noThumbnailTypes.includes(ext) ||
+    size >= 1024 * 1024 * 10 ||
+    ((ext === 'gif' || ext === 'webp') && size >= 1024 * 1024 * 5);
   const t = useI18n();
   const imgRef = useRef<HTMLImageElement>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -37,9 +41,7 @@ const ImageViewer = forwardRef<ImageViewerRef, ImageViewerProps>(function ImageV
     imageTempDir,
   } = useAppStore(useSelector(['sidecar', 'imageTempDir']));
   const hasRenderedRef = useRef<boolean>(false);
-  const [displaySrc, setDisplaySrc] = useState<string | undefined>(
-    useThumbnail ? undefined : src || convertFileSrc(path),
-  );
+  const [displaySrc, setDisplaySrc] = useState<string | undefined>(useThumbnail ? undefined : src);
 
   useImperativeHandle(ref, () => ({
     getImageElement: () => imgRef.current,
@@ -115,6 +117,12 @@ const ImageViewer = forwardRef<ImageViewerRef, ImageViewerProps>(function ImageV
     };
   }, [useThumbnail, path, sidecarOrigin, imageTempDir]);
 
+  useUpdateEffect(() => {
+    if (!useThumbnail) {
+      setDisplaySrc(`${src}?t=${Date.now()}&size=${size}`);
+    }
+  }, [src, size]);
+
   return (
     <div className={cn('relative flex h-full items-center justify-center', className)}>
       {isLoading ? (
@@ -128,9 +136,9 @@ const ImageViewer = forwardRef<ImageViewerRef, ImageViewerProps>(function ImageV
       ) : (
         <img
           ref={imgRef}
-          src={useThumbnail ? displaySrc : src || convertFileSrc(path)}
+          src={displaySrc}
           alt={path}
-          className={cn('h-full object-contain')}
+          className={cn('h-full object-contain', imgClassName)}
           loading='lazy'
           draggable={false}
         />

@@ -188,12 +188,12 @@ export default function AppLayout() {
     };
 
     let timer;
+    useAppStore.getState().initAppPath();
     if (WebviewWindow.getCurrent().label === 'main') {
       if (isProd && useSettingsStore.getState()?.[SettingsKey.AutoCheckUpdate]) {
         checkForUpdate();
       }
       handleNsInspect();
-      useAppStore.getState().initAppPath();
       useAppStore.getState().initSidecar();
       if (isProd) {
         timer = setInterval(() => {
