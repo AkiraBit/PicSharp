@@ -10,6 +10,8 @@ import { withStorageDOMEvents } from './withStorageDOMEvents';
 import { isFunction } from 'radash';
 import { appCacheDir, appDataDir, appLogDir, join } from '@tauri-apps/api/path';
 import { toast } from '@/components/sidecar-error-toast';
+import * as Sentry from '@sentry/react';
+import { SidecarError } from '@/extends/SidecarError';
 interface AppState {
   eventEmitter: EventEmitter;
   sidecar: {
@@ -78,9 +80,17 @@ const useAppStore = create(
               const process = await command.spawn();
               command.on('close', () => {
                 if (errorStrs.length > 0) {
+                  const errorMessage = errorStrs.join('\n');
                   toast({
-                    description: errorStrs.join('\n'),
+                    description: errorMessage,
                   });
+                  Sentry.withScope((scope) => {
+                    scope.setContext('Error Payload', {
+                      errorMessage,
+                    });
+                    scope.captureException(new SidecarError('Sidecar Boot Failed'));
+                  });
+                  errorStrs.length = 0;
                 }
               });
               set({
