@@ -6,18 +6,19 @@ import { createReadStream, createWriteStream } from 'node:fs';
 import {
   calCompressionRate,
   createOutputPath,
+  createTempFilePath,
   copyFileToTemp,
   isValidArray,
   hashFile,
   getPlainMetadata,
   isWindows,
   getFileSize,
+  CompressError,
 } from '../../utils';
 import { resizeFromSharpStream } from '../resize';
 import sharp, { Metadata } from 'sharp';
 import { addTextWatermark, addImageWatermark } from '../watermark';
 import { SaveMode, WatermarkType } from '../../constants';
-import { CompressError } from '../../extends/CompressError';
 
 export interface ImageTaskPayload {
   input_path: string;
@@ -97,9 +98,12 @@ export async function processTinyPng(payload: ImageTaskPayload) {
         },
         body: JSON.stringify(body),
       });
-      const transformer = sharp();
-      response.body.pipe(transformer);
+      const tempTinifyImgPath = createTempFilePath(input_path, options.temp_dir);
+      await pipeline(response.body, createWriteStream(tempTinifyImgPath));
+      const transformer = sharp(tempTinifyImgPath, { limitInputPixels: false, animated: true });
+      let isRaw = true;
       if (options.resize_enable) {
+        isRaw = false;
         resizeFromSharpStream({
           stream: transformer,
           originalMetadata: {
@@ -110,6 +114,7 @@ export async function processTinyPng(payload: ImageTaskPayload) {
         });
       }
       if (options.watermark_type !== WatermarkType.None) {
+        isRaw = false;
         const { info } = await transformer
           .toFormat(data.output.type.replace('image/', '') as any)
           .toBuffer({
@@ -141,9 +146,8 @@ export async function processTinyPng(payload: ImageTaskPayload) {
           });
         }
       }
-      const convertedStream = transformer.clone();
-      await pipeline(transformer, createWriteStream(newOutputPath));
       if (isValidArray(options.convert_types)) {
+        const convertedStream = isRaw ? transformer : transformer.clone();
         const results = await bulkConvert(
           newOutputPath,
           options.convert_types,
@@ -152,24 +156,30 @@ export async function processTinyPng(payload: ImageTaskPayload) {
         );
         convert_results = results;
       }
+      if (isRaw) {
+        await copyFile(tempTinifyImgPath, newOutputPath);
+      } else {
+        await pipeline(transformer, createWriteStream(newOutputPath));
+      }
     } else {
       if (input_path !== newOutputPath) {
         await copyFile(input_path, newOutputPath);
       }
     }
 
+    const outputSize = availableCompressRate ? await getFileSize(newOutputPath) : data.input.size;
+
     const result: Record<string, any> = {
       input_path,
       input_size: data.input.size,
       output_path: newOutputPath,
-      output_size: availableCompressRate ? data.output.size : data.input.size,
+      output_size: outputSize,
       compression_rate: availableCompressRate ? compressRatio : 0,
       original_temp_path: tempFilePath,
       available_compress_rate: availableCompressRate,
       hash: await hashFile(input_path),
       debug: {
-        compressedSize: data.output.size,
-        compressionRate: newOutputPath,
+        compressionRate: compressRatio,
         options,
         process_options,
       },

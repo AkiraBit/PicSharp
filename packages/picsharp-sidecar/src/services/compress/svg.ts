@@ -8,8 +8,8 @@ import {
   hashFile,
   getPlainMetadata,
   isWindows,
+  CompressError,
 } from '../../utils';
-import { CompressError } from '../../extends/CompressError';
 import sharp, { Metadata } from 'sharp';
 import { SaveMode } from '../../constants';
 

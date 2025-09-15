@@ -6,6 +6,7 @@ import {
   getFileSize,
   hashFile,
   getPlainMetadata,
+  CompressError,
 } from '../../utils';
 import { writeFile, copyFile, readFile } from 'node:fs/promises';
 import { isValidArray, isWindows } from '../../utils';
@@ -14,7 +15,6 @@ import { bulkConvert } from '../convert';
 import { resizeFromSharpStream } from '../resize';
 import { losslessCompressPng, PNGLosslessOptions } from '@napi-rs/image';
 import { addTextWatermark, addImageWatermark } from '../watermark';
-import { CompressError } from '../../extends/CompressError';
 
 export async function processPngLossy(payload: {
   input_path: string;

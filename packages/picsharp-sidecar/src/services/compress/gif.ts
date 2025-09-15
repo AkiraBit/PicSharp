@@ -6,6 +6,7 @@ import {
   getFileSize,
   hashFile,
   getPlainMetadata,
+  CompressError,
 } from '../../utils';
 import { copyFile, writeFile } from 'node:fs/promises';
 import { isValidArray, isWindows } from '../../utils';
@@ -13,7 +14,6 @@ import { bulkConvert } from '../convert';
 import { SaveMode, WatermarkType } from '../../constants';
 import { addTextWatermark, addImageWatermark } from '../watermark';
 import { resizeFromSharpStream } from '../resize';
-import { CompressError } from '../../extends/CompressError';
 
 export interface ImageTaskPayload {
   input_path: string;

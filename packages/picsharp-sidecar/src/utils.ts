@@ -49,11 +49,15 @@ export const convertFileSrc = (path: string) => {
   return `${base}${encoded}`;
 };
 
-export const copyFileToTemp = async (targetPath: string, tempDir: string) => {
-  const tempFilePath = path.join(
+export const createTempFilePath = (targetPath: string, tempDir: string) => {
+  return path.join(
     tempDir,
     `${path.basename(targetPath, path.extname(targetPath))}_${nanoid()}${path.extname(targetPath)}`,
   );
+};
+
+export const copyFileToTemp = async (targetPath: string, tempDir: string) => {
+  const tempFilePath = createTempFilePath(targetPath, tempDir);
   await fs.copyFile(targetPath, tempFilePath);
   return tempFilePath;
 };
@@ -231,4 +235,21 @@ export function getPlainMetadata(metadata?: Metadata) {
         'autoOrient',
       ])
     : undefined;
+}
+
+interface CompressErrorOptions {
+  cause: unknown;
+  payload?: Record<string, any>;
+}
+
+export class CompressError extends Error {
+  payload?: Record<string, any>;
+  constructor(message: string, options: CompressErrorOptions) {
+    super(`${message} ${options.cause instanceof Error ? `: ${options.cause.message}` : ''}`, {
+      cause: options.cause,
+    });
+
+    this.name = 'CompressError';
+    this.payload = options.payload;
+  }
 }
