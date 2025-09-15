@@ -72,9 +72,13 @@ async function applyImageTransformations(
   initialMetadata: { width: number; height: number },
 ) {
   let hasTransformations = false;
+  let container = {
+    width: initialMetadata.width,
+    height: initialMetadata.height,
+  };
   if (options.resize_enable) {
     hasTransformations = true;
-    resizeFromSharpStream({
+    container = resizeFromSharpStream({
       stream: transformer,
       originalMetadata: initialMetadata,
       options,
@@ -83,9 +87,6 @@ async function applyImageTransformations(
 
   if (options.watermark_type !== WatermarkType.None) {
     hasTransformations = true;
-    const metadata = await transformer.clone().metadata();
-    console.log('metadata', metadata);
-    const container = { width: metadata.width!, height: metadata.height! };
     if (options.watermark_type === WatermarkType.Text && options.watermark_text) {
       await addTextWatermark({
         stream: transformer,
