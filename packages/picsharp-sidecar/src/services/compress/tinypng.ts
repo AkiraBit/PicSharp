@@ -45,6 +45,124 @@ interface TinifyResult {
 
 const API_ENDPOINT = 'https://api.tinify.com';
 
+async function uploadToTinify(
+  inputPath: string,
+  mimeType: string,
+  apiKey: string,
+): Promise<TinifyResult> {
+  const response = await request<TinifyResult>(`${API_ENDPOINT}/shrink`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': mimeType,
+      Authorization: `Basic ${btoa(`api:${apiKey}`)}`,
+    },
+    body: createReadStream(inputPath),
+  });
+
+  const data = (await response.body?.json()) as TinifyResult;
+  if (data?.error) {
+    throw new Error(`${data.error}, ${data.message}`);
+  }
+  return data;
+}
+
+async function applyImageTransformations(
+  transformer: sharp.Sharp,
+  options: any,
+  initialMetadata: { width: number; height: number },
+) {
+  let hasTransformations = false;
+  if (options.resize_enable) {
+    hasTransformations = true;
+    resizeFromSharpStream({
+      stream: transformer,
+      originalMetadata: initialMetadata,
+      options,
+    });
+  }
+
+  if (options.watermark_type !== WatermarkType.None) {
+    hasTransformations = true;
+    const metadata = await transformer.clone().metadata();
+    console.log('metadata', metadata);
+    const container = { width: metadata.width!, height: metadata.height! };
+    if (options.watermark_type === WatermarkType.Text && options.watermark_text) {
+      await addTextWatermark({
+        stream: transformer,
+        text: options.watermark_text,
+        color: options.watermark_text_color,
+        fontSize: options.watermark_font_size,
+        position: options.watermark_position,
+        container,
+      });
+    } else if (options.watermark_type === WatermarkType.Image && options.watermark_image_path) {
+      await addImageWatermark({
+        stream: transformer,
+        imagePath: options.watermark_image_path,
+        opacity: options.watermark_image_opacity,
+        scale: options.watermark_image_scale,
+        position: options.watermark_position,
+        container,
+      });
+    }
+  }
+
+  return { hasTransformations };
+}
+
+async function downloadAndProcessImage(
+  data: TinifyResult,
+  input_path: string,
+  newOutputPath: string,
+  options: any,
+  process_options: any,
+) {
+  const body: Record<string, any> = {};
+  if (isValidArray(process_options.preserveMetadata)) {
+    body.preserve = process_options.preserveMetadata;
+  }
+  const hasBody = Object.keys(body).length > 0;
+  const response = await request(data.output.url, {
+    method: hasBody ? 'POST' : 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Basic ${btoa(`api:${process_options.api_key}`)}`,
+    },
+    body: hasBody ? JSON.stringify(body) : undefined,
+  });
+
+  const tempTinifyImgPath = createTempFilePath(input_path, options.temp_dir);
+  await pipeline(response.body, createWriteStream(tempTinifyImgPath));
+
+  const transformer = sharp(tempTinifyImgPath, { limitInputPixels: false, animated: true });
+
+  const { hasTransformations } = await applyImageTransformations(transformer, options, {
+    width: data.output.width,
+    height: data.output.height,
+  });
+
+  let convert_results: any[] = [];
+  const shouldConvert = isValidArray(options.convert_types);
+
+  if (shouldConvert) {
+    const conversionStream = hasTransformations ? transformer.clone() : transformer;
+    convert_results = await bulkConvert(
+      newOutputPath,
+      options.convert_types,
+      options.convert_alpha,
+      conversionStream,
+    );
+  }
+
+  if (hasTransformations) {
+    await pipeline(transformer, createWriteStream(newOutputPath));
+  } else {
+    await copyFile(tempTinifyImgPath, newOutputPath);
+  }
+
+  return convert_results;
+}
+
 export async function processTinyPng(payload: ImageTaskPayload) {
   let originalSize: number = 0;
   let originalMetadata: Metadata | undefined;
@@ -59,22 +177,15 @@ export async function processTinyPng(payload: ImageTaskPayload) {
       limitInputPixels: false,
       animated: process_options.mime_type === 'image/webp',
     }).metadata();
-    const response = await request<TinifyResult>(`${API_ENDPOINT}/shrink`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': process_options.mime_type,
-        Authorization: `Basic ${btoa(`api:${process_options.api_key}`)}`,
-      },
-      body: createReadStream(input_path),
-    });
 
-    const data = (await response.body?.json()) as TinifyResult;
+    const data = await uploadToTinify(
+      input_path,
+      process_options.mime_type,
+      process_options.api_key,
+    );
     tinypngResult = data;
-    if (data?.error) {
-      throw new Error(`${data.error}, ${data.message}`);
-    }
-    const compressRatio = calCompressionRate(data.input.size, data.output.size);
 
+    const compressRatio = calCompressionRate(data.input.size, data.output.size);
     const availableCompressRate = compressRatio >= (options.limit_compress_rate || 0);
 
     const newOutputPath = await createOutputPath(input_path, {
@@ -85,82 +196,15 @@ export async function processTinyPng(payload: ImageTaskPayload) {
 
     const tempFilePath = options.temp_dir ? await copyFileToTemp(input_path, options.temp_dir) : '';
     let convert_results: any[] = [];
+
     if (availableCompressRate) {
-      const body: Record<string, any> = {};
-      if (isValidArray(process_options.preserveMetadata)) {
-        body.preserve = process_options.preserveMetadata;
-      }
-      const response = await request(data.output.url, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Basic ${btoa(`api:${process_options.api_key}`)}`,
-        },
-        body: JSON.stringify(body),
-      });
-      const tempTinifyImgPath = createTempFilePath(input_path, options.temp_dir);
-      await pipeline(response.body, createWriteStream(tempTinifyImgPath));
-      const transformer = sharp(tempTinifyImgPath, { limitInputPixels: false, animated: true });
-      let isRaw = true;
-      if (options.resize_enable) {
-        isRaw = false;
-        resizeFromSharpStream({
-          stream: transformer,
-          originalMetadata: {
-            width: data.output.width,
-            height: data.output.height,
-          },
-          options,
-        });
-      }
-      if (options.watermark_type !== WatermarkType.None) {
-        isRaw = false;
-        const { info } = await transformer
-          .toFormat(data.output.type.replace('image/', '') as any)
-          .toBuffer({
-            resolveWithObject: true,
-          });
-        if (options.watermark_type === WatermarkType.Text && options.watermark_text) {
-          await addTextWatermark({
-            stream: transformer,
-            text: options.watermark_text,
-            color: options.watermark_text_color,
-            fontSize: options.watermark_font_size,
-            position: options.watermark_position,
-            container: {
-              width: info.width,
-              height: info.height,
-            },
-          });
-        } else if (options.watermark_type === WatermarkType.Image && options.watermark_image_path) {
-          await addImageWatermark({
-            stream: transformer,
-            imagePath: options.watermark_image_path,
-            opacity: options.watermark_image_opacity,
-            scale: options.watermark_image_scale,
-            position: options.watermark_position,
-            container: {
-              width: info.width,
-              height: info.height,
-            },
-          });
-        }
-      }
-      if (isValidArray(options.convert_types)) {
-        const convertedStream = isRaw ? transformer : transformer.clone();
-        const results = await bulkConvert(
-          newOutputPath,
-          options.convert_types,
-          options.convert_alpha,
-          convertedStream,
-        );
-        convert_results = results;
-      }
-      if (isRaw) {
-        await copyFile(tempTinifyImgPath, newOutputPath);
-      } else {
-        await pipeline(transformer, createWriteStream(newOutputPath));
-      }
+      convert_results = await downloadAndProcessImage(
+        data,
+        input_path,
+        newOutputPath,
+        options,
+        process_options,
+      );
     } else {
       if (input_path !== newOutputPath) {
         await copyFile(input_path, newOutputPath);
@@ -169,7 +213,7 @@ export async function processTinyPng(payload: ImageTaskPayload) {
 
     const outputSize = availableCompressRate ? await getFileSize(newOutputPath) : data.input.size;
 
-    const result: Record<string, any> = {
+    return {
       input_path,
       input_size: data.input.size,
       output_path: newOutputPath,
@@ -185,7 +229,6 @@ export async function processTinyPng(payload: ImageTaskPayload) {
       },
       convert_results,
     };
-    return result;
   } catch (error) {
     throw new CompressError('TinyPng Compress Error', {
       cause: error,
