@@ -284,7 +284,19 @@ function FileCard(props: FileCardProps) {
       className='bg-background group relative rounded-lg border transition-all duration-300 hover:shadow-lg dark:border-neutral-700'
       onContextMenu={fileContextMenuHandler}
     >
-      <div className='text-0 relative flex aspect-[4/3] items-center justify-center overflow-hidden p-1'>
+      <div
+        className='text-0 relative flex aspect-[4/3] items-center justify-center overflow-hidden rounded-md bg-neutral-200/30 dark:bg-neutral-800/80'
+        style={{
+          backgroundImage: `
+            linear-gradient(45deg, rgba(0,0,0,0.4) 25%, transparent 25%),
+            linear-gradient(-45deg, rgba(0,0,0,0.4) 25%, transparent 25%),
+            linear-gradient(45deg, transparent 75%, rgba(0,0,0,0.4) 75%),
+            linear-gradient(-45deg, transparent 75%, rgba(0,0,0,0.4) 75%)
+          `,
+          backgroundSize: '12px 12px',
+          backgroundPosition: '0 0, 0 6px, 6px -6px, -6px 0px',
+        }}
+      >
         <Button
           variant='ghost'
           size='icon'
@@ -293,31 +305,16 @@ function FileCard(props: FileCardProps) {
         >
           <Ellipsis className='h-4 w-4' />
         </Button>
-        <div
-          className='text-0 flex aspect-[4/3] w-full items-center justify-center overflow-hidden rounded-md bg-neutral-200/30 dark:bg-neutral-800/80'
-          style={{
-            backgroundImage: `
-            linear-gradient(45deg, rgba(0,0,0,0.4) 25%, transparent 25%),
-            linear-gradient(-45deg, rgba(0,0,0,0.4) 25%, transparent 25%),
-            linear-gradient(45deg, transparent 75%, rgba(0,0,0,0.4) 75%),
-            linear-gradient(-45deg, transparent 75%, rgba(0,0,0,0.4) 75%)
-          `,
-            backgroundSize: '12px 12px',
-            backgroundPosition: '0 0, 0 6px, 6px -6px, -6px 0px',
-          }}
-        >
-          <ImageViewer
-            src={file.assetPath}
-            size={
-              file.status === ICompressor.Status.Completed
-                ? file.compressedBytesSize
-                : file.bytesSize
-            }
-            path={file.status === ICompressor.Status.Completed ? file.outputPath : file.path}
-            ext={file.ext}
-            ref={imgRef}
-          />
-        </div>
+        <ImageViewer
+          src={file.assetPath}
+          size={
+            file.status === ICompressor.Status.Completed ? file.compressedBytesSize : file.bytesSize
+          }
+          path={file.status === ICompressor.Status.Completed ? file.outputPath : file.path}
+          ext={file.ext}
+          ref={imgRef}
+          imgClassName='aspect-[4/3]'
+        />
       </div>
       <div className='px-1 pb-1'>
         <Tooltip title={file.path} arrow={false}>

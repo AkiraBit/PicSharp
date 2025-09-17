@@ -1,70 +1,111 @@
-import { Metadata, ResizeOptions, Sharp } from 'sharp';
-import { isValidArray } from '../utils';
+import { Metadata, ResizeOptions, FitEnum, Sharp } from 'sharp';
+import { isValidArray, createTempFilePath } from '../utils';
+import { nanoid } from 'nanoid';
+
+export interface Dimensions {
+  width: number;
+  height: number;
+}
+
+export type Fit = keyof FitEnum;
 
 export function calculateResizeDimensions(
-  originalMetadata: { width?: number; height?: number },
-  options: any,
-): { width: number; height: number } {
-  const originalWidth = originalMetadata.width;
-  const originalHeight = originalMetadata.height;
+  originalDimensions: Dimensions,
+  targetDimensions: Partial<Dimensions>,
+  fitMode: Fit,
+): Dimensions {
+  const { width: originalWidth, height: originalHeight } = originalDimensions;
 
-  if (
-    !originalWidth ||
-    !originalHeight ||
-    !isValidArray(options.resize_dimensions) ||
-    !options.resize_dimensions.some((dim: number) => dim > 0)
-  ) {
-    return { width: originalWidth || 0, height: originalHeight || 0 };
+  let finalTargetWidth: number;
+  let finalTargetHeight: number;
+
+  const originalRatio = originalWidth / originalHeight;
+
+  if (targetDimensions.width && targetDimensions.height) {
+    finalTargetWidth = targetDimensions.width;
+    finalTargetHeight = targetDimensions.height;
+  } else if (targetDimensions.width) {
+    finalTargetWidth = targetDimensions.width;
+    finalTargetHeight = Math.round(targetDimensions.width / originalRatio);
+  } else if (targetDimensions.height) {
+    finalTargetWidth = Math.round(targetDimensions.height * originalRatio);
+    finalTargetHeight = targetDimensions.height;
+  } else {
+    return originalDimensions;
   }
 
-  let targetWidth = options.resize_dimensions[0] > 0 ? options.resize_dimensions[0] : Infinity;
-  let targetHeight = options.resize_dimensions[1] > 0 ? options.resize_dimensions[1] : Infinity;
-
-  targetWidth = Math.min(targetWidth, originalWidth);
-  targetHeight = Math.min(targetHeight, originalHeight);
-
-  if (options.resize_fit === 'cover' || options.resize_fit === 'contain') {
-    const wr = targetWidth / originalWidth;
-    const hr = targetHeight / originalHeight;
-    let ratio;
-    if (options.resize_fit === 'cover') {
-      ratio = Math.max(wr, hr);
-    } else {
-      ratio = Math.min(wr, hr);
-    }
+  if (fitMode === 'cover') {
+    const ratioW = finalTargetWidth / originalWidth;
+    const ratioH = finalTargetHeight / originalHeight;
+    const finalRatio = Math.max(ratioW, ratioH);
     return {
-      width: Math.round(originalWidth * ratio),
-      height: Math.round(originalHeight * ratio),
+      width: Math.round(originalWidth * finalRatio),
+      height: Math.round(originalHeight * finalRatio),
     };
   }
 
-  if (targetWidth === Infinity) {
-    targetWidth = originalWidth;
-  }
-  if (targetHeight === Infinity) {
-    targetHeight = originalHeight;
+  if (fitMode === 'contain') {
+    const ratioW = finalTargetWidth / originalWidth;
+    const ratioH = finalTargetHeight / originalHeight;
+    const finalRatio = Math.min(ratioW, ratioH);
+    return {
+      width: Math.round(originalWidth * finalRatio),
+      height: Math.round(originalHeight * finalRatio),
+    };
   }
 
-  return { width: targetWidth, height: targetHeight };
+  if (fitMode === 'fill') {
+    return {
+      width: finalTargetWidth,
+      height: finalTargetHeight,
+    };
+  }
+
+  if (fitMode === 'inside') {
+    if (originalWidth <= finalTargetWidth && originalHeight <= finalTargetHeight) {
+      return originalDimensions;
+    }
+    const ratioW = finalTargetWidth / originalWidth;
+    const ratioH = finalTargetHeight / originalHeight;
+    const finalRatio = Math.min(ratioW, ratioH);
+    return {
+      width: Math.round(originalWidth * finalRatio),
+      height: Math.round(originalHeight * finalRatio),
+    };
+  }
+
+  if (fitMode === 'outside') {
+    const ratioW = finalTargetWidth / originalWidth;
+    const ratioH = finalTargetHeight / originalHeight;
+    const finalRatio = Math.max(ratioW, ratioH);
+    return {
+      width: Math.round(originalWidth * finalRatio),
+      height: Math.round(originalHeight * finalRatio),
+    };
+  }
+
+  return originalDimensions;
 }
-
 export interface ResizeFromSharpStreamPayload {
   stream: Sharp;
-  originalMetadata: Metadata | { width: number; height: number };
+  originalMetadata: Metadata | Dimensions;
   options: any;
 }
 
-export function resizeFromSharpStream(params: ResizeFromSharpStreamPayload): {
-  width: number;
-  height: number;
-} {
+export async function resizeFromSharpStream(
+  params: ResizeFromSharpStreamPayload,
+): Promise<Dimensions> {
   const { stream, originalMetadata, options } = params;
 
   if (
+    originalMetadata.width &&
+    originalMetadata.height &&
     isValidArray(options.resize_dimensions) &&
     options.resize_dimensions.some((dim: number) => dim > 0)
   ) {
-    const params: ResizeOptions = {};
+    const params: ResizeOptions = {
+      fit: 'inside',
+    };
     let useFit = false;
     if (
       options.resize_dimensions[0] > 0 &&
@@ -81,9 +122,26 @@ export function resizeFromSharpStream(params: ResizeFromSharpStreamPayload): {
       useFit = true;
     }
     if (options.resize_fit && useFit) {
-      params.fit = options.resize_fit || 'cover';
+      params.fit = options.resize_fit;
     }
-    stream.resize(params);
+    if (params.width || params.height) {
+      stream.resize(params);
+      const tempFilePath = createTempFilePath(`resize_${nanoid()}.webp`, options.temp_dir);
+      const info = await stream
+        .clone()
+        .webp({
+          quality: 70,
+          force: true,
+          effort: 0,
+        })
+        .toFile(tempFilePath);
+      return {
+        width: info.width,
+        height: info.height,
+      };
+    } else {
+      return originalMetadata;
+    }
   }
-  return calculateResizeDimensions(originalMetadata, options);
+  return originalMetadata;
 }

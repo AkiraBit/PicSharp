@@ -1,17 +1,16 @@
-import sharp, { Sharp } from 'sharp';
-import { getFileExtWithoutDot, createExtOutputPath } from '../utils';
+import { Sharp } from 'sharp';
 import { ConvertFormat } from '../constants';
+import path from 'node:path';
 
 export async function convert(
-  inputPath: string,
-  type: ConvertFormat,
-  alpha: string,
   stream: Sharp,
+  outputPath: string,
+  format: ConvertFormat,
+  alpha: string,
 ) {
   try {
-    const outputPath = createExtOutputPath(inputPath, type);
     let result = null;
-    switch (type) {
+    switch (format) {
       case ConvertFormat.PNG:
         result = await stream.png().toFile(outputPath);
         break;
@@ -25,41 +24,34 @@ export async function convert(
         result = await stream.avif().toFile(outputPath);
         break;
       default:
-        throw new Error(`Unsupported convert format: ${type}`);
+        throw new Error(`Unsupported convert format: ${format}`);
     }
     return {
       success: true,
       output_path: outputPath,
-      format: type,
+      format,
       info: result,
     };
   } catch (error: any) {
     return {
       success: false,
-      format: type,
+      format,
       error_msg: error instanceof Error ? error.message : error.toString(),
     };
   }
 }
 
 export async function bulkConvert(
-  inputPath: string,
+  stream: Sharp,
+  outputName: string,
+  outputDir: string,
   types: ConvertFormat[],
   alpha: string,
-  stream?: Sharp,
 ) {
   const tasks = [];
-  const ext = getFileExtWithoutDot(inputPath);
-  if (!stream) {
-    stream = sharp(inputPath, { limitInputPixels: false, animated: true });
-  }
   for (const type of types) {
-    if (ext === 'jpeg' && type === ConvertFormat.JPG) {
-      continue;
-    } else if (ext !== type) {
-      const convertStream = stream.clone();
-      tasks.push(convert(inputPath, type, alpha, convertStream));
-    }
+    const outputPath = path.join(outputDir, `${outputName}.${type}`);
+    tasks.push(convert(stream.clone(), outputPath, type, alpha));
   }
   return Promise.all(tasks);
 }

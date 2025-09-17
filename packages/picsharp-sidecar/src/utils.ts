@@ -8,6 +8,7 @@ import { createReadStream } from 'node:fs';
 import ssim from 'ssim.js';
 import sharp, { Metadata } from 'sharp';
 import { omit } from 'es-toolkit';
+import os from 'node:os';
 
 export const calCompressionRate = (originalSize: number, compressedSize: number) => {
   return Number(((originalSize - compressedSize) / originalSize).toFixed(2));
@@ -49,14 +50,14 @@ export const convertFileSrc = (path: string) => {
   return `${base}${encoded}`;
 };
 
-export const createTempFilePath = (targetPath: string, tempDir: string) => {
+export const createTempFilePath = (targetPath: string, tempDir: string = os.tmpdir()) => {
   return path.join(
     tempDir,
     `${path.basename(targetPath, path.extname(targetPath))}_${nanoid()}${path.extname(targetPath)}`,
   );
 };
 
-export const copyFileToTemp = async (targetPath: string, tempDir: string) => {
+export const copyFileToTemp = async (targetPath: string, tempDir: string = os.tmpdir()) => {
   const tempFilePath = createTempFilePath(targetPath, tempDir);
   await fs.copyFile(targetPath, tempFilePath);
   return tempFilePath;
@@ -252,4 +253,11 @@ export class CompressError extends Error {
     this.name = 'CompressError';
     this.payload = options.payload;
   }
+}
+
+export function createOutputPathTempPath(inputPath: string) {
+  const dir = path.dirname(inputPath);
+  const base = path.basename(inputPath);
+  const tempPath = path.join(dir, `.${nanoid()}_${base}`);
+  return tempPath;
 }
