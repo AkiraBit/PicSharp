@@ -52,13 +52,16 @@ export async function applyImageTransformations(
 export async function applyImageConversion(
   stream: sharp.Sharp,
   outputPath: string,
+  enable: boolean,
   convertTypes: ConvertFormat[],
   convertAlpha: string,
 ) {
-  if (isValidArray(convertTypes)) {
+  if (enable && isValidArray(convertTypes)) {
+    const ext = path.extname(outputPath);
     return bulkConvert(
       stream,
-      path.basename(outputPath, path.extname(outputPath)),
+      ext,
+      path.basename(outputPath, ext),
       path.dirname(outputPath),
       convertTypes,
       convertAlpha,
@@ -138,6 +141,7 @@ export async function processImage(
   const convert_results: any[] = await applyImageConversion(
     transformer,
     outputPath,
+    options.convert_enable,
     options.convert_types,
     options.convert_alpha,
   );

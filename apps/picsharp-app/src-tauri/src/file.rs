@@ -57,6 +57,8 @@ pub fn get_file_mime_type(path: &Path) -> Option<String> {
         "webp" => Some("image/webp".to_string()),
         "avif" => Some("image/avif".to_string()),
         "svg" => Some("image/svg+xml".to_string()),
+        "tiff" | "tif" => Some("image/tiff".to_string()),
+        "gif" => Some("image/gif".to_string()),
         _ => None,
     }
 }
@@ -75,16 +77,10 @@ pub struct FileInfo {
     pub path: PathBuf,
     // 文件所在目录
     pub base_dir: PathBuf,
-    // 文件资源路径
-    pub asset_path: String,
     // 文件字节数
     pub bytes_size: u64,
-    // 文件格式化大小
-    pub formatted_bytes_size: String,
     // 文件磁盘大小
     pub disk_size: u64,
-    // 文件格式化磁盘大小
-    pub formatted_disk_size: String,
     // 文件扩展名
     pub ext: String,
     // 文件mime类型
@@ -108,24 +104,16 @@ impl FileInfo {
         }
 
         let base_dir = get_file_parent_dir(path);
-        let asset_path = convert_file_src(path.to_str().unwrap_or_default()).unwrap_or_default();
 
         Some(FileInfo {
             id: nanoid!(),
             name,
             path: path.to_path_buf(),
             base_dir,
-            asset_path,
             bytes_size: get_file_bytes_size(path.to_str().unwrap_or_default(), Some(&md))
                 .unwrap_or(0),
-            formatted_bytes_size: format_file_size(
-                get_file_bytes_size(path.to_str().unwrap_or_default(), Some(&md)).unwrap_or(0),
-            ),
             disk_size: get_file_disk_size(path.to_str().unwrap_or_default(), Some(&md))
                 .unwrap_or(0),
-            formatted_disk_size: format_file_size(
-                get_file_disk_size(path.to_str().unwrap_or_default(), Some(&md)).unwrap_or(0),
-            ),
             ext,
             mime_type: get_file_mime_type(path).unwrap_or_default(),
         })

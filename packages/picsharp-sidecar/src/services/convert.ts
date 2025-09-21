@@ -1,6 +1,7 @@
 import { Sharp } from 'sharp';
 import { ConvertFormat } from '../constants';
 import path from 'node:path';
+import Sentry from '@sentry/node';
 
 export async function convert(
   stream: Sharp,
@@ -33,6 +34,7 @@ export async function convert(
       info: result,
     };
   } catch (error: any) {
+    Sentry.captureException(error);
     return {
       success: false,
       format,
@@ -43,6 +45,7 @@ export async function convert(
 
 export async function bulkConvert(
   stream: Sharp,
+  originalExt: string,
   outputName: string,
   outputDir: string,
   types: ConvertFormat[],
@@ -50,6 +53,9 @@ export async function bulkConvert(
 ) {
   const tasks = [];
   for (const type of types) {
+    if (type === originalExt || (type === ConvertFormat.JPG && originalExt === 'jpeg')) {
+      continue;
+    }
     const outputPath = path.join(outputDir, `${outputName}.${type}`);
     tasks.push(convert(stream.clone(), outputPath, type, alpha));
   }

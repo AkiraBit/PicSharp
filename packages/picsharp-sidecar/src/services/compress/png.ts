@@ -69,6 +69,7 @@ export async function processPngLossless(payload: {
       const convert_results: any[] = await applyImageConversion(
         transformer,
         outputPath,
+        options.convert_enable,
         options.convert_types,
         options.convert_alpha,
       );
@@ -118,17 +119,13 @@ export async function processPngLossless(payload: {
           await copyFile(input_path, outputPath);
         }
       }
-      let convert_results: any[] = [];
-      if (isValidArray(options.convert_types)) {
-        const results = await bulkConvert(
-          transformer,
-          path.basename(outputPath, path.extname(outputPath)),
-          path.dirname(outputPath),
-          options.convert_types,
-          options.convert_alpha,
-        );
-        convert_results = results;
-      }
+      const convert_results: any[] = await applyImageConversion(
+        transformer,
+        outputPath,
+        options.convert_enable,
+        options.convert_types,
+        options.convert_alpha,
+      );
       return {
         input_path,
         input_size: originalSize,

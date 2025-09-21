@@ -2,7 +2,7 @@ import Sentry from '@sentry/node';
 import { machineId } from 'node-machine-id';
 
 Sentry.init({
-  environment: process.env.NODE_ENV || 'development',
+  environment: process.env.NODE_ENV || 'production',
   dsn: process.env.PICSHARP_SIDECAR_SENTRY_DSN,
   enableLogs: true,
   tracesSampleRate: 0.05,

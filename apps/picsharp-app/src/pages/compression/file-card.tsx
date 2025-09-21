@@ -28,7 +28,6 @@ import useAppStore from '@/store/app';
 import { copyImage } from '@/utils/clipboard';
 import ImgTag from '@/components/img-tag';
 import { Button } from '@/components/ui/button';
-import { TauriEvent } from '@tauri-apps/api/event';
 export interface FileCardProps {
   path: FileInfo['path'];
 }
@@ -327,16 +326,23 @@ function FileCard(props: FileCardProps) {
         </Tooltip>
         <div className='flex items-center justify-between'>
           <div className='flex items-center gap-1'>
-            <span
-              className={cn(
-                'text-[12px] text-gray-500',
-                file.status === ICompressor.Status.Completed &&
-                  file.compressedBytesSize &&
-                  'line-through',
-              )}
+            <Tooltip
+              title={t('tips.file_size', {
+                bytes: file.bytesSize?.toLocaleString(),
+                formatted_disk_size: file.formattedDiskSize,
+              })}
             >
-              {file.formattedBytesSize}
-            </span>
+              <span
+                className={cn(
+                  'text-[12px] text-gray-500',
+                  file.status === ICompressor.Status.Completed &&
+                    file.compressedBytesSize &&
+                    'line-through',
+                )}
+              >
+                {file.formattedBytesSize}
+              </span>
+            </Tooltip>
             {file.status === ICompressor.Status.Completed && file.compressedBytesSize && (
               <span className='text-[12px] text-gray-500'>{file.formattedCompressedBytesSize}</span>
             )}
@@ -362,10 +368,10 @@ function FileCard(props: FileCardProps) {
           <>
             <Divider className='!my-0' plain>
               <span className='text-xs text-neutral-500'>
-                {t('settings.compression.convert.title')}
+                {t('settings.compression.convert.enable.title')}
               </span>
             </Divider>
-            <div className='mt-1 flex items-center justify-center gap-1'>
+            <div className='mt-1 flex items-center justify-center gap-[2px]'>
               {file.convertResults.map((item) => (
                 <Tooltip
                   title={
@@ -378,7 +384,7 @@ function FileCard(props: FileCardProps) {
                 >
                   <Badge
                     variant={item.success ? 'midnight' : 'destructive'}
-                    className='cursor-pointer'
+                    className='cursor-pointer px-[4px] py-[2px] text-[10px]'
                     data-src={item.output_path}
                     onClick={handleRevealFile}
                   >

@@ -19,7 +19,7 @@ import { resizeFromSharpStream } from '../resize';
 import sharp, { Metadata } from 'sharp';
 import { addTextWatermark, addImageWatermark } from '../watermark';
 import { SaveMode, WatermarkType } from '../../constants';
-import path from 'node:path';
+import { applyImageConversion } from './utils';
 
 export interface ImageTaskPayload {
   input_path: string;
@@ -148,18 +148,13 @@ async function downloadAndProcessImage(
     tinypngResult.output,
   );
 
-  let convert_results: any[] = [];
-  const shouldConvert = isValidArray(options.convert_types);
-
-  if (shouldConvert) {
-    convert_results = await bulkConvert(
-      hasTransformations ? transformer.clone() : transformer,
-      path.basename(outputPath, path.extname(outputPath)),
-      path.dirname(outputPath),
-      options.convert_types,
-      options.convert_alpha,
-    );
-  }
+  const convert_results: any[] = await applyImageConversion(
+    transformer,
+    outputPath,
+    options.convert_enable,
+    options.convert_types,
+    options.convert_alpha,
+  );
 
   if (hasTransformations) {
     await pipeline(transformer, createWriteStream(outputPath));

@@ -33,4 +33,8 @@ export default defineConfig(async () => ({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  define: {
+    __PICSHARP_SIDECAR_SENTRY_DSN__: JSON.stringify(process.env.PICSHARP_SIDECAR_SENTRY_DSN),
+    __PICSHARP_SENTRY_DSN__: JSON.stringify(process.env.PICSHARP_SENTRY_DSN),
+  },
 }));

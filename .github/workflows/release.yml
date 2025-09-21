@@ -72,7 +72,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v5
         with:
-          node-version: 23
+          node-version: 24
 
       - name: Install Rust Stable
         uses: dtolnay/rust-toolchain@stable
@@ -313,6 +313,8 @@ jobs:
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
           NODE_OPTIONS: '--max-old-space-size=8192'
+          PICSHARP_SENTRY_DSN: ${{ secrets.PICSHARP_SENTRY_DSN }}
+          PICSHARP_SIDECAR_SENTRY_DSN: ${{ secrets.PICSHARP_SIDECAR_SENTRY_DSN }}
         with:
           projectPath: apps/picsharp-app
           tagName: v__VERSION__

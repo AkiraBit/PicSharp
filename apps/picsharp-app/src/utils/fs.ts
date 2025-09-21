@@ -3,13 +3,27 @@ import { ICompressor } from './compressor';
 import { isValidArray } from '.';
 import { CompressionOutputMode } from '@/constants';
 import { copyFile, exists, remove } from '@tauri-apps/plugin-fs';
+import { isMac, isLinux } from '.';
 
 const mags = ' KMGTPEZY';
-export function humanSize(bytes: number, precision: number = 1) {
-  const magnitude = Math.min((Math.log(bytes) / Math.log(1024)) | 0, mags.length - 1);
-  const result = bytes / Math.pow(1024, magnitude);
+export function humanSize(bytes: number) {
+  if (bytes === 0) {
+    return '0B';
+  }
+
+  let base = 1024;
+  let precision = 1;
+  // mac or linux use Base-10 for file size
+  if (isMac || isLinux) {
+    base = 1000;
+  }
+  const magnitude = Math.min((Math.log(bytes) / Math.log(base)) | 0, mags.length - 1);
+  if (magnitude <= 1) {
+    precision = 0;
+  }
+  const result = bytes / Math.pow(base, magnitude);
   const suffix = mags[magnitude].trim() + 'B';
-  return result.toFixed(precision) + suffix;
+  return `${Number(result.toFixed(precision))}${suffix}`;
 }
 
 export interface ParsePathsItem {
@@ -17,11 +31,8 @@ export interface ParsePathsItem {
   name: string;
   path: string;
   base_dir: string;
-  asset_path: string;
   bytes_size: number;
-  formatted_bytes_size: string;
   disk_size: number;
-  formatted_disk_size: string;
   ext: string;
   mime_type: string;
 }
@@ -32,29 +43,32 @@ export async function parsePaths(paths: string[], validExts: string[]) {
     validExts,
   });
   if (isValidArray(candidates)) {
-    return candidates.map<FileInfo>((item) => ({
-      id: item.id,
-      path: item.path,
-      assetPath: convertFileSrc(item.path),
-      name: item.name,
-      parentDir: item.base_dir,
-      bytesSize: item.bytes_size,
-      formattedBytesSize: humanSize(item.bytes_size),
-      diskSize: item.disk_size,
-      formattedDiskSize: humanSize(item.disk_size),
-      mimeType: item.mime_type,
-      ext: item.ext,
-      compressedBytesSize: 0,
-      formattedCompressedBytesSize: '',
-      compressedDiskSize: 0,
-      formattedCompressedDiskSize: '',
-      compressRate: '',
-      outputPath: '',
-      status: ICompressor.Status.Pending,
-      originalTempPath: '',
-      originalTempPathConverted: '',
-      ssim: 0,
-    }));
+    return candidates.map<FileInfo>((item) => {
+      console.log('item', item);
+      return {
+        id: item.id,
+        path: item.path,
+        assetPath: convertFileSrc(item.path),
+        name: item.name,
+        parentDir: item.base_dir,
+        bytesSize: item.bytes_size,
+        formattedBytesSize: humanSize(item.bytes_size),
+        diskSize: item.disk_size,
+        formattedDiskSize: humanSize(item.disk_size),
+        mimeType: item.mime_type,
+        ext: item.ext,
+        compressedBytesSize: 0,
+        formattedCompressedBytesSize: '',
+        compressedDiskSize: 0,
+        formattedCompressedDiskSize: '',
+        compressRate: '',
+        outputPath: '',
+        status: ICompressor.Status.Pending,
+        originalTempPath: '',
+        originalTempPathConverted: '',
+        ssim: 0,
+      };
+    });
   }
   return [];
 }

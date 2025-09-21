@@ -24,6 +24,7 @@ const OptionsSchema = z
       .optional()
       .default({}),
     temp_dir: z.string().optional(),
+    convert_enable: z.boolean().optional().default(false),
     convert_types: z.array(z.nativeEnum(ConvertFormat)).optional().default([]),
     convert_alpha: z.string().optional().default('#FFFFFF'),
     resize_enable: z.boolean().optional().default(false),
