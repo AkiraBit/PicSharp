@@ -232,7 +232,6 @@ pub fn run() {
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
-        // .plugin(tauri_plugin_aptabase::Builder::new("A-US-5612988769").build())
         .invoke_handler(tauri::generate_handler![
             file::ipc_parse_paths,
             file::ipc_count_valid_files,
