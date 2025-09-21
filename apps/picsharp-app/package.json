@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@ant-design/icons": "^5.5.2",
+    "@aptabase/tauri": "^0.4.1",
     "@fontsource/ibm-plex-mono": "^5.1.1",
     "@hookform/resolvers": "^3.10.0",
     "@microsoft/fetch-event-source": "^2.0.1",

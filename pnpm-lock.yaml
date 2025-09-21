@@ -35,6 +35,9 @@ importers:
       '@ant-design/icons':
         specifier: ^5.5.2
         version: 5.6.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@aptabase/tauri':
+        specifier: ^0.4.1
+        version: 0.4.1
       '@fontsource/ibm-plex-mono':
         specifier: ^5.1.1
         version: 5.2.5
@@ -405,6 +408,9 @@ packages:
     resolution: {integrity: sha512-EzlvzE6xQUBrZuuhSAFTdsr4P2bBBHGZwKFemEfq8gIGyIQCxalYfZW/T2ORbtQx5rU69o+WycP3exY/7T1hGA==}
     peerDependencies:
       react: '>=16.9.0'
+
+  '@aptabase/tauri@0.4.1':
+    resolution: {integrity: sha512-ZjCtPN1Tw0y90nxMLR64UqFjgikxfc9NZouxqXlqZFkfpF8D/tPf1xUn0Anu8nvERGND/hAkO3x7ZLyLGI1HRg==}
 
   '@babel/code-frame@7.27.1':
     resolution: {integrity: sha512-cjQ7ZlQ0Mv3b47hABuTevyTuYN4i+loJKGeV9flcCgIK37cCXRh+L1bd3iBHlynerhQ7BhCkn2BPbQUL+rGqFg==}
@@ -2515,6 +2521,10 @@ packages:
   '@tanstack/table-core@8.21.3':
     resolution: {integrity: sha512-ldZXEhOBb8Is7xLs01fR3YEc3DERiz5silj8tnGkFZytt1abEvl/GhUmCE0PMLaMPTa3Jk4HbKmRlHmu+gCftg==}
     engines: {node: '>=12'}
+
+  '@tauri-apps/api@1.6.0':
+    resolution: {integrity: sha512-rqI++FWClU5I2UBp4HXFvl+sBWkdigBkxnpJDQUWttNyG7IZP4FwQGhTNL5EOw0vI8i6eSAJ5frLqO7n7jbJdg==}
+    engines: {node: '>= 14.6.0', npm: '>= 6.6.0', yarn: '>= 1.19.1'}
 
   '@tauri-apps/api@2.5.0':
     resolution: {integrity: sha512-Ldux4ip+HGAcPUmuLT8EIkk6yafl5vK0P0c0byzAKzxJh7vxelVtdPONjfgTm96PbN24yjZNESY8CKo8qniluA==}
@@ -5147,6 +5157,10 @@ snapshots:
       resize-observer-polyfill: 1.5.1
       throttle-debounce: 5.0.2
 
+  '@aptabase/tauri@0.4.1':
+    dependencies:
+      '@tauri-apps/api': 1.6.0
+
   '@babel/code-frame@7.27.1':
     dependencies:
       '@babel/helper-validator-identifier': 7.27.1
@@ -7292,6 +7306,8 @@ snapshots:
       react-dom: 18.3.1(react@18.3.1)
 
   '@tanstack/table-core@8.21.3': {}
+
+  '@tauri-apps/api@1.6.0': {}
 
   '@tauri-apps/api@2.5.0': {}
 

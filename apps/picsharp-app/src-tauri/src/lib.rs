@@ -1,3 +1,4 @@
+use dotenvy_macro::dotenv;
 use inspect::Inspect;
 use log::{error, info};
 use std::fs;
@@ -8,6 +9,7 @@ use tauri::{
     tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
 };
 use tauri::{AppHandle, Emitter, Listener, Manager, Url};
+use tauri_plugin_aptabase::EventTracker;
 use tauri_plugin_fs::FsExt;
 mod clipboard;
 mod command;
@@ -230,6 +232,7 @@ pub fn run() {
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
+        // .plugin(tauri_plugin_aptabase::Builder::new("A-US-5612988769").build())
         .invoke_handler(tauri::generate_handler![
             file::ipc_parse_paths,
             file::ipc_count_valid_files,

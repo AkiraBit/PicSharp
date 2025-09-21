@@ -67,6 +67,8 @@ nanoid = "0.4.0"
 merge = "0.2.0"
 tauri-plugin-shell = "2"
 tauri-plugin-process = "2"
+tauri-plugin-aptabase = "1.0.0"
+dotenvy_macro = "0.15.7"
 
 [build]
 rustc-wrapper = "~/.cargo/bin/sccache"
