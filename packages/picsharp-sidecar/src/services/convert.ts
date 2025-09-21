@@ -52,6 +52,7 @@ export async function bulkConvert(
   alpha: string,
 ) {
   const tasks = [];
+  originalExt = originalExt.startsWith('.') ? originalExt.slice(1) : originalExt;
   for (const type of types) {
     if (type === originalExt || (type === ConvertFormat.JPG && originalExt === 'jpeg')) {
       continue;
