@@ -104,8 +104,10 @@ export default {
   'settings.compression.threshold.title': '压缩率限制',
   'settings.compression.threshold.description': '当图片压缩率低于设置阈值时，不进行保存',
   // Settings.Compression.Convert
-  'settings.compression.convert.title': '格式转换',
-  'settings.compression.convert.description': '在压缩完成后，额外将图片转换为指定格式',
+  'settings.compression.convert.enable.title': '格式转换',
+  'settings.compression.convert.enable.description': '在压缩完成后，额外将图片转换为指定格式',
+  'settings.compression.convert.format.title': '转换格式',
+  'settings.compression.convert.format.description': '',
   // Settings.Compression.ConvertAlpha
   'settings.compression.convert_alpha.title': '透明背景填充',
   'settings.compression.convert_alpha.description':

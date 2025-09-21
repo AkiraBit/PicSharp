@@ -28,6 +28,7 @@ export namespace ICompressor {
     }>;
     tempDir: string;
     sidecarDomain?: string;
+    convertEnable?: boolean;
     convertTypes?: ConvertFormat[];
     convertAlpha?: string;
     resizeDimensions?: [number, number];
@@ -631,6 +632,7 @@ export default class Compressor {
                 new_folder_path: this.options.save.newFolderPath,
               },
               temp_dir: this.options.tempDir,
+              convert_enable: this.options.convertEnable,
               convert_types: this.options.convertTypes,
               convert_alpha: this.options.convertAlpha,
               resize_dimensions: this.options.resizeDimensions,

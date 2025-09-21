@@ -108,9 +108,11 @@ const enUS = {
   'settings.compression.threshold.description':
     'When the image compression rate is below the set threshold, saving will not be performed.',
   // Settings.Compression.Convert
-  'settings.compression.convert.title': 'Format Conversion',
-  'settings.compression.convert.description':
+  'settings.compression.convert.enable.title': 'Format Conversion',
+  'settings.compression.convert.enable.description':
     'After compression is completed, additionally convert the image to the specified format.',
+  'settings.compression.convert.format.title': 'Format Conversion',
+  'settings.compression.convert.format.description': '',
   // Settings.Compression.ConvertAlpha
   'settings.compression.convert_alpha.title': 'Alpha Background Fill',
   'settings.compression.convert_alpha.description':

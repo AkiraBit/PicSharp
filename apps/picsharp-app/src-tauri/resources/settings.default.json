@@ -18,6 +18,7 @@
     "creator",
     "location"
   ],
+  "compression_convert_enable": false,
   "compression_convert": [],
   "compression_convert_alpha": "#FFFFFF",
   "compression_resize_enable": false,

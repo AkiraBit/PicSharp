@@ -33,6 +33,7 @@ export enum SettingsKey {
   CompressionOutput = 'compression_output',
   CompressionOutputSaveAsFileSuffix = 'compression_output_save_as_file_suffix',
   CompressionOutputSaveToFolder = 'compression_output_save_to_folder',
+  CompressionConvertEnable = 'compression_convert_enable',
   CompressionConvert = 'compression_convert',
   CompressionConvertAlpha = 'compression_convert_alpha',
   CompressionResizeEnable = 'compression_resize_enable',

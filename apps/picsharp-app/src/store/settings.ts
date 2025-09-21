@@ -36,6 +36,7 @@ interface SettingsState {
   [SettingsKey.CompressionOutput]: CompressionOutputMode;
   [SettingsKey.CompressionOutputSaveAsFileSuffix]: string;
   [SettingsKey.CompressionOutputSaveToFolder]: string;
+  [SettingsKey.CompressionConvertEnable]: boolean;
   [SettingsKey.CompressionConvert]: ConvertFormat[];
   [SettingsKey.CompressionConvertAlpha]: string;
   [SettingsKey.CompressionResizeEnable]: boolean;
@@ -87,6 +88,7 @@ const useSettingsStore = create(
       [SettingsKey.CompressionOutput]: CompressionOutputMode.Overwrite,
       [SettingsKey.CompressionOutputSaveAsFileSuffix]: '_compressed',
       [SettingsKey.CompressionOutputSaveToFolder]: '',
+      [SettingsKey.CompressionConvertEnable]: false,
       [SettingsKey.CompressionConvert]: [],
       [SettingsKey.CompressionConvertAlpha]: '#FFFFFF',
       [SettingsKey.CompressionResizeEnable]: false,
