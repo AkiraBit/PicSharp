@@ -1,4 +1,5 @@
 import { platform } from '@tauri-apps/plugin-os';
+import * as Sentry from '@sentry/react';
 export const validTinifyExts = [
   'png',
   'jpg',
@@ -151,4 +152,18 @@ export function ssimToQualityScore(ssimValue: number): number {
 
   // 3. 返回最终结果，并确保结果不会因浮点数精度问题超过100
   return Math.min(100, qualityScore);
+}
+
+export function captureError(error: Error, payload?: Record<string, any>, tag?: string) {
+  try {
+    Sentry.withScope((scope) => {
+      if (payload) {
+        scope.setContext('Error Payload', payload);
+      }
+      if (tag) {
+        scope.setTag('tag', tag);
+      }
+      scope.captureException(error);
+    });
+  } catch (_) {}
 }

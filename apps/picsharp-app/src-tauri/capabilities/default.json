@@ -12,7 +12,7 @@
   "permissions": [
     {
       "identifier": "http:default",
-      "allow": [{ "url": "https://api.tinify.com/shrink" }, { "url": "http://localhost:*" },{"url": "https://*.ingest.us.sentry.io*"}]
+      "allow": [{ "url": "https://api.tinify.com/shrink" }, { "url": "http://localhost:*" },{"url": "https://*.ingest.us.sentry.io*"},{ "url": "*us.aptabase.com*" }]
     },
     "core:app:allow-default-window-icon",
     "core:window:allow-set-focus",

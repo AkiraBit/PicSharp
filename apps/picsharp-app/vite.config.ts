@@ -1,9 +1,11 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'node:path';
+import 'dotenv/config';
 
 const host = process.env.TAURI_DEV_HOST;
 
+console.log('process.env.TAURI_DEV_HOST', process.env.PICSHARP_ABE_KEY);
 // https://vitejs.dev/config/
 export default defineConfig(async () => ({
   plugins: [react()],
@@ -12,7 +14,6 @@ export default defineConfig(async () => ({
   //
   // 1. prevent vite from obscuring rust errors
   clearScreen: false,
-  envPrefix: 'PICSHARP_',
   server: {
     port: 1420,
     strictPort: true,
@@ -36,5 +37,6 @@ export default defineConfig(async () => ({
   define: {
     __PICSHARP_SIDECAR_SENTRY_DSN__: JSON.stringify(process.env.PICSHARP_SIDECAR_SENTRY_DSN),
     __PICSHARP_SENTRY_DSN__: JSON.stringify(process.env.PICSHARP_SENTRY_DSN),
+    __PICSHARP_ABE_KEY__: JSON.stringify(process.env.PICSHARP_ABE_KEY),
   },
 }));

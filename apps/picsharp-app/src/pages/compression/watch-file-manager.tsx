@@ -16,7 +16,7 @@ function WatchFileManager() {
   const { files } = useCompressionStore(useSelector(['files']));
 
   const [pageIndex, setPageIndex] = useState(1);
-  const [pageSize, setPageSize] = useState(100);
+  const [pageSize, setPageSize] = useState(50);
   const t = useI18n();
   const scrollAreaRef = useRef<ScrollAreaRef>(null);
 

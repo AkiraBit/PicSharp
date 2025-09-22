@@ -19,6 +19,7 @@ import { CompressionContext } from '.';
 import { message } from '@/components/message';
 import { fetchEventSource } from '@microsoft/fetch-event-source';
 import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow';
+import { useReport } from '@/hooks/useReport';
 
 function CompressionWatch() {
   const { progressRef } = useContext(CompressionContext);
@@ -28,6 +29,7 @@ function CompressionWatch() {
   const { messageApi } = useContext(AppContext);
   const isFirstInit = useRef(true);
   const historys = useRef<Set<string>>(new Set());
+  const r = useReport();
 
   const handleCompress = async (files: FileInfo[]) => {
     try {
@@ -301,6 +303,13 @@ function CompressionWatch() {
       ctrl.abort();
       window.removeEventListener('visibilitychange', handlePageVisible);
     };
+  }, []);
+
+  useEffect(() => {
+    const { watchingFolder } = useCompressionStore.getState();
+    r('watch_imp', {
+      has_folder: !!watchingFolder,
+    });
   }, []);
 
   return (

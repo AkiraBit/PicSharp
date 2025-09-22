@@ -11,6 +11,7 @@ import { useI18n } from '@/i18n';
 import { ScrollArea, ScrollAreaRef } from '@/components/ui/scroll-area';
 import { useUpdateEffect } from 'ahooks';
 import { cn } from '@/lib/utils';
+import { useReport } from '@/hooks/useReport';
 
 function FileManager() {
   const { files } = useCompressionStore(useSelector(['files']));
@@ -19,6 +20,8 @@ function FileManager() {
   const navigate = useNavigate();
   const t = useI18n();
   const scrollAreaRef = useRef<ScrollAreaRef>(null);
+  const r = useReport();
+
   const dataList = useMemo(() => {
     let list = files.slice((pageIndex - 1) * pageSize, pageIndex * pageSize);
     if (list.length === 0 && pageIndex !== 1) {
@@ -41,6 +44,13 @@ function FileManager() {
       scrollAreaRef.current.scrollToTop();
     }
   }, [pageIndex]);
+
+  useEffect(() => {
+    const state = useCompressionStore.getState();
+    r('classic_workspace_imp', {
+      files_num: state.files.length,
+    });
+  }, []);
 
   const hasPagination = files.length > pageSize;
 

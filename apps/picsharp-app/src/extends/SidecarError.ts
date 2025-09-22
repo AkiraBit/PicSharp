@@ -1,14 +1,9 @@
-interface SidecarErrorOptions {
-  cause: unknown;
-  payload?: Record<string, any>;
-}
-
 export class SidecarError extends Error {
   payload?: Record<string, any>;
-  constructor(message: string, options?: SidecarErrorOptions) {
+  constructor(message: string, payload?: Record<string, any>) {
     super(message);
 
     this.name = 'SidecarError';
-    this.payload = options?.payload;
+    this.payload = payload;
   }
 }

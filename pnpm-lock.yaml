@@ -35,6 +35,9 @@ importers:
       '@ant-design/icons':
         specifier: ^5.5.2
         version: 5.6.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@aptabase/react':
+        specifier: ^0.4.0
+        version: 0.4.0(react@18.3.1)
       '@aptabase/tauri':
         specifier: ^0.4.1
         version: 0.4.1
@@ -176,6 +179,9 @@ importers:
       dayjs:
         specifier: ^1.11.13
         version: 1.11.13
+      dotenv:
+        specifier: ^17.2.2
+        version: 17.2.2
       eventemitter3:
         specifier: ^5.0.1
         version: 5.0.1
@@ -408,6 +414,11 @@ packages:
     resolution: {integrity: sha512-EzlvzE6xQUBrZuuhSAFTdsr4P2bBBHGZwKFemEfq8gIGyIQCxalYfZW/T2ORbtQx5rU69o+WycP3exY/7T1hGA==}
     peerDependencies:
       react: '>=16.9.0'
+
+  '@aptabase/react@0.4.0':
+    resolution: {integrity: sha512-N82DYXT1iioHbdSyWmfek65Lw+XXcfv8bChlS/TwBvWJ3z2lCBZLDQfqCo/d5PEADQobpJ/SkSILZhAtIlgoPg==}
+    peerDependencies:
+      react: ^18.0.0 || ^19.0.0
 
   '@aptabase/tauri@0.4.1':
     resolution: {integrity: sha512-ZjCtPN1Tw0y90nxMLR64UqFjgikxfc9NZouxqXlqZFkfpF8D/tPf1xUn0Anu8nvERGND/hAkO3x7ZLyLGI1HRg==}
@@ -5156,6 +5167,10 @@ snapshots:
       react: 18.3.1
       resize-observer-polyfill: 1.5.1
       throttle-debounce: 5.0.2
+
+  '@aptabase/react@0.4.0(react@18.3.1)':
+    dependencies:
+      react: 18.3.1
 
   '@aptabase/tauri@0.4.1':
     dependencies:

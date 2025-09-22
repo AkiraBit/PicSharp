@@ -6,5 +6,15 @@ import './store/settings';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import './index.css';
+import { AptabaseProvider } from '@aptabase/react';
+import packageJson from '@/../package.json';
+import { isDev } from './utils';
 
-ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(<App />);
+ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
+  <AptabaseProvider
+    appKey={__PICSHARP_ABE_KEY__}
+    options={{ isDebug: isDev, appVersion: packageJson.version }}
+  >
+    <App />,
+  </AptabaseProvider>,
+);

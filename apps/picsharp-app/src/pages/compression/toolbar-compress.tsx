@@ -12,13 +12,14 @@ import { isString } from 'radash';
 import { useI18n } from '@/i18n';
 import useSettingsStore from '@/store/settings';
 import { sendTextNotification } from '@/utils/notification';
-import { useNavigate } from '@/hooks/useNavigate';
 import { ICompressor } from '@/utils/compressor';
 import { cn } from '@/lib/utils';
 import { convertFileSrc } from '@tauri-apps/api/core';
 import message from '@/components/message';
 import { AppContext } from '@/routes';
 import { openSettingsWindow } from '@/utils/window';
+import { useReport } from '@/hooks/useReport';
+import { CompressError } from '@/extends/CompressError';
 
 function ToolbarCompress() {
   const { sidecar, imageTempDir } = useAppStore(useSelector(['sidecar', 'imageTempDir']));
@@ -86,8 +87,8 @@ function ToolbarCompress() {
       SettingsKey.CompressionKeepMetadata,
     ]),
   );
-  const navigate = useNavigate();
   const t = useI18n();
+  const r = useReport();
   const indicatorRef = useRef<HTMLSpanElement>(null);
   const { messageApi } = useContext(AppContext);
   const disabledCompress =
@@ -101,6 +102,7 @@ function ToolbarCompress() {
     );
 
   const handleCompress = async () => {
+    r('classic_compress_click');
     try {
       if (compressionMode !== CompressionMode.Local && !isValidArray(tinypngApiKeys)) {
         const result = await message.confirm({
@@ -111,6 +113,10 @@ function ToolbarCompress() {
         if (result) {
           openSettingsWindow();
         }
+        r('classic_compress_result', {
+          success: false,
+          reason: 'tinypng api keys not configured',
+        });
         return;
       }
 
@@ -123,6 +129,10 @@ function ToolbarCompress() {
         if (result) {
           openSettingsWindow();
         }
+        r('classic_compress_result', {
+          success: false,
+          reason: 'save to folder not configured',
+        });
         return;
       }
 
@@ -243,9 +253,20 @@ function ToolbarCompress() {
           total: files.length,
         }),
       );
-    } catch (_) {
+      r('classic_compress_result', {
+        success: true,
+        fulfilled,
+        rejected,
+        total: files.length,
+      });
+    } catch (error) {
       messageApi?.error(t('common.compress_failed_msg'));
       sendTextNotification(t('common.compress_failed'), t('common.compress_failed_msg'));
+      r('classic_compress_result', {
+        success: false,
+        reason: 'compress failed',
+        err_msg: error.toString(),
+      });
     } finally {
       if (indicatorRef.current) {
         indicatorRef.current.textContent = '0%';

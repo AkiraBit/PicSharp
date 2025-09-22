@@ -18,6 +18,7 @@ import { downloadDir } from '@tauri-apps/api/path';
 import { AppContext } from '@/routes';
 import UploadWidget from '@/components/animated-icon/upload-widget';
 import FormatsTips from './formats-tips';
+import { useReport } from '@/hooks/useReport';
 
 function ClassicCompressionGuide() {
   const { progressRef } = useContext(CompressionContext);
@@ -26,6 +27,7 @@ function ClassicCompressionGuide() {
   const navigate = useNavigate();
   const t = useI18n();
   const { messageApi } = useContext(AppContext);
+  const r = useReport();
 
   const handleFiles = async (paths: string[] | null) => {
     if (!isValidArray(paths)) return;
@@ -143,6 +145,10 @@ function ClassicCompressionGuide() {
       dragDropController.current = null;
       document.removeEventListener('paste', handlePaste);
     };
+  }, []);
+
+  useEffect(() => {
+    r('classic_guide_imp');
   }, []);
 
   return (

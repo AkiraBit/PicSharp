@@ -11,17 +11,15 @@ import { basename } from '@tauri-apps/api/path';
 import { Button } from '@/components/ui/button';
 import useSettingsStore from '@/store/settings';
 import { CompressionOutputMode } from '@/constants';
-import { Badge } from '@/components/ui/badge';
 import { CompressionContext } from '.';
 import useAppStore from '@/store/app';
 import { AppContext } from '@/routes';
 import { getCurrentWebview } from '@tauri-apps/api/webview';
 import { UnlistenFn } from '@tauri-apps/api/event';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CircleHelpIcon } from 'lucide-react';
 import Folder from '@/components/animated-icon/folder';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import FormatsTips from './formats-tips';
+import { useReport } from '@/hooks/useReport';
 
 const WATCH_HISTORY_KEY = 'compression_watch_history';
 
@@ -49,6 +47,7 @@ function WatchCompressionGuide() {
   const { messageApi } = useContext(AppContext);
   const dragDropController = useRef<UnlistenFn | null>(null);
   const dropzoneRef = useRef<HTMLDivElement>(null);
+  const r = useReport();
 
   const handleWatch = async (path?: string) => {
     const { sidecar } = useAppStore.getState();
@@ -149,6 +148,10 @@ function WatchCompressionGuide() {
       setHistory(arr);
     }
     setupDragDrop();
+  }, []);
+
+  useEffect(() => {
+    r('watch_guide_imp');
   }, []);
 
   return (
