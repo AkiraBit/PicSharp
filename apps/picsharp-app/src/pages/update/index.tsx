@@ -7,7 +7,6 @@ import { isMac, isProd, isWindows } from '@/utils';
 import { Progress } from '@/components/ui/progress';
 import { Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import * as logger from '@tauri-apps/plugin-log';
 import { message } from '@tauri-apps/plugin-dialog';
 import { useI18n } from '@/i18n';
 import { marked } from 'marked';
@@ -15,6 +14,9 @@ import useAppStore from '@/store/app';
 import { invoke } from '@tauri-apps/api/core';
 import { AppContext } from '@/routes';
 import WindowControl from '@/components/window-control';
+import { useReport } from '@/hooks/useReport';
+import { captureError } from '@/utils';
+import { UpdateError } from '@/extends/UpdateError';
 
 enum UpdateStatus {
   Ready = 'ready',
@@ -41,6 +43,8 @@ export default function Update() {
   const [progress, setProgress] = useState<number>(0);
   const t = useI18n();
   const { messageApi } = useContext(AppContext);
+  const r = useReport();
+
   const handleUpdate = async () => {
     let updater: IUpdate | null = null;
     try {
@@ -86,12 +90,20 @@ export default function Update() {
               if (isWindows) {
                 invoke('ipc_kill_picsharp_sidecar_processes').finally(() => {
                   window.localStorage.setItem('updated_relaunch', version);
+                  r('update_done', {
+                    success: true,
+                    target: version,
+                  });
                   setTimeout(() => {
                     relaunch();
                   }, 1000);
                 });
               } else {
                 window.localStorage.setItem('updated_relaunch', version);
+                r('update_done', {
+                  success: true,
+                  target: version,
+                });
                 setTimeout(() => {
                   relaunch();
                 }, 1000);
@@ -105,14 +117,23 @@ export default function Update() {
       setStatus(UpdateStatus.Ready);
       setProgress(0);
       messageApi?.error(t('update.message.failed'));
-      console.error('[Update Failed]: ', error);
-      if (isProd) {
-        logger.error(`[Update Failed]: ${error}`);
-      }
+      captureError(
+        new UpdateError(`Update Error: ${error.message}`, error),
+        undefined,
+        'Update-Failed',
+      );
+      r('update_done', {
+        success: false,
+        target: version,
+      });
     } finally {
       updater?.close();
     }
   };
+
+  useEffect(() => {
+    r('update_imp');
+  }, []);
 
   return (
     <div className='flex min-h-screen w-screen flex-col items-center justify-center'>

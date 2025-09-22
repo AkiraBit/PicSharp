@@ -4,9 +4,12 @@ import SettingItem from '../setting-item';
 import { Button } from '@/components/ui/button';
 import { ChevronRight } from 'lucide-react';
 import { Github } from 'lucide-react';
+import { useReport } from '@/hooks/useReport';
 
 function SettingsAboutVersion() {
   const t = useI18n();
+  const r = useReport();
+
   return (
     <SettingItem
       title={
@@ -17,7 +20,11 @@ function SettingsAboutVersion() {
       }
       description={t('settings.about.detail.description')}
     >
-      <a href='https://github.com/AkiraBit/PicSharp' target='_blank'>
+      <a
+        href='https://github.com/AkiraBit/PicSharp'
+        target='_blank'
+        onClick={() => r('github_click')}
+      >
         <Button size='icon' variant='link'>
           <ChevronRight className='h-4 w-4' />
         </Button>

@@ -10,11 +10,14 @@ import { useTrafficLightStore } from '@/store/trafficLight';
 import useSelector from '@/hooks/useSelector';
 import { UnlistenFn } from '@tauri-apps/api/event';
 import ImageViewer from '@/components/image-viewer';
+import { useReport } from '@/hooks/useReport';
 
 export default function ImageCompare() {
   const [file, setFile] = useState<FileInfo | null>(null);
   const t = useI18n();
+  const r = useReport();
   const { isTrafficLightVisible } = useTrafficLightStore(useSelector(['isTrafficLightVisible']));
+
   useEffect(() => {
     let unFn: UnlistenFn;
     async function handler() {
@@ -32,6 +35,10 @@ export default function ImageCompare() {
       unFn?.();
     };
   }, []);
+
+  useEffect(() => {
+    r('image_compare_imp');
+  }, [file]);
 
   return (
     <div className='flex h-full w-full select-none flex-col px-2 pb-2'>

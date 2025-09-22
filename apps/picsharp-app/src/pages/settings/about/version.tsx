@@ -8,6 +8,7 @@ import { Loader2 } from 'lucide-react';
 import { Trans } from 'react-i18next';
 import { AppContext } from '@/routes';
 import { invoke } from '@tauri-apps/api/core';
+import { useReport } from '@/hooks/useReport';
 
 let clickCount = 0;
 
@@ -15,9 +16,11 @@ function SettingsAboutVersion() {
   const t = useI18n();
   const [isChecking, setIsChecking] = useState(false);
   const { messageApi } = useContext(AppContext);
+  const r = useReport();
 
   const handleCheckUpdate = async () => {
     try {
+      r('settings_update_click');
       setIsChecking(true);
       const updater = await checkUpdate();
       setIsChecking(false);

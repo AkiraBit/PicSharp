@@ -14,11 +14,13 @@ import { useContext } from 'react';
 import WindowControl from '@/components/window-control';
 import { isMac } from '@/utils';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { useReport } from '@/hooks/useReport';
 
 export default function SettingsLayout() {
   const t = useI18n();
   const { reset, init } = useSettingsStore(useSelector(['reset', 'init']));
   const { messageApi } = useContext(AppContext);
+  const r = useReport();
   const sidebarNavItems = [
     {
       title: t('settings.general.title'),
@@ -43,11 +45,13 @@ export default function SettingsLayout() {
   ];
 
   const handleReload = async () => {
+    r('settings_reload_click');
     await init(true);
     messageApi?.success(t('tips.settings_reload_success'));
   };
 
   const handleReset = () => {
+    r('settings_reset_click');
     showAlertDialog({
       title: t('settings.reset_all_confirm'),
       cancelText: t('cancel'),
@@ -56,6 +60,7 @@ export default function SettingsLayout() {
         await sleep(1000);
         await reset();
         messageApi?.success(t('tips.settings_reset_success'));
+        r('settings_reset_success');
       },
     });
   };

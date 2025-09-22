@@ -47,6 +47,7 @@ import { cn } from '@/lib/utils';
 import SettingItem from '../setting-item';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { AppContext } from '@/routes';
+import { useReport } from '@/hooks/useReport';
 
 export default memo(function SettingsCompressionTinyPngApiKeys() {
   const t = useI18n();
@@ -55,7 +56,6 @@ export default memo(function SettingsCompressionTinyPngApiKeys() {
   );
   const [loading, setLoading] = useState(false);
   const { messageApi } = useContext(AppContext);
-
   const handleDelete = async (apiKey: string) => {
     const newApiKeys = tinypngApiKeys.filter((item) => item.api_key !== apiKey);
     await set(SettingsKey.TinypngApiKeys, newApiKeys);
@@ -324,6 +324,7 @@ function AddApiKeyDialog() {
   const [isSubmiting, setIsSubmiting] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const t = useI18n();
+  const r = useReport();
   const { tinypng_api_keys: tinypngApiKeys, set } = useSettingsStore(
     useSelector([SettingsKey.TinypngApiKeys, 'set']),
   );
@@ -392,6 +393,7 @@ function AddApiKeyDialog() {
       disabled: isLoading,
       onClick: async () => {
         try {
+          r('tinypng_api_keys_import_click');
           setIsLoading(true);
           const file = await open({
             multiple: false,
@@ -453,6 +455,7 @@ function AddApiKeyDialog() {
       disabled: !isValidArray(tinypngApiKeys) || isLoading,
       onClick: async () => {
         try {
+          r('tinypng_api_keys_export_click');
           setIsLoading(true);
           const file = await open({
             directory: true,
@@ -495,6 +498,8 @@ function AddApiKeyDialog() {
         setIsAddDialogOpen(open);
         if (!open) {
           form.reset();
+        } else {
+          r('tinypng_api_keys_add_dialog_imp');
         }
       }}
     >
