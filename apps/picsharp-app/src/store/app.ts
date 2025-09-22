@@ -85,7 +85,7 @@ const useAppStore = create(
                   toast({
                     description: errorMessage,
                   });
-                  captureError(new SidecarError('Sidecar Boot Failed', { errorMessage }));
+                  captureError(new SidecarError('Sidecar Error', { errorMessage }));
                   errorStrs.length = 0;
                 }
               });
