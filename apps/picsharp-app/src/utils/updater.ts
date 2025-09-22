@@ -1,6 +1,6 @@
 import { check } from '@tauri-apps/plugin-updater';
 import { createWebviewWindow } from './window';
-import { t } from '../i18n';
+import { t } from '@/i18n';
 
 export const UPDATE_WINDOW_LABEL = 'picsharp_update';
 

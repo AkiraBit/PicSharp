@@ -5,7 +5,7 @@ import useSelector from '@/hooks/useSelector';
 import Toolbar from './toolbar';
 import ToolbarPagination from './toolbar-pagination';
 import { isValidArray } from '@/utils';
-import { useI18n } from '../../i18n';
+import { useI18n } from '@/i18n';
 import { Empty } from 'antd';
 import { useUpdateEffect } from 'ahooks';
 import { ScrollArea, ScrollAreaRef } from '@/components/ui/scroll-area';

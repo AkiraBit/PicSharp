@@ -387,6 +387,8 @@ const enUS = {
   'tips.service_startup_failed': 'Service Startup Failed',
   'tips.watch_service_startup_failed': 'Watch service startup failed',
   'tips.file_size': '{{bytes}} bytes ({{formatted_disk_size}} on disk)',
+  'tips.reload_app': 'Reloading application...',
+  'tips.reload_app_failed': 'Failed to reload application, please try again later',
   // Classic Compression Guide
   'page.compression.classic.app_title': 'PicSharp',
   'page.compression.classic.app_description': 'Simple and efficient image compression tool',

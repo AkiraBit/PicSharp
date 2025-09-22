@@ -5,8 +5,18 @@ import { openSettingsWindow } from './window';
 import checkForUpdate from './updater';
 import { message } from '@tauri-apps/plugin-dialog';
 import { open } from '@tauri-apps/plugin-shell';
+import { isProd, isMac } from '.';
+import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow';
+import { isFunction } from 'radash';
+
+declare global {
+  interface Window {
+    __APP_MENU_INSTANCE?: Menu;
+  }
+}
 
 export async function initAppMenu() {
+  if (getCurrentWebviewWindow().label !== 'main' || !isMac) return;
   const appSubmenu = await Submenu.new({
     text: 'PicSharp',
     items: [
@@ -15,7 +25,7 @@ export async function initAppMenu() {
         item: {
           About: {
             name: 'PicSharp',
-            comments: 'PicSharp111',
+            comments: 'PicSharp',
           },
         },
       }),
@@ -135,39 +145,6 @@ export async function initAppMenu() {
     ],
   });
 
-  // const fileSubmenu = await Submenu.new({
-  //   text: t('menu.file'),
-  //   items: [
-  //     await PredefinedMenuItem.new({
-  //       text: t('menu.edit.undo'),
-  //       item: 'Undo',
-  //     }),
-  //     await PredefinedMenuItem.new({
-  //       text: t('menu.edit.redo'),
-  //       item: 'Redo',
-  //     }),
-  //     await PredefinedMenuItem.new({
-  //       item: 'Separator',
-  //     }),
-  //     await PredefinedMenuItem.new({
-  //       text: t('menu.edit.cut'),
-  //       item: 'Cut',
-  //     }),
-  //     await PredefinedMenuItem.new({
-  //       text: t('menu.edit.copy'),
-  //       item: 'Copy',
-  //     }),
-  //     await PredefinedMenuItem.new({
-  //       text: t('menu.edit.paste'),
-  //       item: 'Paste',
-  //     }),
-  //     await PredefinedMenuItem.new({
-  //       text: t('menu.edit.select_all'),
-  //       item: 'SelectAll',
-  //     }),
-  //   ],
-  // });
-
   const defaultMenu = await Menu.default();
   const defaultMenuitems = await defaultMenu.items();
   const windowSubmenu = defaultMenuitems[defaultMenuitems.length - 2];
@@ -178,8 +155,16 @@ export async function initAppMenu() {
   const menu = await Menu.new({
     items: [appSubmenu, editSubmenu, windowSubmenu, viewSubmenu, helpSubmenu],
   });
+  window.__APP_MENU_INSTANCE = menu;
 
-  if (platform() === 'macos') {
-    await menu.setAsAppMenu();
+  await menu.setAsAppMenu();
+}
+
+export async function destroyAppMenu() {
+  if (isFunction(window.__APP_MENU_INSTANCE?.close)) {
+    await window.__APP_MENU_INSTANCE.close();
+    window.__APP_MENU_INSTANCE = null;
   }
 }
+
+initAppMenu();

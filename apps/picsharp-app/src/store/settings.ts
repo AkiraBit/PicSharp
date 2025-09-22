@@ -141,7 +141,9 @@ const useSettingsStore = create(
               i18next.changeLanguage(uaLang);
             } else {
               set({ [SettingsKey.Language]: value as string });
-              i18next.changeLanguage(value as string);
+              if (i18next.language !== (value as string)) {
+                i18next.changeLanguage(value as string);
+              }
             }
           } else {
             set({ [key]: value });

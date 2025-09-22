@@ -3,7 +3,7 @@ import useSelector from '@/hooks/useSelector';
 import { FolderClock, Plus, X } from 'lucide-react';
 import useCompressionStore from '../../store/compression';
 import { useNavigate } from '@/hooks/useNavigate';
-import { useI18n } from '../../i18n';
+import { useI18n } from '@/i18n';
 import { useEffect, useState, useContext, useRef } from 'react';
 import { isValidArray, stopPropagation } from '@/utils';
 import { exists, stat } from '@tauri-apps/plugin-fs';

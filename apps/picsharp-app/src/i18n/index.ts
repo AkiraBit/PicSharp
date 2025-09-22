@@ -7,7 +7,6 @@ import { createTrayMenu } from '@/utils/tray';
 import { initAppMenu } from '@/utils/menu';
 import type { TOptions } from 'i18next';
 import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow';
-import { platform } from '@tauri-apps/plugin-os';
 
 declare module 'i18next' {
   interface CustomTypeOptions {
@@ -58,9 +57,7 @@ i18next
 
 i18next.on('languageChanged', async (lng) => {
   if (getCurrentWebviewWindow().label === 'main') {
-    if (platform() === 'macos') {
-      initAppMenu();
-    }
+    initAppMenu();
     const trayMenu = await createTrayMenu();
     window.__TRAY_INSTANCE?.setMenu(trayMenu);
   }

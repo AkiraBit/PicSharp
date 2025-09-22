@@ -2,6 +2,10 @@ import { Component, ErrorInfo, ReactNode } from 'react';
 import { Translation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { captureError } from '@/utils';
+import { reloadApp } from '@/utils';
+import { toast } from 'sonner';
+import { sleep } from '@/utils';
+import { t } from '@/i18n';
 
 interface Props {
   children: ReactNode;
@@ -33,9 +37,10 @@ export default class ErrorBoundary extends Component<Props, State> {
   }
 
   public render() {
-    if (!this.state.hasError) {
+    if (this.state.hasError) {
       return (
-        <div className='flex h-screen w-full flex-col items-center justify-center p-4'>
+        <div className='flex h-screen w-screen flex-col items-center justify-center p-4'>
+          <div className='fixed left-0 top-0 z-[999] h-[48px] w-full' data-tauri-drag-region></div>
           <div className='flex flex-col items-center space-y-4 text-center'>
             {/* <XCircle className="h-16 w-16 text-destructive" /> */}
             <h2 className='text-foreground text-2xl font-semibold'>
@@ -46,7 +51,29 @@ export default class ErrorBoundary extends Component<Props, State> {
               {/* @ts-ignore */}
               <Translation>{(t) => t('error.unexpected_error')}</Translation>
             </p>
-            <Button variant='default' onClick={() => window.location.reload()} className='mt-4'>
+            <Button
+              variant='default'
+              onClick={async () => {
+                try {
+                  toast.loading(t('tips.reload_app'), {
+                    richColors: true,
+                    position: 'top-center',
+                  });
+                  await sleep(500);
+                  await reloadApp();
+                } catch (error) {
+                  toast.dismiss();
+                  toast.error(t('tips.reload_app_failed'), {
+                    richColors: true,
+                    position: 'top-center',
+                  });
+                  captureError(error, undefined, 'App-Reload-Failed');
+                } finally {
+                  toast.dismiss();
+                }
+              }}
+              className='mt-4'
+            >
               {/* @ts-ignore */}
               <Translation>{(t) => t('error.refresh_page')}</Translation>
             </Button>

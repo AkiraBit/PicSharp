@@ -1,6 +1,6 @@
 import { invoke } from '@tauri-apps/api/core';
 import { WebviewWindow } from '@tauri-apps/api/webviewWindow';
-import { t } from '../i18n';
+import { t } from '@/i18n';
 import { isMac } from '.';
 
 export function calImageWindowSize(imgWidth: number, imgHeight: number): [number, number] {

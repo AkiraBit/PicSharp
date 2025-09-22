@@ -383,6 +383,8 @@ export default {
   'tips.service_startup_failed': '服务启动失败',
   'tips.watch_service_startup_failed': '文件监听服务启动失败',
   'tips.file_size': '{{bytes}} 字节（磁盘上的{{formatted_disk_size}}）',
+  'tips.reload_app': '正在重启应用...',
+  'tips.reload_app_failed': '重启应用失败，请稍后再试',
   // 经典模式压缩引导页
   'page.compression.classic.app_title': 'PicSharp',
   'page.compression.classic.app_description': '简单高效的图片压缩工具',

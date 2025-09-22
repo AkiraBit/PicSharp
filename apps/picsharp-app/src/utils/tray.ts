@@ -1,13 +1,14 @@
 import { Menu } from '@tauri-apps/api/menu';
 import { TrayIcon, TrayIconOptions } from '@tauri-apps/api/tray';
 import { defaultWindowIcon } from '@tauri-apps/api/app';
-import { t } from '../i18n';
+import { t } from '@/i18n';
 import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow';
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import { isProd } from '.';
 import { openSettingsWindow } from './window';
 import checkForUpdate from './updater';
 import { message } from '@tauri-apps/plugin-dialog';
+import { isFunction } from 'radash';
 
 declare global {
   interface Window {
@@ -84,8 +85,14 @@ export async function initTray() {
     },
   };
 
-  const tray = await TrayIcon.new(options);
-  window.__TRAY_INSTANCE = tray;
+  window.__TRAY_INSTANCE = await TrayIcon.new(options);
+}
+
+export async function destroyTray() {
+  if (isFunction(window.__TRAY_INSTANCE?.close)) {
+    await window.__TRAY_INSTANCE.close();
+    window.__TRAY_INSTANCE = null;
+  }
 }
 
 if (isProd) {
