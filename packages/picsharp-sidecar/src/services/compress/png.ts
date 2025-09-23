@@ -11,10 +11,8 @@ import {
 import { writeFile, copyFile, readFile } from 'node:fs/promises';
 import { isValidArray, isWindows } from '../../utils';
 import { SaveMode, WatermarkType } from '../../constants';
-import { bulkConvert } from '../convert';
 import { losslessCompressPng, PNGLosslessOptions } from '@napi-rs/image';
 import { processImage, applyImageTransformations, applyImageConversion } from './utils';
-import path from 'node:path';
 
 export async function processPngLossy(payload: {
   input_path: string;
@@ -27,7 +25,7 @@ export async function processPngLossy(payload: {
     originalSize = await getFileSize(payload.input_path);
     const transformer = sharp(payload.input_path, { limitInputPixels: false });
     originalMetadata = await transformer.metadata();
-    return processImage(transformer, 'png', payload, originalSize, originalMetadata);
+    return await processImage(transformer, 'png', payload, originalSize, originalMetadata);
   } catch (error) {
     throw new CompressError('PNG Lossy Compress Error', {
       cause: error,

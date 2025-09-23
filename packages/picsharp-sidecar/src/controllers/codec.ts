@@ -26,7 +26,6 @@ export function createCodecRouter() {
 
   app.post('/base64', zValidator('json', ToBase64PayloadSchema), async (c) => {
     const { input_path } = await c.req.json<z.infer<typeof ToBase64PayloadSchema>>();
-    console.log('input_path', input_path);
     const pool = getThreadPool();
     const data = await pool.run<any, any>({
       type: 'codec:to-base64' as any,

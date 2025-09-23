@@ -26,6 +26,7 @@ import message from '@/components/message';
 import { PathTagsInput } from '../path-tags-input';
 import { TooltipProvider } from '../ui/tooltip';
 import { useTrafficLightStore } from '@/store/trafficLight';
+import { useReport } from '@/hooks/useReport';
 
 if (isProd) {
   window.oncontextmenu = (e) => {
@@ -38,6 +39,7 @@ export default function AppLayout() {
   const navigate = useNavigate();
   const t = useI18n();
   const { messageApi } = useContext(AppContext);
+  const r = useReport();
 
   useEffect(() => {
     let unlistenNsCompress: UnlistenFn | null = null;
@@ -69,6 +71,10 @@ export default function AppLayout() {
     async function handleOpenWithFiles() {
       const payload = parseOpenWithFiles();
       if (payload) {
+        r('open_with_files', {
+          mode: payload.mode,
+          paths: payload.paths,
+        });
         switch (payload.mode) {
           case 'compress:compare':
             // navigate('/image-compare');
@@ -121,6 +127,7 @@ export default function AppLayout() {
     async function handleNsInspect() {
       const currentWindow = WebviewWindow.getCurrent();
       unlistenNsCompress = await currentWindow.listen('ns_compress', async (event) => {
+        r('ns_compress');
         if (currentWindow.label !== 'main') return;
         const paths = event.payload as string[];
         const hasSpawned = await spawnNewWindow('ns_compress', paths);
@@ -133,6 +140,7 @@ export default function AppLayout() {
       unlistenNsWatchAndCompress = await currentWindow.listen(
         'ns_watch_and_compress',
         async (event) => {
+          r('ns_watch_and_compress');
           if (currentWindow.label !== 'main') return;
           const paths = event.payload as string[];
           const hasSpawned = await spawnNewWindow('ns_watch_and_compress', paths);
@@ -148,7 +156,6 @@ export default function AppLayout() {
 
     const handleDeepLink = async () => {
       unlistenDeepLink = await onOpenUrl(async (urls) => {
-        console.log('onOpenUrl', urls);
         if (isValidArray(urls)) {
           const urlObj = new URL(urls[0]);
           if (urlObj.protocol === 'picsharp:') {
@@ -190,16 +197,16 @@ export default function AppLayout() {
     let timer;
     useAppStore.getState().initAppPath();
     if (WebviewWindow.getCurrent().label === 'main') {
-      if (isProd && useSettingsStore.getState()?.[SettingsKey.AutoCheckUpdate]) {
-        checkForUpdate();
-      }
-      handleNsInspect();
       useAppStore.getState().initSidecar();
       if (isProd) {
         timer = setInterval(() => {
           useAppStore.getState().pingSidecar();
         }, 10000);
       }
+      if (isProd && useSettingsStore.getState()?.[SettingsKey.AutoCheckUpdate]) {
+        checkForUpdate();
+      }
+      handleNsInspect();
     }
     handleOpenWithFiles();
     handleDeepLink();

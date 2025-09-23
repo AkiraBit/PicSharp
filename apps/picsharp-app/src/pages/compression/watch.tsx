@@ -20,6 +20,7 @@ import { message } from '@/components/message';
 import { fetchEventSource } from '@microsoft/fetch-event-source';
 import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow';
 import { useReport } from '@/hooks/useReport';
+import { captureError } from '@/utils';
 
 function CompressionWatch() {
   const { progressRef } = useContext(CompressionContext);
@@ -126,6 +127,10 @@ function CompressionWatch() {
             rejected++;
             targetFile.status = ICompressor.Status.Failed;
             targetFile.errorMessage = 'Process failed,Please try again';
+            r('classic_compress_result', {
+              success: false,
+              err_msg: 'After compression, cannot find target file',
+            });
           }
           eventEmitter.emit('update_file_item', targetFile.path);
         },
@@ -159,7 +164,7 @@ function CompressionWatch() {
         }),
       );
     } catch (error) {
-      console.error('err', error);
+      captureError(error);
       messageApi?.error(t('common.compress_failed_msg'));
       sendTextNotification(t('common.compress_failed'), t('common.compress_failed_msg'));
     }
@@ -181,8 +186,8 @@ function CompressionWatch() {
             handleCompress(candidates);
           }
         })
-        .catch((err) => {
-          console.error('err', err);
+        .catch((error) => {
+          captureError(error);
         });
       queueRef.current = [];
     }
@@ -266,6 +271,7 @@ function CompressionWatch() {
               getCurrentWebviewWindow().setFocus();
             }
           }, 1000);
+          captureError(error);
         },
         onclose() {
           console.log('[Sidecar] Watch EventSource closed');

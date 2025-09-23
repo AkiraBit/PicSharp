@@ -316,7 +316,6 @@ function TextColor() {
     useSettingsStore(useSelector([SettingsKey.CompressionWatermarkTextColor, 'set']));
 
   const handleColorChange: ColorPickerProps['onChange'] = (color) => {
-    console.log(color);
     set(SettingsKey.CompressionWatermarkTextColor, color.toHexString());
   };
 

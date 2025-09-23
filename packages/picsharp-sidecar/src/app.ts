@@ -17,6 +17,7 @@ import tinify from './controllers/compress/tinypng';
 import watch from './controllers/watch';
 import createKvAdminRouter from './controllers/admin/kv';
 import Sentry from '@sentry/node';
+import { captureError } from './utils';
 
 export function createApp() {
   const app = new Hono()
@@ -49,14 +50,17 @@ export function createApp() {
       if (error instanceof HTTPException) {
         const response = error.getResponse();
         const data = await response.json();
-        Sentry.captureException(new Error(data.message || 'Internal Server Error'));
-        return c.json({
-          status: 500,
-          data,
-          message: data.message || 'Internal Server Error',
-        });
+        captureError(new Error(data.message || 'Internal Server Error'));
+        return c.json(
+          {
+            status: 500,
+            data,
+            message: data.message || 'Internal Server Error',
+          },
+          500,
+        );
       }
-      Sentry.captureException(error);
+      captureError(error);
       return c.json({ status: 500, message: error.message || 'Internal Server Error' }, 500);
     })
     // .use((c, next) => {

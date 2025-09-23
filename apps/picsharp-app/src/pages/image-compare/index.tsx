@@ -60,7 +60,19 @@ export default function ImageCompare() {
         )}
         <WindowControl showControls={!isMac} showFullscreen={!isMac} />
       </div>
-      <div className='flex w-full flex-1 items-center justify-center overflow-hidden rounded-lg bg-neutral-200 p-2 dark:bg-neutral-800'>
+      <div
+        className='flex w-full flex-1 items-center justify-center overflow-hidden rounded-lg bg-neutral-200 p-2 dark:bg-neutral-800'
+        style={{
+          backgroundImage: `
+                  linear-gradient(45deg, rgba(0,0,0,0.4) 25%, transparent 25%),
+                  linear-gradient(-45deg, rgba(0,0,0,0.4) 25%, transparent 25%),
+                  linear-gradient(45deg, transparent 75%, rgba(0,0,0,0.4) 75%),
+                  linear-gradient(-45deg, transparent 75%, rgba(0,0,0,0.4) 75%)
+                `,
+          backgroundSize: '12px 12px',
+          backgroundPosition: '0 0, 0 6px, 6px -6px, -6px 0px',
+        }}
+      >
         {file ? (
           <div className='relative h-full w-full'>
             <ReactCompareSlider

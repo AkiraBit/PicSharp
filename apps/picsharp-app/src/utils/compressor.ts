@@ -8,10 +8,8 @@ import {
   WatermarkPosition,
 } from '../constants';
 import { CompressionOutputMode, CompressionType } from '../constants';
-import { error } from '@tauri-apps/plugin-log';
 import { draw, isFunction } from 'radash';
-import { isProd } from '.';
-import { t } from '@/i18n';
+import { captureError } from '.';
 
 export namespace ICompressor {
   export type Options = {
@@ -554,13 +552,11 @@ export default class Compressor {
   }
 
   private selectHandler = (file: FileInfo) => {
-    return this.handlers[file.ext](file).catch((err) => {
-      if (isProd) {
-        error(`[Compress Handler Error]: ${err.message}\n\n${err.stack}`);
-      }
+    return this.handlers[file.ext](file).catch((error) => {
+      captureError(error, undefined, 'compressor_handler_error');
       return Promise.reject({
         input_path: file.path,
-        error: err,
+        error: error,
       });
     });
   };

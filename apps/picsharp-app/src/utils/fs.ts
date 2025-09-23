@@ -44,7 +44,6 @@ export async function parsePaths(paths: string[], validExts: string[]) {
   });
   if (isValidArray(candidates)) {
     return candidates.map<FileInfo>((item) => {
-      console.log('item', item);
       return {
         id: item.id,
         path: item.path,
@@ -121,7 +120,6 @@ export async function undoSave(file: FileInfo) {
     file.saveType
   ) {
     const { path, outputPath, originalTempPath, saveType } = file;
-    console.log('undo', originalTempPath);
     if (!(await exists(originalTempPath))) {
       return {
         success: false,

@@ -16,7 +16,7 @@ export async function processJpeg(payload: ImageTaskPayload) {
     originalSize = await getFileSize(payload.input_path);
     const transformer = sharp(payload.input_path, { limitInputPixels: false });
     originalMetadata = await transformer.metadata();
-    return processImage(transformer, 'jpeg', payload, originalSize, originalMetadata);
+    return await processImage(transformer, 'jpeg', payload, originalSize, originalMetadata);
   } catch (error) {
     throw new CompressError('JPEG Compress Error', {
       cause: error,

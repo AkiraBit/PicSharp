@@ -2,6 +2,7 @@ import { platform } from '@tauri-apps/plugin-os';
 import * as Sentry from '@sentry/react';
 import { destroyAppMenu } from './menu';
 import { destroyTray } from './tray';
+import useAppStore from '@/store/app';
 export const validTinifyExts = [
   'png',
   'jpg',
@@ -171,6 +172,6 @@ export function captureError(error: Error, payload?: Record<string, any>, tag?: 
 }
 
 export async function reloadApp() {
-  await Promise.all([destroyAppMenu(), destroyTray()]);
+  await Promise.all([destroyAppMenu(), destroyTray(), useAppStore.getState().destroySidecar()]);
   window.location.reload();
 }

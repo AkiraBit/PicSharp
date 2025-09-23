@@ -16,7 +16,7 @@ export async function processGif(payload: ImageTaskPayload) {
     originalSize = await getFileSize(payload.input_path);
     const transformer = sharp(payload.input_path, { limitInputPixels: false, animated: true });
     originalMetadata = await transformer.metadata();
-    return processImage(transformer, 'gif', payload, originalSize, originalMetadata);
+    return await processImage(transformer, 'gif', payload, originalSize, originalMetadata);
   } catch (error) {
     throw new CompressError('GIF Compress Error', {
       cause: error,

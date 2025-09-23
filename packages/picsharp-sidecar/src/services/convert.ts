@@ -1,7 +1,7 @@
 import { Sharp } from 'sharp';
 import { ConvertFormat } from '../constants';
 import path from 'node:path';
-import Sentry from '@sentry/node';
+import { captureError } from '../utils';
 
 export async function convert(
   stream: Sharp,
@@ -34,7 +34,7 @@ export async function convert(
       info: result,
     };
   } catch (error: any) {
-    Sentry.captureException(error);
+    captureError(error);
     return {
       success: false,
       format,

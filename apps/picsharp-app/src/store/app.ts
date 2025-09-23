@@ -3,7 +3,6 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 import EventEmitter from 'eventemitter3';
 import { isProd } from '@/utils';
 import { Command, Child } from '@tauri-apps/plugin-shell';
-import { info, error } from '@tauri-apps/plugin-log';
 import { exists, remove, mkdir } from '@tauri-apps/plugin-fs';
 import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow';
 import { withStorageDOMEvents } from './withStorageDOMEvents';
@@ -47,7 +46,7 @@ const useAppStore = create(
       dataDir: '',
       initSidecar: async () => {
         try {
-          get().destroySidecar();
+          await get().destroySidecar();
           if (getCurrentWebviewWindow().label === 'main') {
             if (isProd) {
               const command = Command.sidecar('binaries/picsharp-sidecar', '', {
@@ -61,7 +60,7 @@ const useAppStore = create(
                 },
               });
               command.stdout.once('data', (data) => {
-                info(`[Start Sidecar Output]: ${data}`);
+                console.log(`[Start Sidecar Output]: ${data}`);
                 const response = JSON.parse(data);
                 set({
                   sidecar: {
@@ -70,13 +69,11 @@ const useAppStore = create(
                   },
                 });
                 console.log(`[Init Sidecar Success]: Server: ${response.origin}`);
-                info(`[Init Sidecar Success]: Server: ${response.origin}`);
               });
               const errorStrs: string[] = [];
               command.stderr.on('data', (data) => {
                 errorStrs.push(data);
                 console.error(`[Start Sidecar Error]: ${data}`);
-                error(`[Start Sidecar Error]: ${data}`);
               });
               const process = await command.spawn();
               command.on('close', () => {
@@ -88,6 +85,7 @@ const useAppStore = create(
                   captureError(new SidecarError('Sidecar Error', { errorMessage }));
                   errorStrs.length = 0;
                 }
+                get().destroySidecar();
               });
               set({
                 sidecar: {
@@ -97,17 +95,15 @@ const useAppStore = create(
                 },
               });
               console.log(`[Init Sidecar Success]: PID ${process.pid}`);
-              info(`[Init Sidecar Success]: PID ${process.pid}`);
             } else {
               set({ sidecar: { origin: 'http://localhost:3000', spawning: false } });
             }
           } else {
             console.log(`[Sub Window Init Sidecar Success]: Server: ${get().sidecar?.origin}`);
-            info(`[Sub Window Init Sidecar Success]: Server: ${get().sidecar?.origin}`);
           }
-        } catch (err) {
-          console.error(`[Init Sidecar Error]: ${err.message || err.toString()}`);
-          error(`[Init Sidecar Error]: ${err.message || err.toString()}`);
+        } catch (error) {
+          captureError(error);
+          console.error(`[Init Sidecar Error]: ${error.message || error.toString()}`);
         }
       },
       pingSidecar: async () => {
@@ -119,13 +115,11 @@ const useAppStore = create(
             }
             const text = await response.text();
             console.log(`[Sidecar Heartbeat]: ${text}`);
-          } catch (err) {
-            const errorMessage = `[Sidecar Heartbeat Error]: ${err.message || err.toString()}`;
+          } catch (error) {
+            const errorMessage = `[Sidecar Heartbeat Error]: ${error.message || error.toString()}`;
             console.error(errorMessage);
-            if (isProd) {
-              error(errorMessage);
-            }
             get().initSidecar();
+            captureError(new SidecarError(errorMessage));
           }
         }
       },
@@ -136,8 +130,8 @@ const useAppStore = create(
           }
           set({ sidecar: null });
           return true;
-        } catch (err) {
-          console.error(`[Destroy Sidecar Error]: ${err.message || err.toString()}`);
+        } catch (error) {
+          captureError(new Error(`[Destroy Sidecar Error]: ${error.message || error.toString()}`));
           return false;
         }
       },
@@ -154,11 +148,14 @@ const useAppStore = create(
             await remove(get().imageTempDir, { recursive: true });
           }
           await mkdir(get().imageTempDir, { recursive: true });
-          info('[Clear Image Cache]: Success');
           return true;
-        } catch (err) {
-          console.error(`[Clear Image Cache Error]: ${err.message || err.toString()}`);
-          error(`[Clear Image Cache Error]: ${err.message || err.toString()}`);
+        } catch (error) {
+          console.error(`[Clear Image Cache Error]: ${error.message || error.toString()}`);
+          captureError(
+            new Error(`[Clear Image Cache Error]: ${error.message || error.toString()}`),
+            undefined,
+            'clear_image_cache_error',
+          );
           return false;
         }
       },

@@ -3,6 +3,8 @@ import { Worker } from 'node:worker_threads';
 import path from 'node:path';
 import { isDev } from '../utils';
 import Sentry from '@sentry/node';
+import cluster from 'node:cluster';
+import { captureError } from '../utils';
 
 export type TaskType =
   | 'png'
@@ -27,6 +29,7 @@ interface Pending<T = any> {
 }
 
 interface PoolWorker {
+  id: number;
   worker: Worker;
   busy: boolean;
   currentId?: string;
@@ -45,7 +48,11 @@ function getWorkerEntry(): string {
 
 function createWorkerInstance(): Worker {
   const entry = getWorkerEntry();
-  return new Worker(entry);
+  return new Worker(entry, {
+    workerData: {
+      workerId: cluster.worker?.id,
+    },
+  });
 }
 
 let singletonPool: ThreadPool | undefined;
@@ -53,7 +60,7 @@ let singletonPool: ThreadPool | undefined;
 export function initThreadPool(): ThreadPool {
   const size = Math.max(1, Math.floor((os.cpus().length || 2) / 2));
   const poolSize = Number(process.env.PICSHARP_SIDECAR_THREADS) || size;
-  const workers: PoolWorker[] = [];
+  const workers: Map<number, PoolWorker> = new Map();
   const pendings = new Map<string, Pending>();
 
   function nextId() {
@@ -61,12 +68,12 @@ export function initThreadPool(): ThreadPool {
   }
 
   function getIdle(): PoolWorker | undefined {
-    return workers.find((w) => !w.busy);
+    return Array.from(workers.values()).find((w) => !w.busy);
   }
 
   function spawn() {
     const w = createWorkerInstance();
-    const wrap: PoolWorker = { worker: w, busy: false };
+    const wrap: PoolWorker = { id: w.threadId, worker: w, busy: false };
     w.on('message', (msg: any) => {
       const { requestId, data, error, errorPayload } = msg || {};
       if (!requestId) return;
@@ -85,22 +92,32 @@ export function initThreadPool(): ThreadPool {
         pending.resolve(data);
       }
     });
-    w.on('error', (err) => {
+    w.on('error', (error) => {
       if (wrap.currentId) {
         const p = pendings.get(wrap.currentId);
         if (p) {
           if (p.timeout) clearTimeout(p.timeout);
           pendings.delete(wrap.currentId);
-          p.reject(err);
+          p.reject(error);
+          captureError(
+            new Error(`[WorkerThread<${w.threadId}> Error]: ${error.message || error.toString()}`),
+            undefined,
+            'worker_thread_error',
+          );
         }
       }
     });
-    w.on('exit', () => {
-      const idx = workers.indexOf(wrap);
-      if (idx >= 0) workers.splice(idx, 1);
+    w.on('exit', (code) => {
+      console.log(`[WorkerThread<${w.threadId}> Exit]:`, code);
+      workers.delete(wrap.id);
       spawn();
+      captureError(
+        new Error(`[WorkerThread<${w.threadId}> Exit]: ${code}`),
+        undefined,
+        'worker_thread_exit',
+      );
     });
-    workers.push(wrap);
+    workers.set(wrap.id, wrap);
   }
 
   for (let i = 0; i < poolSize; i++) spawn();

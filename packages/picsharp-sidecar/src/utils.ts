@@ -9,6 +9,7 @@ import ssim from 'ssim.js';
 import sharp, { Metadata } from 'sharp';
 import { omit } from 'es-toolkit';
 import os from 'node:os';
+import Sentry from '@sentry/node';
 
 export const calCompressionRate = (originalSize: number, compressedSize: number) => {
   return Number(((originalSize - compressedSize) / originalSize).toFixed(2));
@@ -260,4 +261,18 @@ export function createOutputPathTempPath(inputPath: string) {
   const base = path.basename(inputPath);
   const tempPath = path.join(dir, `.${nanoid()}_${base}`);
   return tempPath;
+}
+
+export function captureError(error: Error, payload?: Record<string, any>, tag?: string) {
+  try {
+    Sentry.withScope((scope) => {
+      if (payload) {
+        scope.setContext('Error Payload', payload);
+      }
+      if (tag) {
+        scope.setTag('tag', tag);
+      }
+      scope.captureException(error);
+    });
+  } catch (_) {}
 }

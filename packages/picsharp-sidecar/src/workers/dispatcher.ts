@@ -1,4 +1,4 @@
-import { parentPort } from 'node:worker_threads';
+import { parentPort, workerData } from 'node:worker_threads';
 import { processPngLossy, processPngLossless } from '../services/compress/png';
 import { processJpeg } from '../services/compress/jpeg';
 import { processWebp } from '../services/compress/webp';
@@ -19,45 +19,36 @@ parentPort.on('message', async (msg: { requestId: string; type: string; payload:
   const { requestId, type, payload } = msg || {};
   if (!requestId) return;
   try {
+    let result: any = null;
     if (type === 'png') {
-      const result = await processPngLossy(payload);
-      parentPort!.postMessage({ requestId, type: 'result', data: result });
+      result = await processPngLossy(payload);
     } else if (type === 'png-lossless') {
-      const result = await processPngLossless(payload);
-      parentPort!.postMessage({ requestId, type: 'result', data: result });
+      result = await processPngLossless(payload);
     } else if (type === 'jpeg') {
-      const result = await processJpeg(payload);
-      parentPort!.postMessage({ requestId, type: 'result', data: result });
+      result = await processJpeg(payload);
     } else if (type === 'webp') {
-      const result = await processWebp(payload);
-      parentPort!.postMessage({ requestId, type: 'result', data: result });
+      result = await processWebp(payload);
     } else if (type === 'avif') {
-      const result = await processAvif(payload);
-      parentPort!.postMessage({ requestId, type: 'result', data: result });
+      result = await processAvif(payload);
     } else if (type === 'gif') {
-      const result = await processGif(payload);
-      parentPort!.postMessage({ requestId, type: 'result', data: result });
+      result = await processGif(payload);
     } else if (type === 'tiff') {
-      const result = await processTiff(payload);
-      parentPort!.postMessage({ requestId, type: 'result', data: result });
+      result = await processTiff(payload);
     } else if (type === 'svg') {
-      const result = await processSvg(payload as any);
-      parentPort!.postMessage({ requestId, type: 'result', data: result });
+      result = await processSvg(payload as any);
     } else if (type === 'codec:get-raw-pixels') {
-      const result = await getRawPixels(payload.input_path);
-      parentPort!.postMessage({ requestId, type: 'result', data: result });
+      result = await getRawPixels(payload.input_path);
     } else if (type === 'codec:to-base64') {
-      const result = await toBase64(payload.input_path);
-      parentPort!.postMessage({ requestId, type: 'result', data: result });
+      result = await toBase64(payload.input_path);
     } else if (type === 'image:thumbnail') {
-      const result = await generateThumbnail(payload as any);
-      parentPort!.postMessage({ requestId, type: 'result', data: result });
+      result = await generateThumbnail(payload as any);
     } else if (type === 'tinypng') {
-      const result = await processTinyPng(payload);
-      parentPort!.postMessage({ requestId, type: 'result', data: result });
+      result = await processTinyPng(payload);
     } else {
       throw new Error(`Unsupported task type: ${type}`);
     }
+    result._workerId = workerData.workerId;
+    parentPort!.postMessage({ requestId, type: 'result', data: result });
   } catch (error: any | CompressError) {
     parentPort!.postMessage({
       requestId,

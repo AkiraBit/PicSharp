@@ -3,7 +3,7 @@ import type { Worker as ClusterWorker } from 'node:cluster';
 import { IpcEnvelope, IpcMessage } from '../ipc/messages';
 import { AppConfig } from '../config';
 import os from 'node:os';
-import Sentry from '@sentry/node';
+import { captureError } from '../utils';
 
 interface KvEntry {
   value: unknown;
@@ -82,17 +82,21 @@ export async function startMaster(config: AppConfig) {
   }
 
   cluster.on('exit', (worker, code, signal) => {
-    Sentry.captureException(new Error(`Worker Exit`), {
-      extra: {
-        worker_id: worker.id,
-        worker_pid: worker.process.pid,
-        code,
-        signal,
+    captureError(
+      new Error(`Worker Exit`),
+      {
+        extra: {
+          worker_id: worker.id,
+          worker_pid: worker.process.pid,
+          code,
+          signal,
+        },
       },
-    });
+      'worker_exit',
+    );
     console.error(
       JSON.stringify({
-        msg: 'worker exit',
+        msg: '[Worker Exit]',
         id: worker.id,
         pid: worker.process.pid,
         code,

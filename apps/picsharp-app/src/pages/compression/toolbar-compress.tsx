@@ -215,6 +215,10 @@ function ToolbarCompress() {
             rejected++;
             targetFile.status = ICompressor.Status.Failed;
             targetFile.errorMessage = 'Process failed,Please try again';
+            r('classic_compress_result', {
+              success: false,
+              err_msg: 'After compression, cannot find target file',
+            });
           }
           eventEmitter.emit('update_file_item', targetFile.path);
           if (indicatorRef.current) {

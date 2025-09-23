@@ -16,7 +16,7 @@ export async function processWebp(payload: ImageTaskPayload) {
     originalSize = await getFileSize(payload.input_path);
     const transformer = sharp(payload.input_path, { limitInputPixels: false, animated: true });
     originalMetadata = await transformer.metadata();
-    return processImage(transformer, 'webp', payload, originalSize, originalMetadata);
+    return await processImage(transformer, 'webp', payload, originalSize, originalMetadata);
   } catch (error) {
     throw new CompressError('Webp Compress Error', {
       cause: error,

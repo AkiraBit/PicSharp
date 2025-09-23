@@ -2,7 +2,7 @@ import 'dotenv/config';
 import './apm';
 import { startServer } from './server';
 import { loadConfig } from './config';
-import Sentry from '@sentry/node';
+import { captureError } from './utils';
 
 async function main() {
   try {
@@ -21,9 +21,8 @@ async function main() {
     } else {
       await startServer(config);
     }
-  } catch (error) {
-    Sentry.captureException(error);
-    console.error(`[Sidecar Error]:`, error);
+  } catch (error: any) {
+    captureError(error);
     process.exit(1);
   }
 }

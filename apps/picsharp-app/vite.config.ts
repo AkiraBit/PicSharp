@@ -4,8 +4,6 @@ import path from 'node:path';
 import 'dotenv/config';
 
 const host = process.env.TAURI_DEV_HOST;
-
-console.log('process.env.TAURI_DEV_HOST', process.env.PICSHARP_ABE_KEY);
 // https://vitejs.dev/config/
 export default defineConfig(async () => ({
   plugins: [react()],
