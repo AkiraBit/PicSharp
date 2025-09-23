@@ -1,5 +1,14 @@
 {
   "releases": {
+    "2.2.4": {
+      "date": "2025-09-23",
+      "notes": [
+        "🚀 [Improvement] Use the same base as the operating system for file size conversion, and display it in the same way as the operating system.",
+        "🚀 [优化] 文件大小换算采用与操作系统一致的基准，展示上与操作系统保持一致。",
+        "🐛 [BugFix] Fix some known bugs.",
+        "🐛 [问题] 修复了一些已知问题。"
+      ]
+    },
     "2.2.3": {
       "date": "2025-09-21",
       "notes": [
