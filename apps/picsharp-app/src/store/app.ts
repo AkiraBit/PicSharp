@@ -9,7 +9,7 @@ import { withStorageDOMEvents } from './withStorageDOMEvents';
 import { isFunction } from 'radash';
 import { appCacheDir, appDataDir, appLogDir, join } from '@tauri-apps/api/path';
 import { toast } from '@/components/sidecar-error-toast';
-import { captureError } from '@/utils';
+import { captureError, report } from '@/utils';
 import { SidecarError } from '@/extends/SidecarError';
 
 interface AppState {
@@ -28,12 +28,15 @@ interface AppState {
 interface AppAction {
   initSidecar: () => Promise<void>;
   pingSidecar: () => Promise<void>;
+  reportSidecarStderr: () => void;
   destroySidecar: () => Promise<boolean>;
   initAppPath: () => Promise<void>;
   clearImageCache: () => Promise<boolean>;
 }
 
 type AppStore = AppState & AppAction;
+
+const errorMessages: string[] = [];
 
 const useAppStore = create(
   persist<AppStore>(
@@ -48,7 +51,7 @@ const useAppStore = create(
         try {
           await get().destroySidecar();
           if (getCurrentWebviewWindow().label === 'main') {
-            if (isProd) {
+            if (!isProd) {
               const command = Command.sidecar('binaries/picsharp-sidecar', '', {
                 env: {
                   PICSHARP_SIDECAR_ENABLE: 'true',
@@ -60,30 +63,39 @@ const useAppStore = create(
                 },
               });
               command.stdout.once('data', (data) => {
+                report('sidecar_start', { data });
                 console.log(`[Start Sidecar Output]: ${data}`);
-                const response = JSON.parse(data);
-                set({
-                  sidecar: {
-                    ...(get().sidecar || ({} as AppState['sidecar'])),
-                    origin: response.origin,
-                  },
-                });
-                console.log(`[Init Sidecar Success]: Server: ${response.origin}`);
+                if (data.includes(`{"origin":"http://localhost:`)) {
+                  const response = JSON.parse(data);
+                  set({
+                    sidecar: {
+                      ...(get().sidecar || ({} as AppState['sidecar'])),
+                      origin: response.origin,
+                    },
+                  });
+                  console.log(`[Init Sidecar Success]: Server: ${response.origin}`);
+                } else {
+                  captureError(
+                    new SidecarError('Sidecar Error', { errorMessage: data }),
+                    {
+                      errorMessage: data,
+                    },
+                    'sidecar_error',
+                  );
+                }
               });
-              const errorStrs: string[] = [];
               command.stderr.on('data', (data) => {
-                errorStrs.push(data);
+                errorMessages.push(data);
                 console.error(`[Start Sidecar Error]: ${data}`);
               });
               const process = await command.spawn();
-              command.on('close', () => {
-                if (errorStrs.length > 0) {
-                  const errorMessage = errorStrs.join('\n');
+              command.on('close', (payload) => {
+                report('sidecar_close', { errorMessages: errorMessages.join('\n'), payload });
+                if (errorMessages.length > 0) {
                   toast({
-                    description: errorMessage,
+                    description: errorMessages.join('\n'),
                   });
-                  captureError(new SidecarError('Sidecar Error', { errorMessage }));
-                  errorStrs.length = 0;
+                  get().reportSidecarStderr();
                 }
                 get().destroySidecar();
               });
@@ -102,6 +114,7 @@ const useAppStore = create(
             console.log(`[Sub Window Init Sidecar Success]: Server: ${get().sidecar?.origin}`);
           }
         } catch (error) {
+          report('sidecar_start_error', { error: error.message || error.toString() });
           captureError(error);
           console.error(`[Init Sidecar Error]: ${error.message || error.toString()}`);
         }
@@ -116,11 +129,21 @@ const useAppStore = create(
             const text = await response.text();
             console.log(`[Sidecar Heartbeat]: ${text}`);
           } catch (error) {
+            report('sidecar_heartbeat_error', { error: error.message || error.toString() });
             const errorMessage = `[Sidecar Heartbeat Error]: ${error.message || error.toString()}`;
             console.error(errorMessage);
             get().initSidecar();
             captureError(new SidecarError(errorMessage));
           }
+        }
+      },
+      reportSidecarStderr: () => {
+        if (errorMessages.length > 0) {
+          const payload = {
+            errorMessage: errorMessages.join('\n'),
+          };
+          captureError(new SidecarError('Sidecar Stderr', payload), payload, 'sidecar_stderr');
+          errorMessages.length = 0;
         }
       },
       destroySidecar: async () => {

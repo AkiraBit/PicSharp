@@ -3,6 +3,7 @@ import * as Sentry from '@sentry/react';
 import { destroyAppMenu } from './menu';
 import { destroyTray } from './tray';
 import useAppStore from '@/store/app';
+import { trackEvent } from '@aptabase/web';
 export const validTinifyExts = [
   'png',
   'jpg',
@@ -175,3 +176,19 @@ export async function reloadApp() {
   await Promise.all([destroyAppMenu(), destroyTray(), useAppStore.getState().destroySidecar()]);
   window.location.reload();
 }
+
+export class ReportError extends Error {
+  cause: Error;
+  constructor(error: Error) {
+    super(`Report Failed: ${error.message}`);
+    this.name = 'ReportError';
+  }
+}
+
+export const report = (event: string, payload?: Record<string, any>) => {
+  try {
+    trackEvent(event, payload).catch((error) => {
+      captureError(new ReportError(error));
+    });
+  } catch (_) {}
+};

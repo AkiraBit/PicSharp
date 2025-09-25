@@ -2,6 +2,7 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'node:path';
 import 'dotenv/config';
+import packageJson from './package.json';
 
 const host = process.env.TAURI_DEV_HOST;
 // https://vitejs.dev/config/
@@ -36,5 +37,7 @@ export default defineConfig(async () => ({
     __PICSHARP_SIDECAR_SENTRY_DSN__: JSON.stringify(process.env.PICSHARP_SIDECAR_SENTRY_DSN),
     __PICSHARP_SENTRY_DSN__: JSON.stringify(process.env.PICSHARP_SENTRY_DSN),
     __PICSHARP_ABE_KEY__: JSON.stringify(process.env.PICSHARP_ABE_KEY),
+    __PICSHARP_ENV__: JSON.stringify(process.env.NODE_ENV),
+    __PICSHARP_VERSION__: JSON.stringify(packageJson.version),
   },
 }));

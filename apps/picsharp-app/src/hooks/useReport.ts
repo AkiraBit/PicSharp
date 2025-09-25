@@ -1,13 +1,6 @@
 import { useAptabase } from '@aptabase/react';
-import { captureError } from '@/utils';
+import { captureError, ReportError } from '@/utils';
 import { useCallback } from 'react';
-class ReportError extends Error {
-  cause: Error;
-  constructor(error: Error) {
-    super(`Report Failed: ${error.message}`);
-    this.name = 'ReportError';
-  }
-}
 
 export const useReport = () => {
   const { trackEvent } = useAptabase();

@@ -30,17 +30,15 @@ export function getImageViewerCacheKey(path: string, width: number, height: numb
 
 const lruCache = new Map<string, ImageThumbnailCacheRecord>();
 
-function touchEntry(key: string) {
-  const existing = lruCache.get(key);
-  if (!existing) return;
+function touchEntry(key: string, value: ImageThumbnailCacheRecord) {
   lruCache.delete(key);
-  lruCache.set(key, { ...existing, updatedAt: Date.now() });
+  lruCache.set(key, { ...value, updatedAt: Date.now() });
 }
 
 export function readCache(key: string): ImageThumbnailCacheRecord | null {
   const value = lruCache.get(key) || null;
   if (value) {
-    touchEntry(key);
+    touchEntry(key, value);
   }
   return value;
 }

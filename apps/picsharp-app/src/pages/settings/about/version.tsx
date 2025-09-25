@@ -1,4 +1,3 @@
-import packageJson from '@/../package.json';
 import { memo, useState, useContext } from 'react';
 import { useI18n } from '@/i18n';
 import SettingItem from '../setting-item';
@@ -46,7 +45,7 @@ function SettingsAboutVersion() {
     <SettingItem
       title={
         <span onClick={handleTitleClick}>
-          {t('settings.about.version.title', { version: packageJson.version })}
+          {t('settings.about.version.title', { version: __PICSHARP_VERSION__ })}
         </span>
       }
       // description={

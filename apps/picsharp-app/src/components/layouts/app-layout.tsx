@@ -200,6 +200,7 @@ export default function AppLayout() {
       useAppStore.getState().initSidecar();
       if (isProd) {
         timer = setInterval(() => {
+          useAppStore.getState().reportSidecarStderr();
           useAppStore.getState().pingSidecar();
         }, 10000);
       }

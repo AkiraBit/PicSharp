@@ -1,4 +1,10 @@
 import * as Sentry from '@sentry/react';
+import { init } from '@aptabase/web';
+
+init(__PICSHARP_ABE_KEY__, {
+  isDebug: import.meta.env.DEV,
+  appVersion: __PICSHARP_VERSION__,
+});
 
 Sentry.init({
   dsn: __PICSHARP_SENTRY_DSN__,

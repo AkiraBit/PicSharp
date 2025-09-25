@@ -87,8 +87,8 @@ const ImageViewer = forwardRef<ImageViewerRef, ImageViewerProps>(function ImageV
         const cacheKey = getImageViewerCacheKey(path, json.width, json.height);
         const record: ThumbnailCacheValue = {
           key: cacheKey,
-          width: json.width,
-          height: json.height,
+          width: 200,
+          height: 150,
           outputPath: json.output_path,
           updatedAt: Date.now(),
         };
