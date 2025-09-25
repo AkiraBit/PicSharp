@@ -1,5 +1,5 @@
 import os from 'node:os';
-import { findAvailablePort } from '../utils';
+import { findAvailablePort, isDev } from '../utils';
 
 export interface AppConfig {
   enable: boolean;
@@ -39,7 +39,7 @@ export async function loadConfig(): Promise<AppConfig> {
   const cpuCount = Math.max(1, Math.floor(os.cpus().length / 2));
   const concurrency = parseNumber(process.env.PICSHARP_SIDECAR_CONCURRENCY, cpuCount);
   const cluster = parseBoolean(process.env.PICSHARP_SIDECAR_CLUSTER, false);
-  const port = await findAvailablePort();
+  const port = await findAvailablePort(isDev ? 3000 : undefined);
   const mode =
     (String(process.env.PICSHARP_SIDECAR_MODE || 'server').toLowerCase() as AppConfig['mode']) ||
     'server';

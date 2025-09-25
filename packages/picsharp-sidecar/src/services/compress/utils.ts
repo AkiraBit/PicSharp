@@ -104,7 +104,7 @@ export async function saveImage(
     if (inputPath !== outputPath) {
       await copyFile(inputPath, outputPath);
     }
-    await unlink(originalEctypePath);
+    await unlink(outputTempPath);
   }
   return {
     availableCompressRate,
