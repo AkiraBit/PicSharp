@@ -1,7 +1,7 @@
 {
   "name": "@picsharp/monorepo",
   "private": true,
-  "version": "2.2.5",
+  "version": "2.2.6",
   "author": {
     "name": "AkiraBit",
     "email": "fengyvxiu@gmail.com"

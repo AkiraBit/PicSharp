@@ -1,5 +1,12 @@
 {
   "releases": {
+    "2.2.6": {
+      "date": "2025-09-24",
+      "notes": [
+        "🐛 [BugFix] Partially fixed the compression failure issue on Windows and Mac due to differences in operating environments",
+        "🐛 [问题] 对Windows和Mac系统下，因运行环境差异而导致压缩失败问题的部分修复"
+      ]
+    },
     "2.2.5": {
       "date": "2025-09-24",
       "notes": [
