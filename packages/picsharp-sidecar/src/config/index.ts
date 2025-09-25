@@ -39,7 +39,7 @@ export async function loadConfig(): Promise<AppConfig> {
   const cpuCount = Math.max(1, Math.floor(os.cpus().length / 2));
   const concurrency = parseNumber(process.env.PICSHARP_SIDECAR_CONCURRENCY, cpuCount);
   const cluster = parseBoolean(process.env.PICSHARP_SIDECAR_CLUSTER, false);
-  const port = await findAvailablePort(parseNumber(process.env.PICSHARP_SIDECAR_PORT, 3000));
+  const port = await findAvailablePort();
   const mode =
     (String(process.env.PICSHARP_SIDECAR_MODE || 'server').toLowerCase() as AppConfig['mode']) ||
     'server';

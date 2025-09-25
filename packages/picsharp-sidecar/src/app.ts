@@ -22,7 +22,13 @@ import { captureError } from './utils';
 export function createApp() {
   const app = new Hono()
     .use(logger())
-    .use('*', cors())
+    .use(
+      '*',
+      cors({
+        origin: '*',
+        maxAge: 600,
+      }),
+    )
     .use(
       '*',
       timeout(60000 * 3, () => new HTTPException(500, { message: 'Process timeout' })),

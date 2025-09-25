@@ -1,3 +1,6 @@
+// const HOSTNAME = '::';
+export const HOSTNAME = '127.0.0.1';
+
 export enum SaveMode {
   Overwrite = 'overwrite',
   SaveAsNewFile = 'save_as_new_file',

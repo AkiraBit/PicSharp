@@ -58,7 +58,7 @@ function createWorkerInstance(): Worker {
 let singletonPool: ThreadPool | undefined;
 
 export function initThreadPool(): ThreadPool {
-  const size = Math.max(1, Math.floor((os.cpus().length || 2) / 2));
+  const size = Math.max(1, Math.floor(os.cpus().length || 2));
   const poolSize = Number(process.env.PICSHARP_SIDECAR_THREADS) || size;
   const workers: Map<number, PoolWorker> = new Map();
   const pendings = new Map<string, Pending>();

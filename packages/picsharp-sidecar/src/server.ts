@@ -4,6 +4,7 @@ import { AppConfig } from './config';
 import { createApp } from './app';
 import { startMaster } from './cluster/master';
 import { startWorker } from './cluster/worker';
+import { HOSTNAME } from './constants';
 
 export async function startServer(config: AppConfig) {
   if (config.cluster) {
@@ -14,7 +15,7 @@ export async function startServer(config: AppConfig) {
     }
   } else {
     const app = createApp();
-    serve({ fetch: app.fetch, port: config.port, hostname: '::' }, (info) => {
+    serve({ fetch: app.fetch, port: config.port, hostname: HOSTNAME }, (info) => {
       console.log(JSON.stringify({ origin: `http://localhost:${info.port}` }));
     });
   }

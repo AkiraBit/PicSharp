@@ -42,7 +42,7 @@ export async function processSvg(payload: SvgTaskPayload) {
       new_file_suffix: options.save.new_file_suffix,
       new_folder_path: options.save.new_folder_path,
     });
-    const tempFilePath = copyFileToTemp(input_path, options.temp_dir);
+    const tempFilePath = await copyFileToTemp(input_path, options.temp_dir);
     if (availableCompressRate) {
       await writeFile(newOutputPath, optimizedContent.data, 'utf-8');
     } else {

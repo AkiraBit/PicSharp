@@ -1,4 +1,4 @@
-import { parentPort, workerData } from 'node:worker_threads';
+import { parentPort, threadId } from 'node:worker_threads';
 import { processPngLossy, processPngLossless } from '../services/compress/png';
 import { processJpeg } from '../services/compress/jpeg';
 import { processWebp } from '../services/compress/webp';
@@ -47,7 +47,7 @@ parentPort.on('message', async (msg: { requestId: string; type: string; payload:
     } else {
       throw new Error(`Unsupported task type: ${type}`);
     }
-    result._workerId = workerData.workerId;
+    result._threadId = threadId;
     parentPort!.postMessage({ requestId, type: 'result', data: result });
   } catch (error: any | CompressError) {
     parentPort!.postMessage({
