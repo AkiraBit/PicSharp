@@ -198,7 +198,7 @@ export default function AppLayout() {
     useAppStore.getState().initAppPath();
     if (WebviewWindow.getCurrent().label === 'main') {
       useAppStore.getState().initSidecar();
-      if (!isProd) {
+      if (isProd) {
         timer = setInterval(() => {
           useAppStore.getState().pingSidecar();
         }, 10000);
