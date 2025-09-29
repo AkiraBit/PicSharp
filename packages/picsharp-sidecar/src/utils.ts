@@ -2,7 +2,7 @@ import fse from 'fs-extra';
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import { nanoid } from 'nanoid';
-import getPort from './get-port';
+import getPort, { portNumbers } from './get-port';
 import { createHash } from 'node:crypto';
 import { createReadStream } from 'node:fs';
 import ssim from 'ssim.js';
@@ -91,7 +91,7 @@ export const createOutputPath = async (
 };
 
 export async function findAvailablePort(preferredPort?: number): Promise<number> {
-  return getPort({ port: preferredPort });
+  return getPort({ port: preferredPort || portNumbers(1024, 8080) });
 }
 
 export interface RetryOptions {

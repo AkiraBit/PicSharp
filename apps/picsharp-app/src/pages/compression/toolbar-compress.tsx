@@ -103,6 +103,10 @@ function ToolbarCompress() {
 
   const handleCompress = async () => {
     r('classic_compress_click');
+    let fulfilled = 0;
+    let rejected = 0;
+    const rejectedList = [];
+    let startTime = Date.now();
     try {
       if (compressionMode !== CompressionMode.Local && !isValidArray(tinypngApiKeys)) {
         const result = await message.confirm({
@@ -153,9 +157,6 @@ function ToolbarCompress() {
         .filter(Boolean);
 
       eventEmitter.emit('update_file_item', 'all');
-
-      let fulfilled = 0;
-      let rejected = 0;
       await new Compressor({
         compressionMode,
         compressionLevel,
@@ -227,6 +228,7 @@ function ToolbarCompress() {
         },
         (res) => {
           rejected++;
+          rejectedList.push(res.input_path);
           const targetFile = fileMap.get(res.input_path);
           if (targetFile) {
             targetFile.status = ICompressor.Status.Failed;
@@ -262,6 +264,8 @@ function ToolbarCompress() {
         fulfilled,
         rejected,
         total: files.length,
+        rejectedList: rejectedList.slice(0, 10),
+        costTime: Date.now() - startTime,
       });
     } catch (error) {
       messageApi?.error(t('common.compress_failed_msg'));
@@ -270,6 +274,8 @@ function ToolbarCompress() {
         success: false,
         reason: 'compress failed',
         err_msg: error.toString(),
+        rejectedList: rejectedList.slice(0, 10),
+        costTime: Date.now() - startTime,
       });
     } finally {
       if (indicatorRef.current) {

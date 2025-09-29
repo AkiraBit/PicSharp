@@ -39,7 +39,7 @@
     "pino": "^9.7.0",
     "radash": "^12.1.1",
     "readdirp": "^4.1.2",
-    "sharp": "0.34.2",
+    "sharp": "0.34.4",
     "ssim.js": "^3.5.0",
     "svgo": "^3.3.2",
     "undici": "^7.8.0",
@@ -49,7 +49,7 @@
   "devDependencies": {
     "@types/fs-extra": "^11.0.4",
     "@types/yargs": "^17.0.33",
-    "@yao-pkg/pkg": "^6.4.0",
+    "@yao-pkg/pkg": "^6.7.0",
     "esbuild-register": "^3.6.0",
     "pino-pretty": "^11.3.0",
     "tsx": "^4.7.1",
