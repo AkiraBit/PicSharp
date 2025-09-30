@@ -30,6 +30,7 @@ function CompressionWatch() {
   const { messageApi } = useContext(AppContext);
   const isFirstInit = useRef(true);
   const historys = useRef<Set<string>>(new Set());
+  const ctrlRef = useRef<AbortController | null>(null);
   const r = useReport();
 
   const handleCompress = async (files: FileInfo[]) => {
@@ -213,15 +214,18 @@ function CompressionWatch() {
     });
   };
 
+  function regain() {
+    const { reset } = useCompressionStore.getState();
+    ctrlRef.current?.abort();
+    reset();
+    navigate('/compression/watch/guide');
+    progressRef.current?.done();
+  }
+
   useEffect(() => {
-    const { watchingFolder, reset } = useCompressionStore.getState();
+    const { watchingFolder } = useCompressionStore.getState();
     const ctrl = new AbortController();
-    function regain() {
-      ctrl.abort();
-      reset();
-      navigate('/compression/watch/guide');
-      progressRef.current?.done();
-    }
+    ctrlRef.current = ctrl;
     async function handleWatch() {
       const { compression_watch_file_ignore: ignores = [] } = useSettingsStore.getState();
       const { sidecar } = useAppStore.getState();
@@ -319,6 +323,7 @@ function CompressionWatch() {
     window.addEventListener('visibilitychange', handlePageVisible);
     return () => {
       ctrl.abort();
+      ctrlRef.current = null;
       window.removeEventListener('visibilitychange', handlePageVisible);
     };
   }, []);

@@ -19,6 +19,7 @@ export default memo(function SettingsTinypng() {
 
   useEffect(() => {
     const hash = window.location.hash;
+    console.log('hash', hash);
     if (elRef.current && hash === '#tinypng-api-keys') {
       setTimeout(() => {
         elRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });

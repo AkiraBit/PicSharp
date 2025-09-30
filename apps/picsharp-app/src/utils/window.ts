@@ -2,6 +2,16 @@ import { invoke } from '@tauri-apps/api/core';
 import { WebviewWindow } from '@tauri-apps/api/webviewWindow';
 import { t } from '@/i18n';
 import { isMac } from '.';
+import { message } from '@/components/message';
+import { report } from '.';
+
+export const windowFocus = () => {
+  const window = WebviewWindow.getCurrent();
+  if (window) {
+    window.show();
+    window.setFocus();
+  }
+};
 
 export function calImageWindowSize(imgWidth: number, imgHeight: number): [number, number] {
   const maxWidth = 1000.0;
@@ -67,8 +77,7 @@ export async function createWebviewWindow(
   const target = await WebviewWindow.getByLabel(label);
   console.log(`[createWebviewWindow] ${label}`, target);
   if (target) {
-    target.show();
-    target.setFocus();
+    windowFocus();
     return target;
   } else {
     return new WebviewWindow(label, {
@@ -79,13 +88,20 @@ export async function createWebviewWindow(
   }
 }
 
-export async function openSettingsWindow() {
-  return createWebviewWindow('picsharp_settings', {
-    url: '/settings',
+export async function openSettingsWindow(
+  options: { subpath?: string; query?: Record<string, string>; hash?: string } = {},
+) {
+  createWebviewWindow('picsharp_settings', {
+    url: `/settings${options.subpath ? `/${options.subpath}` : ''}${options.query ? `?${new URLSearchParams(options.query).toString()}` : ''}${options.hash ? `#${options.hash}` : ''}`,
     title: t('nav.settings'),
     width: 796,
     height: 528,
     minWidth: 796,
     minHeight: 529,
+  }).catch((err) => {
+    report('open_settings_window_failed', {
+      error: err.message,
+    });
+    message.error(t('tips.open_settings_window_failed'));
   });
 }

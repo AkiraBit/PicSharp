@@ -375,7 +375,7 @@ const enUS = {
   'tips.file_not_exists': 'File not exists',
   'tips.path_not_exists': 'File path not exists',
   'tips.watch_and_save_same_folder':
-    'The listening directory and the image saving directory are the same',
+    'The listening directory and the image saving directory are the same, please modify the save type or configure new save folder',
   'tips.error': 'Error',
   'tips.warning': 'Warning',
   'tips.watch_folder_deleted': 'The listening directory has been deleted',
@@ -409,6 +409,7 @@ const enUS = {
   'tips.file_watch_abort': 'File watch service has been terminated',
   'tips.file_watch_target_changed': 'The listening directory has been modified or moved',
   'tips.import_files': 'Importing files...',
+  'tips.open_settings_window_failed': 'Failed to open settings window',
 
   // Watch Compression Guide
   'page.compression.watch.guide.title': 'Listen And Auto-Compress',

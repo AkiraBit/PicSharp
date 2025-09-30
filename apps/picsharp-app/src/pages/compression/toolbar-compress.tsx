@@ -101,7 +101,7 @@ function ToolbarCompress() {
     );
 
   const handleCompress = async () => {
-    r('classic_compress_click', {
+    r('classic_compress_start', {
       files_num: selectedFiles.length,
     });
     let fulfilled = 0;
@@ -110,18 +110,18 @@ function ToolbarCompress() {
     let startTime = Date.now();
     try {
       if (compressionMode !== CompressionMode.Local && !isValidArray(tinypngApiKeys)) {
+        r('tinypng_api_keys_not_configured');
         const result = await message.confirm({
           title: t('tips.tinypng_api_keys_not_configured'),
           confirmText: t('goToSettings'),
           cancelText: t('cancel'),
         });
         if (result) {
-          openSettingsWindow();
+          openSettingsWindow({
+            subpath: 'tinypng',
+            hash: 'tinypng-api-keys',
+          });
         }
-        r('classic_compress_result', {
-          success: false,
-          reason: 'tinypng api keys not configured',
-        });
         return;
       }
 

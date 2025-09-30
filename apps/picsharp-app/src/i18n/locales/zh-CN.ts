@@ -364,7 +364,8 @@ export default {
   'tips.invalid_paths': '无效的文件路径',
   'tips.file_not_exists': '文件不存在',
   'tips.path_not_exists': '文件路径不存在',
-  'tips.watch_and_save_same_folder': '监听目录和图片保存目录相同',
+  'tips.watch_and_save_same_folder':
+    '当前监听的文件夹与图片保存的文件夹相同，请修改保存方式或配置新的保存文件夹',
   'tips.error': '错误',
   'tips.warning': '警告',
   'tips.watch_folder_deleted': '监听目录已被删除',
@@ -386,6 +387,7 @@ export default {
   'tips.file_size': '{{bytes}} 字节（磁盘上的{{formatted_disk_size}}）',
   'tips.reload_app': '正在重启应用...',
   'tips.reload_app_failed': '重启应用失败，请稍后再试',
+  'tips.open_settings_window_failed': '打开设置窗口失败',
   // 经典模式压缩引导页
   'page.compression.classic.app_title': 'PicSharp',
   'page.compression.classic.app_description': '简单高效的图片压缩工具',

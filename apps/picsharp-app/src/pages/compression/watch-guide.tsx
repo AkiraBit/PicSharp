@@ -10,7 +10,7 @@ import { exists, stat } from '@tauri-apps/plugin-fs';
 import { basename } from '@tauri-apps/api/path';
 import { Button } from '@/components/ui/button';
 import useSettingsStore from '@/store/settings';
-import { CompressionOutputMode } from '@/constants';
+import { CompressionMode, CompressionOutputMode, SettingsKey } from '@/constants';
 import { CompressionContext } from '.';
 import useAppStore from '@/store/app';
 import { AppContext } from '@/routes';
@@ -20,6 +20,9 @@ import Folder from '@/components/animated-icon/folder';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import FormatsTips from './formats-tips';
 import { useReport } from '@/hooks/useReport';
+import { openSettingsWindow } from '@/utils/window';
+import { message } from '@/components/message';
+import { windowFocus } from '@/utils/window';
 
 const WATCH_HISTORY_KEY = 'compression_watch_history';
 
@@ -66,12 +69,44 @@ function WatchCompressionGuide() {
         messageApi?.error(t('tips.path_not_exists'));
         return;
       }
-      const state = useSettingsStore.getState();
+      const {
+        [SettingsKey.CompressionMode]: compressionMode,
+        [SettingsKey.TinypngApiKeys]: tinypngApiKeys,
+        [SettingsKey.CompressionOutput]: compressionOutput,
+        [SettingsKey.CompressionOutputSaveToFolder]: compressionOutputSaveToFolder,
+      } = useSettingsStore.getState();
+      if (compressionMode !== CompressionMode.Local && !isValidArray(tinypngApiKeys)) {
+        r('tinypng_api_keys_not_configured');
+        const result = await message.confirm({
+          title: t('tips.tinypng_api_keys_not_configured'),
+          confirmText: t('goToSettings'),
+          cancelText: t('cancel'),
+        });
+        if (result) {
+          openSettingsWindow({
+            subpath: 'tinypng',
+            hash: 'tinypng-api-keys',
+          });
+          windowFocus();
+        }
+        return;
+      }
       if (
-        state.compression_output === CompressionOutputMode.SaveToNewFolder &&
-        state.compression_output_save_to_folder === path
+        compressionOutput === CompressionOutputMode.SaveToNewFolder &&
+        compressionOutputSaveToFolder === path
       ) {
-        messageApi?.error(t('tips.watch_and_save_same_folder'));
+        const result = await message.confirm({
+          title: t('tips.watch_and_save_same_folder'),
+          confirmText: t('goToSettings'),
+          cancelText: t('cancel'),
+        });
+        if (result) {
+          openSettingsWindow({
+            subpath: 'compression',
+            hash: 'output',
+          });
+          windowFocus();
+        }
         return;
       }
       const newHistory = await updateWatchHistory(path);
@@ -84,22 +119,9 @@ function WatchCompressionGuide() {
   };
 
   const handleHistorySelect = async (path: string) => {
-    const { sidecar } = useAppStore.getState();
-    if (!sidecar?.origin) {
-      messageApi?.error(t('tips.file_watch_not_running'));
-      return;
-    }
     const isExists = await exists(path);
     const targetIndex = history.findIndex((item) => item.path === path);
     if (isExists) {
-      const state = useSettingsStore.getState();
-      if (
-        state.compression_output === CompressionOutputMode.SaveToNewFolder &&
-        state.compression_output_save_to_folder === path
-      ) {
-        messageApi?.error(t('tips.watch_and_save_same_folder'));
-        return;
-      }
       if (targetIndex !== -1) {
         const name = history[targetIndex].name;
         history.splice(targetIndex, 1);
@@ -107,10 +129,7 @@ function WatchCompressionGuide() {
         localStorage.setItem(WATCH_HISTORY_KEY, JSON.stringify(newHistory));
         setHistory(newHistory);
       }
-      progressRef.current?.show(true);
-      setWorking(true);
-      setWatchingFolder(path);
-      navigate(`/compression/watch/workspace`);
+      handleWatch(path);
     } else {
       history.splice(targetIndex, 1);
       localStorage.setItem(WATCH_HISTORY_KEY, JSON.stringify(history));
@@ -143,7 +162,13 @@ function WatchCompressionGuide() {
       });
     };
     const history = localStorage.getItem(WATCH_HISTORY_KEY);
-    const arr = JSON.parse(history || '[]');
+    const arr = (() => {
+      try {
+        return JSON.parse(history || '[]');
+      } catch (error) {
+        return [];
+      }
+    })();
     if (isValidArray(arr)) {
       setHistory(arr);
     }
