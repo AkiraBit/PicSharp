@@ -276,7 +276,7 @@ jobs:
 
             core.info(`Platform: ${platform}, Architecture: ${arch}`);
 
-            let ext = platform === "windows-latest" ? ".exe" : "";
+            let ext = platform.includes("windows") ? ".exe" : "";
 
             const sourceDir = 'packages/picsharp-sidecar/bin';
             const destDir = 'apps/picsharp-app/src-tauri/binaries';
