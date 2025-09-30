@@ -3,8 +3,8 @@
     "2.2.7": {
       "date": "2025-09-30",
       "notes": [
-        "🐛 [BugFix] Continue to partially fix the compression failure issue on Windows and Mac due to differences in operating environments",
-        "🐛 [问题] 对不同操作系统下，因运行环境差异而导致压缩失败问题进行全面修复",
+        "🐛 [BugFix] Comprehensively fix the issue of compression failure caused by differences in operating environments under different operating systems. After updating to the new version, it is recommended to click the reset button on the Settings page to format the application configuration, then restart. Before formatting, save the currently configured data (if the TinyPNG API Keys are configured, they can be exported as a file for easy import after formatting).",
+        "🐛 [修复] 对不同操作系统下，因运行环境差异而导致压缩失败问题进行全面修复。更新到新版本后，建议点击设置页面的重置按钮格式化应用配置，然后重启，格式化前保存好当前已配置的数据（如有配置TinyPNG API Keys，可进行导出为文件，方便格式化后再导入）",
         "🚀 [Optimization] Enhance the stability of the application on Mac OS 26",
         "🚀 [优化] 提升应用在Mac OS 26上的稳定性",
         "⚙️ [New] Add Windows ARM64 installation package, built with Window 11 arm64 environment",
