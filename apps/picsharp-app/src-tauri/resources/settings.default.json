@@ -7,17 +7,12 @@
   "compression_type": "lossy",
   "compression_level": 4,
   "compression_keep_metadata": true,
-  "compression_output": "overwrite",
-  "compression_output_save_as_file_suffix": "_compressed",
-  "compression_output_save_to_folder": "",
+  "concurrency": 6,
   "compression_threshold_enable": false,
   "compression_threshold_value": 0.1,
-  "tinypng_api_keys": [],
-  "tinypng_preserve_metadata": [
-    "copyright",
-    "creator",
-    "location"
-  ],
+  "compression_output":"overwrite",
+  "compression_output_save_as_file_suffix":"_min",
+  "compression_output_save_to_folder":"",
   "compression_convert_enable": false,
   "compression_convert": [],
   "compression_convert_alpha": "#FFFFFF",
@@ -25,14 +20,21 @@
   "compression_resize_dimensions": [0, 0],
   "compression_resize_fit": "cover",
   "compression_watermark_type": "none",
-  "compression_watermark_position": "bottom_right",
+  "compression_watermark_position": "southeast",
   "compression_watermark_text": "",
   "compression_watermark_text_color": "#FFFFFF",
+  "compression_watermark_text_font_size": 72,
   "compression_watermark_image_path": "",
   "compression_watermark_image_opacity": 1,
   "compression_watermark_image_scale": 0.15,
   "compression_watch_file_ignore": [
     ".git",
     "node_modules"
+  ],
+  "tinypng_api_keys": [],
+  "tinypng_preserve_metadata": [
+    "copyright",
+    "creator",
+    "location"
   ]
 }

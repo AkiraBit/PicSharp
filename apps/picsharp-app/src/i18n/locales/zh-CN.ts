@@ -345,7 +345,8 @@ export default {
   'error.refresh_page': '刷新页面',
 
   // Toast/Notification massages
-  'tips.tinypng_api_keys_not_configured': 'TinyPNG API密钥未配置',
+  'tips.tinypng_api_keys_not_configured':
+    '当前压缩模式将优先使用TinyPNG服务，但API密钥未配置，请配置API密钥或修改压缩模式为“本地压缩”后重试',
   'tips.save_to_folder_not_configured': '图片保存目录未配置',
   'tips.compressing': '正在压缩... 成功：{{fulfilled}}，失败：{{rejected}}，总任务数：{{total}}',
   'tips.compress_completed': '成功：{{fulfilled}}  失败：{{rejected}}  总任务数：{{total}}',

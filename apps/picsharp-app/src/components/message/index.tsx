@@ -242,7 +242,7 @@ function createDialog(config: MessageConfig): Promise<boolean> {
           <MessageDialogContent>
             <div className='flex items-start gap-4 p-4'>
               <div className='flex-1 space-y-3'>
-                <AlertDialogPrimitive.Title className='flex items-center gap-2'>
+                <AlertDialogPrimitive.Title className='flex gap-2'>
                   <div className='flex-shrink-0'>
                     <IconComponent className={cn('h-6 w-6', iconColor)} />
                   </div>

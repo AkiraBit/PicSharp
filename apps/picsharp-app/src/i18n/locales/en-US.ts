@@ -355,7 +355,8 @@ const enUS = {
   'error.refresh_page': 'Refresh',
 
   // Toast/Notification messages
-  'tips.tinypng_api_keys_not_configured': 'TinyPNG API keys are not configured.',
+  'tips.tinypng_api_keys_not_configured':
+    'The compression mode will prioritize using the TinyPNG service, but the API key is not configured, please configure the API key or modify the compression mode to "Local Compression" and try again',
   'tips.save_to_folder_not_configured': 'Image saving directory is not configured.',
   'tips.compressing': 'Success: {{fulfilled}}, Failed: {{rejected}}, Total Tasks: {{total}}',
   'tips.compress_completed': 'Success: {{fulfilled}}  Failed: {{rejected}}  Total Tasks: {{total}}',

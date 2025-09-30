@@ -33,6 +33,10 @@ function CompressionWatch() {
   const r = useReport();
 
   const handleCompress = async (files: FileInfo[]) => {
+    let fulfilled = 0;
+    let rejected = 0;
+    const rejectedList = [];
+    let startTime = Date.now();
     try {
       const { sidecar, imageTempDir } = useAppStore.getState();
       const { fileMap, eventEmitter } = useCompressionStore.getState();
@@ -66,8 +70,6 @@ function CompressionWatch() {
 
       eventEmitter.emit('update_file_item', 'all');
 
-      let fulfilled = 0;
-      let rejected = 0;
       await new Compressor({
         compressionMode,
         compressionLevel,
@@ -125,9 +127,10 @@ function CompressionWatch() {
             }
           } else {
             rejected++;
+            rejectedList.push(res.input_path);
             targetFile.status = ICompressor.Status.Failed;
             targetFile.errorMessage = 'Process failed,Please try again';
-            r('classic_compress_result', {
+            r('watch_compress_result', {
               success: false,
               err_msg: 'After compression, cannot find target file',
             });
@@ -136,6 +139,7 @@ function CompressionWatch() {
         },
         (res) => {
           rejected++;
+          rejectedList.push(res.input_path);
           const targetFile = fileMap.get(res.input_path);
           if (targetFile) {
             targetFile.status = ICompressor.Status.Failed;
@@ -163,6 +167,14 @@ function CompressionWatch() {
           total: files.length,
         }),
       );
+      r('watch_compress_result', {
+        success: true,
+        fulfilled,
+        rejected,
+        total: files.length,
+        rejectedList: rejectedList.slice(0, 10),
+        costTime: Date.now() - startTime,
+      });
     } catch (error) {
       captureError(error);
       messageApi?.error(t('common.compress_failed_msg'));

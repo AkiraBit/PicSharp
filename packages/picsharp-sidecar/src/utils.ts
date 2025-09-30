@@ -10,6 +10,7 @@ import sharp, { Metadata } from 'sharp';
 import { omit } from 'es-toolkit';
 import os from 'node:os';
 import Sentry from '@sentry/node';
+import type { ZodError } from 'zod';
 
 export const calCompressionRate = (originalSize: number, compressedSize: number) => {
   return Number(((originalSize - compressedSize) / originalSize).toFixed(2));
@@ -91,7 +92,7 @@ export const createOutputPath = async (
 };
 
 export async function findAvailablePort(preferredPort?: number): Promise<number> {
-  return getPort({ port: preferredPort || portNumbers(1024, 8080) });
+  return getPort({ port: preferredPort || portNumbers(1024, 49151) });
 }
 
 export interface RetryOptions {

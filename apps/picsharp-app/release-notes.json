@@ -1,5 +1,14 @@
 {
   "releases": {
+    "2.2.7": {
+      "date": "2025-09-29",
+      "notes": [
+        "🐛 [BugFix] Continue to partially fix the compression failure issue on Windows and Mac due to differences in operating environments",
+        "🐛 [问题] 继续对Windows和Mac系统下，因运行环境差异而导致压缩失败问题的部分修复",
+        "⚙️ [New] Add Windows ARM64 installation package, built with Window 11 arm64 environment",
+        "⚙️ [新特性] 新增Windows ARM64安装包，使用Window 11 arm64环境构建"
+      ]
+    },
     "2.2.6": {
       "date": "2025-09-24",
       "notes": [

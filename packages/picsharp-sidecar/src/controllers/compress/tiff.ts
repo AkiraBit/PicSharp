@@ -10,6 +10,7 @@ import {
   WatermarkPosition,
 } from '../../constants';
 import { getThreadPool } from '../../workers/thread-pool';
+import { payloadValidator } from '../utils';
 const app = new Hono();
 
 const OptionsSchema = z
@@ -114,7 +115,7 @@ const PayloadSchema = z.object({
   process_options: ProcessOptionsSchema,
 });
 
-app.post('/', zValidator('json', PayloadSchema), async (context) => {
+app.post('/', zValidator('json', PayloadSchema, payloadValidator), async (context) => {
   let { input_path, options, process_options } =
     await context.req.json<z.infer<typeof PayloadSchema>>();
   await checkFile(input_path);

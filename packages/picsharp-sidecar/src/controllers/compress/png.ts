@@ -11,6 +11,7 @@ import {
 } from '../../constants';
 import { getThreadPool } from '../../workers/thread-pool';
 import { PngRowFilter } from '@napi-rs/image';
+import { payloadValidator } from '../utils';
 
 const app = new Hono();
 
@@ -101,7 +102,7 @@ const LosslessPayloadSchema = z.object({
   process_options: LosslessProcessOptionsSchema,
 });
 
-app.post('/', zValidator('json', LossyPayloadSchema), async (context) => {
+app.post('/', zValidator('json', LossyPayloadSchema, payloadValidator), async (context) => {
   let { input_path, options, process_options } =
     await context.req.json<z.infer<typeof LossyPayloadSchema>>();
   await checkFile(input_path);

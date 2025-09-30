@@ -19,7 +19,6 @@ import message from '@/components/message';
 import { AppContext } from '@/routes';
 import { openSettingsWindow } from '@/utils/window';
 import { useReport } from '@/hooks/useReport';
-import { CompressError } from '@/extends/CompressError';
 
 function ToolbarCompress() {
   const { sidecar, imageTempDir } = useAppStore(useSelector(['sidecar', 'imageTempDir']));
@@ -102,7 +101,9 @@ function ToolbarCompress() {
     );
 
   const handleCompress = async () => {
-    r('classic_compress_click');
+    r('classic_compress_click', {
+      files_num: selectedFiles.length,
+    });
     let fulfilled = 0;
     let rejected = 0;
     const rejectedList = [];

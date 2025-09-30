@@ -9,7 +9,7 @@ import {
 } from '../constants';
 import { CompressionOutputMode, CompressionType } from '../constants';
 import { draw, isFunction } from 'radash';
-import { captureError } from '.';
+import { t } from '../i18n';
 
 export namespace ICompressor {
   export type Options = {
@@ -552,11 +552,10 @@ export default class Compressor {
   }
 
   private selectHandler = (file: FileInfo) => {
-    return this.handlers[file.ext](file).catch((error) => {
-      captureError(error, undefined, 'compressor_handler_error');
+    return this.handlers[file.ext](file).catch((error: string) => {
       return Promise.reject({
         input_path: file.path,
-        error: error,
+        error,
       });
     });
   };
@@ -575,7 +574,7 @@ export default class Compressor {
       case CompressionMode.Remote: {
         return files.map(
           (file) => () =>
-            this.tinify(file).catch((error) => {
+            this.tinify(file).catch((error: string) => {
               return Promise.reject({
                 input_path: file.path,
                 error,
@@ -650,12 +649,12 @@ export default class Compressor {
         }),
       });
       const result = await response.json();
-      if (!String(response.status).startsWith('2')) {
-        throw new Error(result.message || 'Process failed, please try again later.');
+      if (result?.code === -1) {
+        return Promise.reject(result?.err_msg || JSON.stringify(result));
       }
       return result;
     } catch (error) {
-      return Promise.reject(error);
+      return Promise.reject(error.message || 'Process failed, please try again.');
     }
   };
 
@@ -742,9 +741,9 @@ export default class Compressor {
   };
 
   tinify = async (file: FileInfo) => {
-    // if (!VALID_TINYPNG_IMAGE_EXTS.includes(file.ext)) {
-    //   return Promise.reject(t('page.compression.tinify.error.unsupported_file_type'));
-    // }
+    if (!VALID_TINYPNG_IMAGE_EXTS.includes(file.ext)) {
+      return Promise.reject(t('page.compression.tinify.error.unsupported_file_type'));
+    }
     return this.process('tinify', {
       input_path: file.path,
       process_options: {

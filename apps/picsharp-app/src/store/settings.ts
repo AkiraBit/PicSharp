@@ -20,6 +20,7 @@ import { withStorageDOMEvents } from './withStorageDOMEvents';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
 interface SettingsState {
+  appDataDirPath: string;
   settingsFilePath: string;
   defaultSettingsFilePath: string;
   [SettingsKey.Language]: string;
@@ -72,6 +73,7 @@ type SettingsStore = SettingsState & SettingsAction;
 const useSettingsStore = create(
   persist<SettingsStore>(
     (set, get) => ({
+      appDataDirPath: '',
       settingsFilePath: '',
       defaultSettingsFilePath: '',
       [SettingsKey.Language]: 'en-US',
@@ -86,7 +88,7 @@ const useSettingsStore = create(
       [SettingsKey.CompressionThresholdEnable]: false,
       [SettingsKey.CompressionThresholdValue]: 0.1,
       [SettingsKey.CompressionOutput]: CompressionOutputMode.Overwrite,
-      [SettingsKey.CompressionOutputSaveAsFileSuffix]: '_compressed',
+      [SettingsKey.CompressionOutputSaveAsFileSuffix]: '_min',
       [SettingsKey.CompressionOutputSaveToFolder]: '',
       [SettingsKey.CompressionConvertEnable]: false,
       [SettingsKey.CompressionConvert]: [],
@@ -98,11 +100,11 @@ const useSettingsStore = create(
       [SettingsKey.CompressionWatermarkPosition]: WatermarkPosition.BottomRight,
       [SettingsKey.CompressionWatermarkText]: '',
       [SettingsKey.CompressionWatermarkTextColor]: '#FFFFFF',
-      [SettingsKey.CompressionWatermarkFontSize]: 16,
+      [SettingsKey.CompressionWatermarkFontSize]: 72,
       [SettingsKey.CompressionWatermarkImagePath]: '',
       [SettingsKey.CompressionWatermarkImageOpacity]: 1,
       [SettingsKey.CompressionWatermarkImageScale]: 0.15,
-      [SettingsKey.CompressionWatchFileIgnore]: [],
+      [SettingsKey.CompressionWatchFileIgnore]: ['.git', 'node_modules'],
       [SettingsKey.TinypngApiKeys]: [],
       [SettingsKey.TinypngPreserveMetadata]: [
         TinypngMetadata.Copyright,
@@ -110,9 +112,10 @@ const useSettingsStore = create(
         TinypngMetadata.Location,
       ],
       init: async (reload = false) => {
-        const settingsFilePath = await join(await appDataDir(), SETTINGS_FILE_NAME);
-        const defaultSettingsFilePath = await join(await appDataDir(), DEFAULT_SETTINGS_FILE_NAME);
-        set({ settingsFilePath, defaultSettingsFilePath });
+        const appDataDirPath = await appDataDir();
+        const settingsFilePath = await join(appDataDirPath, SETTINGS_FILE_NAME);
+        const defaultSettingsFilePath = await join(appDataDirPath, DEFAULT_SETTINGS_FILE_NAME);
+        set({ appDataDirPath, settingsFilePath, defaultSettingsFilePath });
         const store = await load(SETTINGS_FILE_NAME);
         if (reload) {
           await store.reload();
@@ -122,11 +125,11 @@ const useSettingsStore = create(
           if (key === SettingsKey.CompressionOutputSaveToFolder) {
             if (!value) {
               const downloadDirPath = await downloadDir();
-              await store.set(SettingsKey.CompressionOutputSaveToFolder, downloadDirPath);
-              await store.save();
               set({
                 [SettingsKey.CompressionOutputSaveToFolder]: downloadDirPath,
               });
+              await store.set(SettingsKey.CompressionOutputSaveToFolder, downloadDirPath);
+              await store.save();
             } else {
               set({
                 [SettingsKey.CompressionOutputSaveToFolder]: value as string,
@@ -135,15 +138,22 @@ const useSettingsStore = create(
           } else if (key === SettingsKey.Language) {
             if (!value) {
               const uaLang = window.navigator.language || 'en-US';
-              await store.set(SettingsKey.Language, uaLang);
-              await store.save();
               set({ [SettingsKey.Language]: uaLang });
               i18next.changeLanguage(uaLang);
+              await store.set(SettingsKey.Language, uaLang);
+              await store.save();
             } else {
               set({ [SettingsKey.Language]: value as string });
               if (i18next.language !== (value as string)) {
                 i18next.changeLanguage(value as string);
               }
+            }
+          } else if (key === SettingsKey.CompressionWatermarkPosition) {
+            // Compatible with old values to avoid error reports
+            if (value === 'bottom_right') {
+              set({ [SettingsKey.CompressionWatermarkPosition]: WatermarkPosition.BottomRight });
+            } else {
+              set({ [key]: value as WatermarkPosition });
             }
           } else {
             set({ [key]: value });
@@ -152,10 +162,10 @@ const useSettingsStore = create(
       },
 
       set: async (key, value) => {
+        set({ [key]: value });
         const store = await load(SETTINGS_FILE_NAME, { autoSave: false });
         await store.set(key, value);
         await store.save();
-        set({ [key]: value });
       },
 
       reset: async () => {
@@ -164,7 +174,7 @@ const useSettingsStore = create(
       },
     }),
     {
-      version: 1,
+      version: 2,
       name: 'store:settings',
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => state as SettingsStore,
