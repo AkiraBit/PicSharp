@@ -96,8 +96,8 @@ async function applyImageTransformations(
   }
 
   if (options.watermark_type !== WatermarkType.None) {
-    hasTransformations = true;
     if (options.watermark_type === WatermarkType.Text && options.watermark_text) {
+      hasTransformations = true;
       await addTextWatermark({
         stream: transformer,
         text: options.watermark_text,
@@ -107,6 +107,7 @@ async function applyImageTransformations(
         container: dimensions,
       });
     } else if (options.watermark_type === WatermarkType.Image && options.watermark_image_path) {
+      hasTransformations = true;
       await addImageWatermark({
         stream: transformer,
         imagePath: options.watermark_image_path,
@@ -208,7 +209,9 @@ export async function processTinyPng(payload: ImageTaskPayload) {
       input_size: originalSize,
       output_path: newOutputPath,
       output_size: availableCompressRate ? await getFileSize(newOutputPath) : originalSize,
-      compression_rate: availableCompressRate ? compressRatio : 0,
+      compression_rate: availableCompressRate
+        ? calCompressionRate(originalSize, await getFileSize(newOutputPath))
+        : 0,
       original_temp_path: originalTempPath,
       available_compress_rate: availableCompressRate,
       hash: await hashFile(input_path),

@@ -22,7 +22,6 @@ import FormatsTips from './formats-tips';
 import { useReport } from '@/hooks/useReport';
 import { openSettingsWindow } from '@/utils/window';
 import { message } from '@/components/message';
-import { windowFocus } from '@/utils/window';
 
 const WATCH_HISTORY_KEY = 'compression_watch_history';
 
@@ -87,7 +86,6 @@ function WatchCompressionGuide() {
             subpath: 'tinypng',
             hash: 'tinypng-api-keys',
           });
-          windowFocus();
         }
         return;
       }
@@ -95,6 +93,7 @@ function WatchCompressionGuide() {
         compressionOutput === CompressionOutputMode.SaveToNewFolder &&
         compressionOutputSaveToFolder === path
       ) {
+        r('save_to_folder_not_configured');
         const result = await message.confirm({
           title: t('tips.watch_and_save_same_folder'),
           confirmText: t('goToSettings'),
@@ -105,10 +104,32 @@ function WatchCompressionGuide() {
             subpath: 'compression',
             hash: 'output',
           });
-          windowFocus();
         }
         return;
       }
+
+      if (
+        compressionOutput === CompressionOutputMode.SaveToNewFolder &&
+        compressionOutputSaveToFolder &&
+        !(await exists(compressionOutputSaveToFolder))
+      ) {
+        r('save_to_folder_not_exists');
+        const result = await message.confirm({
+          title: t('tips.save_to_folder_not_exists', {
+            path: compressionOutputSaveToFolder,
+          }),
+          confirmText: t('goToSettings'),
+          cancelText: t('cancel'),
+        });
+        if (result) {
+          openSettingsWindow({
+            subpath: 'compression',
+            hash: 'output',
+          });
+        }
+        return;
+      }
+
       const newHistory = await updateWatchHistory(path);
       setHistory(newHistory);
       progressRef.current?.show(true);

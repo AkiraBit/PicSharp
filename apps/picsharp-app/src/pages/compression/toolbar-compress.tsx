@@ -19,6 +19,8 @@ import message from '@/components/message';
 import { AppContext } from '@/routes';
 import { openSettingsWindow } from '@/utils/window';
 import { useReport } from '@/hooks/useReport';
+import { exists } from '@tauri-apps/plugin-fs';
+import { captureError } from '@/utils';
 
 function ToolbarCompress() {
   const { sidecar, imageTempDir } = useAppStore(useSelector(['sidecar', 'imageTempDir']));
@@ -126,18 +128,40 @@ function ToolbarCompress() {
       }
 
       if (outputMode === CompressionOutputMode.SaveToNewFolder && !saveToFolder) {
+        r('save_to_folder_not_configured');
         const result = await message.confirm({
           title: t('tips.save_to_folder_not_configured'),
           confirmText: t('goToSettings'),
           cancelText: t('cancel'),
         });
         if (result) {
-          openSettingsWindow();
+          openSettingsWindow({
+            subpath: 'compression',
+            hash: 'output',
+          });
         }
-        r('classic_compress_result', {
-          success: false,
-          reason: 'save to folder not configured',
+        return;
+      }
+
+      if (
+        outputMode === CompressionOutputMode.SaveToNewFolder &&
+        saveToFolder &&
+        !(await exists(saveToFolder))
+      ) {
+        r('save_to_folder_not_exists');
+        const result = await message.confirm({
+          title: t('tips.save_to_folder_not_exists', {
+            path: saveToFolder,
+          }),
+          confirmText: t('goToSettings'),
+          cancelText: t('cancel'),
         });
+        if (result) {
+          openSettingsWindow({
+            subpath: 'compression',
+            hash: 'output',
+          });
+        }
         return;
       }
 
@@ -215,11 +239,12 @@ function ToolbarCompress() {
             }
           } else {
             rejected++;
+            rejectedList.push(res);
             targetFile.status = ICompressor.Status.Failed;
             targetFile.errorMessage = 'Process failed,Please try again';
-            r('classic_compress_result', {
-              success: false,
-              err_msg: 'After compression, cannot find target file',
+            r('file_not_found_after_compression', {
+              success: true,
+              data: res,
             });
           }
           eventEmitter.emit('update_file_item', targetFile.path);
@@ -229,7 +254,7 @@ function ToolbarCompress() {
         },
         (res) => {
           rejected++;
-          rejectedList.push(res.input_path);
+          rejectedList.push(res);
           const targetFile = fileMap.get(res.input_path);
           if (targetFile) {
             targetFile.status = ICompressor.Status.Failed;
@@ -239,6 +264,11 @@ function ToolbarCompress() {
               targetFile.errorMessage = res.error.toString();
             }
             eventEmitter.emit('update_file_item', targetFile.path);
+          } else {
+            r('file_not_found_after_compression', {
+              success: false,
+              data: res,
+            });
           }
           if (indicatorRef.current) {
             indicatorRef.current.textContent = `${calProgress(fulfilled + rejected, files.length)}%`;
@@ -260,8 +290,7 @@ function ToolbarCompress() {
           total: files.length,
         }),
       );
-      r('classic_compress_result', {
-        success: true,
+      r('classic_compress_completed', {
         fulfilled,
         rejected,
         total: files.length,
@@ -269,15 +298,17 @@ function ToolbarCompress() {
         costTime: Date.now() - startTime,
       });
     } catch (error) {
-      messageApi?.error(t('common.compress_failed_msg'));
-      sendTextNotification(t('common.compress_failed'), t('common.compress_failed_msg'));
-      r('classic_compress_result', {
-        success: false,
-        reason: 'compress failed',
-        err_msg: error.toString(),
+      captureError(error);
+      r('classic_compress_failed', {
+        fulfilled,
+        rejected,
+        total: files.length,
+        error: error.toString(),
         rejectedList: rejectedList.slice(0, 10),
         costTime: Date.now() - startTime,
       });
+      messageApi?.error(t('common.compress_failed_msg'));
+      sendTextNotification(t('common.compress_failed'), t('common.compress_failed_msg'));
     } finally {
       if (indicatorRef.current) {
         indicatorRef.current.textContent = '0%';

@@ -5,11 +5,11 @@ import { isMac } from '.';
 import { message } from '@/components/message';
 import { report } from '.';
 
-export const windowFocus = () => {
-  const window = WebviewWindow.getCurrent();
+export const windowFocus = async (target?: WebviewWindow) => {
+  const window = target || WebviewWindow.getCurrent();
   if (window) {
-    window.show();
-    window.setFocus();
+    await window.show();
+    await window.setFocus();
   }
 };
 
@@ -77,7 +77,7 @@ export async function createWebviewWindow(
   const target = await WebviewWindow.getByLabel(label);
   console.log(`[createWebviewWindow] ${label}`, target);
   if (target) {
-    windowFocus();
+    windowFocus(target);
     return target;
   } else {
     return new WebviewWindow(label, {

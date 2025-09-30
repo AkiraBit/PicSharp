@@ -15,6 +15,9 @@ import WindowControl from '@/components/window-control';
 import { isMac } from '@/utils';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useReport } from '@/hooks/useReport';
+import { revealItemInDir } from '@tauri-apps/plugin-opener';
+
+let clickCount = 0;
 
 export default function SettingsLayout() {
   const t = useI18n();
@@ -65,11 +68,20 @@ export default function SettingsLayout() {
     });
   };
 
+  const handleOpenSettingDir = () => {
+    clickCount++;
+    if (clickCount === 5) {
+      revealItemInDir(useSettingsStore.getState().appDataDirPath);
+      clickCount = 0;
+    }
+  };
+
   return (
     <div className='flex h-full flex-col'>
       <div
         className={'flex h-[48px] items-center justify-end gap-1 px-2'}
         data-tauri-drag-region='true'
+        onClick={handleOpenSettingDir}
       >
         <div className='flex items-center gap-1'>
           <Tooltip>

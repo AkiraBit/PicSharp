@@ -128,19 +128,19 @@ function CompressionWatch() {
             }
           } else {
             rejected++;
-            rejectedList.push(res.input_path);
+            rejectedList.push(res);
             targetFile.status = ICompressor.Status.Failed;
             targetFile.errorMessage = 'Process failed,Please try again';
-            r('watch_compress_result', {
-              success: false,
-              err_msg: 'After compression, cannot find target file',
+            r('file_not_found_after_compression', {
+              success: true,
+              data: res,
             });
           }
           eventEmitter.emit('update_file_item', targetFile.path);
         },
         (res) => {
           rejected++;
-          rejectedList.push(res.input_path);
+          rejectedList.push(res);
           const targetFile = fileMap.get(res.input_path);
           if (targetFile) {
             targetFile.status = ICompressor.Status.Failed;
@@ -150,6 +150,11 @@ function CompressionWatch() {
               targetFile.errorMessage = res.error.toString();
             }
             eventEmitter.emit('update_file_item', targetFile.path);
+          } else {
+            r('file_not_found_after_compression', {
+              success: false,
+              data: res,
+            });
           }
         },
       );
@@ -168,8 +173,7 @@ function CompressionWatch() {
           total: files.length,
         }),
       );
-      r('watch_compress_result', {
-        success: true,
+      r('classic_compress_completed', {
         fulfilled,
         rejected,
         total: files.length,
@@ -178,6 +182,14 @@ function CompressionWatch() {
       });
     } catch (error) {
       captureError(error);
+      r('classic_compress_failed', {
+        fulfilled,
+        rejected,
+        total: files.length,
+        error: error.toString(),
+        rejectedList: rejectedList.slice(0, 10),
+        costTime: Date.now() - startTime,
+      });
       messageApi?.error(t('common.compress_failed_msg'));
       sendTextNotification(t('common.compress_failed'), t('common.compress_failed_msg'));
     }

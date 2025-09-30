@@ -555,7 +555,7 @@ export default class Compressor {
     return this.handlers[file.ext](file).catch((error: string) => {
       return Promise.reject({
         input_path: file.path,
-        error,
+        error: error.toString(),
       });
     });
   };
@@ -577,7 +577,7 @@ export default class Compressor {
             this.tinify(file).catch((error: string) => {
               return Promise.reject({
                 input_path: file.path,
-                error,
+                error: error.toString(),
               });
             }),
         );
@@ -650,11 +650,11 @@ export default class Compressor {
       });
       const result = await response.json();
       if (result?.code === -1) {
-        return Promise.reject(result?.err_msg || JSON.stringify(result));
+        return Promise.reject(result?.err_msg || 'Process failed, please try again');
       }
       return result;
     } catch (error) {
-      return Promise.reject(error.message || 'Process failed, please try again.');
+      return Promise.reject(error.message || 'Process failed, please try again');
     }
   };
 

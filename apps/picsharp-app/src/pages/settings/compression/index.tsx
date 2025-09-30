@@ -40,7 +40,7 @@ export default function SettingsCompression() {
     const hash = window.location.hash;
     if (outputElRef.current && hash === '#output') {
       setTimeout(() => {
-        outputElRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        outputElRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         outputElRef.current.classList.add('breathe-highlight');
       }, 300);
     }
