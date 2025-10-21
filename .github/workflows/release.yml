@@ -17,7 +17,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - name: setup node
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
       - name: get version
         run: echo "PACKAGE_VERSION=$(node -p "require('./apps/picsharp-app/package.json').version")" >> $GITHUB_ENV
       - name: get release notes
@@ -70,7 +70,7 @@ jobs:
           version: 9.5.0
 
       - name: Setup Node.js
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
           node-version: 24
 
