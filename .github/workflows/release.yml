@@ -22,7 +22,7 @@ jobs:
         run: echo "PACKAGE_VERSION=$(node -p "require('./apps/picsharp-app/package.json').version")" >> $GITHUB_ENV
       - name: get release notes
         id: get-release-notes
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             const fs = require('fs');
@@ -65,7 +65,7 @@ jobs:
       - uses: actions/checkout@v6
 
       - name: Setup Pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
         with:
           version: 9.5.0
 
@@ -265,7 +265,7 @@ jobs:
         working-directory: packages/picsharp-sidecar
 
       - name: Move sidecar binary
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             const fs = require('fs');
